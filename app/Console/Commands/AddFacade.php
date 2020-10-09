@@ -1,0 +1,48 @@
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\GeneratorCommand;
+
+class AddFacade extends GeneratorCommand
+{
+    /**
+     * 控制台命令名称
+     *
+     * @var string
+     */
+    protected $name = 'make:facade';
+    /**
+     * 控制台命令描述
+     *
+     * @var string
+     */
+    protected $description = 'Create a new facade class';
+    /**
+     * 生成类的类型
+     *
+     * @var string
+     */
+    protected $type = 'Facades';
+    /**
+     * 获取生成器的存根文件
+     *
+     * @return string
+     */
+    protected function getStub()
+    {
+        return __DIR__.'/Stubs/facades.stub';
+    }
+
+    /**
+     * 获取类的默认命名空间
+     *
+     * @param  string  $rootNamespace
+     * @return string
+     */
+
+    protected function getDefaultNamespace($rootNamespace)
+    {
+        return $rootNamespace.'\Facades';
+    }
+}
