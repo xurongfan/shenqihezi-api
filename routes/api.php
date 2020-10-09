@@ -38,6 +38,7 @@ Route::get('/gameList', function (){
       $datum['icon'] = env('H5_URL').$datum['package_name'].'/'.$datum['icon'];
       $datum['banner'] = env('H5_URL').$datum['package_name'].'/'.$datum['banner'];
       $datum['game_url'] = env('H5_URL').$datum['package_name'].'/game/';
+      $datum['imgs'] = $datum['imgs'] ? json_decode($datum['imgs'],true) : [];
     }
 
   }
