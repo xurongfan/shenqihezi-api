@@ -23,7 +23,7 @@ Route::any('/captcha', function (){
 })->name('captcha');
 
 Route::get('/gameList', function (){
-  $list =  \App\Model\Game\PackageGame::query()->paginate(10)->toArray();
+  $list =  \App\Model\Game\PackageGame::query()->where('is_h',1)->paginate(10)->toArray();
 
   foreach ($list['data'] as $k => &$datum) {
     if (!$datum['is_h']) {
