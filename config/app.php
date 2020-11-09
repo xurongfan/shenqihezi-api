@@ -82,7 +82,7 @@ return [
     |
     */
 
-    'locale' => 'en',
+    'locale' => 'zh-CN',
 
     /*
     |--------------------------------------------------------------------------
@@ -124,6 +124,12 @@ return [
     'key' => env('APP_KEY'),
 
     'cipher' => 'AES-256-CBC',
+
+  //阿里云密钥
+    'ali_access_keyid' => env('ALI_ACCESS_KEYID'),
+
+    'ali_access_secret' => env('ALI_ACCESS_SECRET'),
+
 
     /*
     |--------------------------------------------------------------------------

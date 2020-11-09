@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>大文件切割上传带进度条</title>
+  <link rel="stylesheet" href="">
+<script>
+var xhr = new XMLHttpRequest();//xhr对象
+var clock = null;
+function selfile(){
+  clock = window.setInterval(sendfile,1000);
+}
+var sendfile = (function (){
+  const LENGTH = 1024 * 1024 * 10;//每次上传的大小
+  var start = 0;//每次上传的开始字节
+  var end = start + LENGTH;//每次上传的结尾字节
+  var sending = false;//表示是否正在上传
+  var fd = null;//创建表单数据对象
+  var blob = null;//二进制对象
+  var percent = 0;
+  return (function (){
+    //如果有块正在上传，则不进行上传
+    if(sending == true){
+      return;
+    }
+    var file = document.getElementsByName('video')[0].files[0];//文件对象
+    //如果sta>file.size，就结束了
+    if(start > file.size){
+      clearInterval(clock);
+      return;
+    }
+    blob = file.slice(start,end);//根据长度截取每次需要上传的数据
+    fd = new FormData();//每一次需要重新创建
+    fd.append('video',blob);//添加数据到fd对象中
+    up(fd);
+    //重新设置开始和结尾
+    start = end;
+    end = start + LENGTH;
+    console.log(start)
+    console.log(end)
+
+    sending = false;//上传完了
+    //显示进度条
+    percent = 100 * start/file.size;
+    if(percent>100){
+      percent = 100;
+    }
+    document.getElementById('bar').style.width = percent + '%';
+    document.getElementById('bar').innerHTML = parseInt(percent)+'%';
+  });
+})();
+function up(fd){
+  xhr.open('POST','/api/upload',false);
+  xhr.send(fd);
+}
+</script>
+<style>
+  #progress{
+    width:500px;
+    height:30px;
+    border:1px solid green;
+  }
+  #bar{
+    width:0%;
+    height:100%;
+    background-color: green;
+  }
+</style>
+</head>
+<body>
+  <h1>大文件切割上传带进度条</h1>
+  <div id="progress">
+    <div id="bar"></div>
+  </div>
+  <input type="file" name="video" onchange="selfile();" />
+</body>
+</html>
+

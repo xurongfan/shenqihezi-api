@@ -2,14 +2,8 @@
 
 namespace App\Base\Providers;
 
-use App\Models\Feedback;
-use App\Models\Message;
-use App\Models\Program;
-use App\Models\Shop;
-use App\Services\Apps\InstallLogService;
-use App\Services\Apps\MessageService;
-use App\Services\Apps\ProgramService;
-use App\Services\Apps\ShopService;
+use App\Models\User\MerUser;
+use App\Services\MerUser\MerUserService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +13,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-
+        $this->app->bind(MerUserService::class, function () {
+            return new MerUserService(new MerUser());
+        });
     }
 }

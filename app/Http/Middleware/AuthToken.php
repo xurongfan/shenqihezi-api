@@ -21,24 +21,27 @@ class AuthToken extends BaseMiddleware
      */
     public function handle($request, Closure $next)
     {
-        // 使用 try 包裹，以捕捉 token 过期所抛出的 TokenExpiredException  异常
+        // 检查此次请求中是否带有 token，如果没有则抛出异常。
+        $this->checkForToken($request);
+        $role = 'api';
+        // 判断token是否在有效期内
         try {
-            // 检测用户的登录状态，如果正常则通过
-            if (auth()->guard('api')->user()) {
+            if (auth($role)->payload())  {
+                app('auth')->shouldUse($role);
                 return $next($request);
             }
-            throw new \Exception('未登录', '401');
-        } catch (TokenExpiredException $exception) {
-            // 此处捕获到了 token 过期所抛出的 TokenExpiredException 异常，我们在这里需要做的是刷新该用户的 token 并将它添加到响应头中
-            try {
-                // 刷新用户的 token
-                $token = $this->auth->refresh();
+        } catch (JWTException $exception) {
+            try{
+                $token = auth($role)->refresh();
                 // 使用一次性登录以保证此次请求的成功
-                $request->headers->set('Authorization', 'Bearer '.$token);
-//                Auth::guard('api')->onceUsingId($this->auth->manager()->getPayloadFactory()->buildClaimsCollection()->toPlainArray()['sub']);
-            } catch (JWTException $exception) {
+                auth($role)->onceUsingId(
+                    auth($role)->payload()->get('sub')
+                );
+                //更新请求中的token
+                $request->headers->set('Authorization','Bearer '.$token);
+            } catch(JWTException $exception) {
                 // 如果捕获到此异常，即代表 refresh 也过期了，用户无法刷新令牌，需要重新登录。
-                throw new \Exception($exception->getMessage(), '401');
+                throw new UnauthorizedHttpException('jwt-auth', $exception->getMessage());
             }
         }
         // 在响应头中返回新的 token

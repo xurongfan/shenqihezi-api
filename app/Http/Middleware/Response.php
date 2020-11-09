@@ -16,26 +16,17 @@ class Response
      */
     public function handle($request, Closure $next)
     {
-//        if(strtolower($request->getMethod()) == 'options'){
-//            $response = new \Illuminate\Http\Response();
-//            $response->withHeaders([
-//                'Content-Type'  => $request->expectsJson() || $request->ajax()?'application/json;charset:UTF-8':'text/html; charset=UTF-8',
-//                'Access-Control-Allow-Origin'=>'*',
-//                'Access-Control-Allow-Credentials'=>'true',
-//                'Access-Control-Allow-Methods'=>'PUT, GET, POST, DELETE, OPTIONS',
-//                'Access-Control-Allow-Headers' => 'Accept,Content-Type,Authorization,X-Requested-With,X-XSRF-TOKEN',
-//                'Access-Control-Expose-Headers' => 'Authorization'
-//            ]);
-//            return $response;
+      if ($request->header('lang')) {
+        config(['app.locale' => $request->header('lang')]);
+      }
+//        //去除请求参数左右两边空格
+//        $params = $request->all();
+//        foreach($params as $key=>$value){
+//            if(!is_array($value)) {
+//                $params[$key] = trim($value);
+//            }
 //        }
-        //去除请求参数左右两边空格
-        $params = $request->all();
-        foreach($params as $key=>$value){
-            if(!is_array($value)) {
-                $params[$key] = trim($value);
-            }
-        }
-        $request->replace($params);
+//        $request->replace($params);
 //        \DB::enableQueryLog();
         $response = $next($request);
 //        print_r(\DB::getQueryLog());
@@ -50,15 +41,7 @@ class Response
                 $response->setContent($content)->withHeaders(['Content-Type' => 'application/json']);
             }
         }
-        $this->saveAccessLog($request->method(),$request->path(),$params,$response);
-//        $response->withHeaders([
-//            'Content-Type'  =>  $request->expectsJson() || $request->ajax()?'application/json;charset:UTF-8':'text/html; charset=UTF-8',
-//            'Access-Control-Allow-Origin'=>'*',
-//            'Access-Control-Allow-Credentials'=>'true',
-//            'Access-Control-Allow-Methods'=>'PUT, GET, POST, DELETE, OPTIONS',
-//            'Access-Control-Allow-Headers' => 'Accept,Content-Type,Authorization,X-Requested-With,X-XSRF-TOKEN',
-//            'Access-Control-Expose-Headers' => 'Authorization'
-//        ]);
+//        $this->saveAccessLog($request->method(),$request->path(),$params,$response);
         return $response;
     }
 

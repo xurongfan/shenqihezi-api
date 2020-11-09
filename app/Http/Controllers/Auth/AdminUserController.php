@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: xurf
+ * MerUser: xurf
  * Date: 2020/8/26
  * Time: 15:47
  */
@@ -10,7 +10,7 @@ namespace App\Http\Controllers\Auth;
 
 
 use App\Base\Controllers\Controller;
-use App\Services\User\AdminUserService;
+use App\Services\MerUser\AdminUserService;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -35,6 +35,12 @@ class AdminUserController extends Controller
      */
     public function login(Request $request)
     {
+        echo"<pre>";print_r($request->all());exit;
+      return [
+        'token' => '$jwt_token',
+        'token_type' => 'Bearer ',
+        'expires_in' => JWTAuth::factory()->getTTL() * 60
+      ];
         $this->validate($request, [
             'username' => 'required',
             'password' => 'required',

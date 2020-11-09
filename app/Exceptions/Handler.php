@@ -56,30 +56,25 @@ class Handler extends ExceptionHandler
     {
 
         if ($request->expectsJson()) {
-
-            $message = $exception->getMessage();
-            $code = $exception->getCode();
-            if (in_array($exception->getCode() , [
-                Response::HTTP_FORBIDDEN,
-                Response::HTTP_UNAUTHORIZED
-            ])) {
-                return new Response(compact('code','message'), $exception->getCode());
+            if ($exception->getCode()) {
+                $message = $exception->getMessage();
+                $code = $exception->getCode();
+                return new Response(compact('code','message'),Response::HTTP_INTERNAL_SERVER_ERROR);
             }
 
             if($exception instanceof ValidationException){
                 $message = array_values($exception->errors())[0][0];
-                $status_code = Response::HTTP_UNPROCESSABLE_ENTITY;
-                return new Response(compact('code','message'),$status_code);
+                return new Response(compact('message'),Response::HTTP_UNPROCESSABLE_ENTITY);
             }
+//
+//            if($exception instanceof NotFoundHttpException){
+//                $message = '方法不存在';
+//                return new Response(compact('message'),Response::HTTP_NOT_FOUND);
+//            }
 
-            if($exception instanceof NotFoundHttpException){
-                $message = '方法不存在';
-                return new Response(compact('code','message'),404);
-            }
-
-            if($exception instanceof MethodNotAllowedHttpException){
-                return new Response(compact('code','message'),405);
-            }
+//            if($exception instanceof MethodNotAllowedHttpException){
+//                return new Response('',compact('message'),Response::HTTP_METHOD_NOT_ALLOWED);
+//            }
 
         }
         return parent::render($request, $exception);

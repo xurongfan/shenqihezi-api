@@ -168,70 +168,7 @@ function ip() {
     return $res;
 }
 
-/**
- * @param $url
- * @param int $weight
- * @param int $height
- * @return string
- */
-function tailoringImg($url , $weight = 128, $height = 128)
-{
-    return $url.'?x-oss-process=image/resize,w_'.$weight.',h_'.$height.',limit_0';
-}
 
-
-/*
-  //白山云文件、图片上传，支持 image/png、image/jpeg、image/bmp、image/gif、application/pdf、application/vnd.android.package-archive
-  $fileObject：文件对像，$request->file('file');
-  $project：项目，xjd：现金贷项目，dc：贷超，项目中约定即可
-  $fileName：auto：自动命名，其它：手动命名(段是完整的文件名)
-  $bucket：oss中bucket桶名称
- */
-
-function baiShanCloudUpload($fileObject, $project, $fileName = 'auto', $bucket = 'xiyou') {
-    try {
-        $cType = $fileObject->getMimeType();
-
-        if ($cType != 'application/zlib' && $cType != 'image/png' && $cType != 'image/jpeg' && $cType != 'image/bmp' && $cType != 'image/gif' && $cType != 'application/pdf' && $cType != 'application/vnd.android.package-archive' && $cType != 'video/mp4') {
-            return -2;
-        }
-        $fName = $fileName;
-        if ($fName == 'auto') {
-            if ($cType != 'application/zlib') {
-                $fName = $fileObject->hashName();
-            } else {
-                $fName = md5($fName) . '.svga';
-            }
-        }
-
-        $cli = new \Aws\S3\S3Client([
-            'version' => 'latest',
-            'region' => 'us-east-1',
-            'credentials' => [
-                'key' => env('BAISHANCLOUD_ACCESS_KEY', ''),
-                'secret' => env('BAISHANCLOUD_ACCESS_SECRET', ''),
-            ],
-            'endpoint' => env('BAISHANCLOUD_ENDPOINT', ''),
-        ]);
-        $resp = $cli->putObject([
-            'ACL' => 'public-read',
-            'Bucket' => env('BAISHANCLOUD_BUCKET', $bucket),
-            'Key' => $project . '/' . date('Ymd') . '/' . $fName,
-            'ContentType' => $cType,
-            'SourceFile' => $fileObject->path(),
-        ]);
-    } catch (Exception $exception) {
-        return $exception->getMessage();
-    }
-
-    if ($cType != 'application/zlib') {
-        return $resp->get('ObjectURL');
-
-    } else {
-        return str_replace("http://","https://",$resp->get('ObjectURL'));
-    }
-
-}
 
 /**
  * 获取客户端IP地址
@@ -262,4 +199,64 @@ function getClientIp($type = 0, $adv = false)
     $long = sprintf("%u", ip2long($ip));
     $ip = $long ? array($ip, $long) : array('0.0.0.0', 0);
     return $ip[$type];
+}
+
+/**
+ * 根据日期计算年龄
+ * @param $birth
+ * @return mixed
+ */
+function howOld($birth) {
+    list($birthYear, $birthMonth, $birthDay) = explode('-', $birth);
+    list($currentYear, $currentMonth, $currentDay) = explode('-', date('Y-m-d'));
+
+    $age = $currentYear - $birthYear - 1;
+    if($currentMonth > $birthMonth || $currentMonth == $birthMonth && $currentDay >= $birthDay) $age++;
+
+    return $age;
+}
+
+/**
+ * @param $phoneNumber
+ * @return bool
+ * @throws \AlibabaCloud\Client\Exception\ClientException
+ */
+function sendSms($phoneNumber,$areaCode,$varifyCode)
+{
+  \AlibabaCloud\Client\AlibabaCloud::accessKeyClient(config('app.ali_access_keyid'), config('app.ali_access_secret'))
+    ->regionId('cn-hangzhou')
+    ->asDefaultClient();
+
+  try {
+    $result = \AlibabaCloud\Client\AlibabaCloud::rpc()
+      ->product('Dysmsapi')
+      // ->scheme('https') // https | http
+      ->version('2017-05-25')
+      ->action('SendSms')
+      ->method('POST')
+      ->host('dysmsapi.aliyuncs.com')
+      ->options([
+        'query' => [
+          'RegionId' => "cn-hangzhou",
+          'PhoneNumbers' => $phoneNumber,
+          'SignName' => "FunTouch",
+          'TemplateCode' => "SMS_205123396",
+          'TemplateParam' => json_encode([
+            'code' => $varifyCode
+          ]),
+        ],
+      ])
+      ->request();
+  } catch (\AlibabaCloud\Client\Exception\ClientException $e) {
+    throw new Exception($e->getErrorMessage());
+  } catch (\AlibabaCloud\Client\Exception\ServerException $e) {
+    throw new Exception($e->getErrorMessage());
+  }
+  $result = $result->toArray();
+
+  if (isset($result['Message']) && $result['Message'] == 'OK') {
+    return true;
+  }
+
+  throw new Exception(transL('sms.send_error','发送失败'));
 }
