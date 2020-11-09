@@ -253,10 +253,9 @@ function sendSms($phoneNumber,$areaCode,$varifyCode)
     throw new Exception($e->getErrorMessage());
   }
   $result = $result->toArray();
-
   if (isset($result['Message']) && $result['Message'] == 'OK') {
     return true;
   }
-
+  logger('sms-response:'.json_encode($result));
   throw new Exception(transL('sms.send_error','发送失败'));
 }
