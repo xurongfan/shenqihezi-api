@@ -257,5 +257,5 @@ function sendSms($phoneNumber,$areaCode,$varifyCode)
     return true;
   }
   logger('sms-response:'.json_encode($result));
-  throw new Exception(transL('sms.send_error','发送失败'));
+  throw new Exception($result['Message'] ?? transL('sms.send_error','发送失败'));
 }
