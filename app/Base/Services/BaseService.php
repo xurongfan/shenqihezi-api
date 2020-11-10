@@ -31,6 +31,22 @@ abstract class BaseService
     }
 
     /**
+     * @return \Illuminate\Contracts\Auth\Authenticatable|null
+     */
+    public function user()
+    {
+        return auth()->user();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function userId()
+    {
+        return $this->user()->id;
+    }
+
+    /**
      * DB:select对象转数组
      * @param $list
      * @return array

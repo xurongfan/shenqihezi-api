@@ -53,7 +53,7 @@ class MerUserService extends BaseService
             throw new \Exception(transL('mer-user.user_exist','用户已存在'));
         }
         //验证码校验
-        if ($request['verify_code'] ?? '' != self::smsKey($request['area_code'].$request['phone'])) {
+        if ($request['verify_code'] ?? '' != self::smsKey($request['area_code'].$request['phone'],'login')) {
             throw new \Exception('sms.sms_code_error');
         }
 
@@ -85,7 +85,7 @@ class MerUserService extends BaseService
             }
             $user = $this->getUserByPhone($request['phone'],$request['area_code']);
             if (!isset($user)) {
-                throw new \Exception(transL('mer-user.user_not_exist'));
+                throw new \Exception(transL('mer-user.user_not_exist'),100);
             }
         } else if (isset($request['facebook_auth_code']) && $request['facebook_auth_code']) {
             $user = $this->finOneUser(['facebook_auth_code' => $request['facebook_auth_code']]);
@@ -103,14 +103,6 @@ class MerUserService extends BaseService
         return $user;
     }
 
-    /**
-     * 获取用户信息
-     * @return \Illuminate\Contracts\Auth\Authenticatable|null
-     */
-    public function user()
-    {
-        return auth()->user();
-    }
 
     /**
      * 重新登陆获取token

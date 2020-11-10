@@ -37,6 +37,7 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
 
     $router->group(['namespace' => 'Game','prefix' => 'game'],function ($router){
         $router->get('tag', 'GameTagController@all')->name('game.tag');
+        $router->get('/', 'GamePackageController@index')->name('game.index');
     });
 
     $router->group(['namespace' => 'System','prefix' => 'system'],function ($router){

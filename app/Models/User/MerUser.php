@@ -52,4 +52,12 @@ class MerUser extends BaseModel implements
     {
         return $this->belongsToMany(GameTag::class, 'mer_user_tag', 'user_id', 'tag_id');
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function tagsId()
+    {
+        return $this->hasMany(MerUserTag::class,'user_id','id');
+    }
 }
