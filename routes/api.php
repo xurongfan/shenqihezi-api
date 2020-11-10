@@ -67,8 +67,8 @@ Route::any('game/list', function (){
     foreach ($list['data'] as $k => &$v){
         $v['icon_img'] = config('filesystems.disks.oss.domain_url').$v['icon_img'];
         $v['background_img'] = config('filesystems.disks.oss.domain_url').$v['background_img'];
-        $v['url'] = 'http://game.sqhezi.cn/'.$v['url'];
-        $v['crack_url'] = $v['crack_url']  ? 'http://game.sqhezi.cn/'.$v['crack_url'] : '';
+        $v['url'] = 'http://h5-cdn.sqhezi.cn/'.$v['url'];
+        $v['crack_url'] = $v['crack_url']  ? 'http://h5-cdn.sqhezi.cn/'.$v['crack_url'] : '';
     }
     return $list;
 })->name('game-list');
