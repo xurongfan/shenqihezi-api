@@ -15,15 +15,15 @@ class MerUserService extends BaseService
      * @param string $areaCode
      * @throws \AlibabaCloud\Client\Exception\ClientException
      */
-    public function sendSmsCode( $phone , $areaCode = '',$type = 'reg' )
+    public function sendSmsCode( $phone , $areaCode = '',$type = 'login' )
     {
-        if ($type == 'reg' && self::getUserByPhone($phone , $areaCode)) {
-            throw new \Exception(transL('mer-user.user_exist'));
-        }
-
-        if ($type == 'login' && !self::getUserByPhone($phone , $areaCode)) {
-            throw new \Exception(transL('mer-user.user_not_exist'));
-        }
+//        if ($type == 'reg' && self::getUserByPhone($phone , $areaCode)) {
+//            throw new \Exception(transL('mer-user.user_exist'));
+//        }
+//
+//        if ($type == 'login' && !self::getUserByPhone($phone , $areaCode)) {
+//            throw new \Exception(transL('mer-user.user_not_exist'));
+//        }
 
         $varifyCode = mt_rand(1000,9999);
         if (sendSms($phone,$areaCode,$varifyCode)) {
