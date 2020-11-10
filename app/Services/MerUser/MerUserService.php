@@ -80,7 +80,7 @@ class MerUserService extends BaseService
         if (isset($request['phone']) && $request['phone']) {
             //验证码校验
             if (($request['verify_code'] ?? '') != Redis::GET(self::smsKey($request['area_code'].$request['phone'],'login'))) {
-                throw new \Exception('sms.sms_code_error');
+                throw new \Exception(transL('sms.sms_code_error'));
             }
             $user = $this->getUserByPhone($request['phone'],$request['area_code']);
             if (!isset($user)) {
