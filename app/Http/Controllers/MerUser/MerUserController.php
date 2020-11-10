@@ -133,7 +133,7 @@ class MerUserController extends Controller
             'phone.required' => transL('mer-user.phone_error'),
             'area_code.required' => transL('mer-user.area_code_error')
         ]);
-        $type = \request('type','reg');
+        $type = \request('type','login');
         $phone = \request('phone');
         $areaCode = \request('area_code');
 

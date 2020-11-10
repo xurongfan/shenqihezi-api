@@ -24,7 +24,6 @@ class MerUserService extends BaseService
 //        if ($type == 'login' && !self::getUserByPhone($phone , $areaCode)) {
 //            throw new \Exception(transL('mer-user.user_not_exist'));
 //        }
-
         $varifyCode = mt_rand(1000,9999);
         if (sendSms($phone,$areaCode,$varifyCode)) {
             Redis::SETEX(self::smsKey($areaCode.$phone,$type),300,$varifyCode);
@@ -38,7 +37,7 @@ class MerUserService extends BaseService
      * @param $phoneNumber
      * @return string
      */
-    public function smsKey($phoneNumber, $type = 'reg' )
+    public function smsKey($phoneNumber, $type = 'login' )
     {
         return $type.'_'.$phoneNumber;
     }
@@ -80,7 +79,7 @@ class MerUserService extends BaseService
     {
         if (isset($request['phone']) && $request['phone']) {
             //验证码校验
-            if ($request['verify_code'] ?? '' != Redis::GET(self::smsKey($request['area_code'].$request['phone'],'login'))) {
+            if (($request['verify_code'] ?? '') != Redis::GET(self::smsKey($request['area_code'].$request['phone'],'login'))) {
                 throw new \Exception('sms.sms_code_error');
             }
             $user = $this->getUserByPhone($request['phone'],$request['area_code']);
