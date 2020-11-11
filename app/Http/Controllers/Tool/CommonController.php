@@ -15,7 +15,8 @@ class CommonController extends Controller
     {
         $file = request()->file('file');
         try {
-           return Storage::disk('oss')->put('profile_imgs/'.date('Ymd'), $file);
+            $result = Storage::disk('oss')->put('profile_imgs/'.date('Ymd'), $file);
+            return ossDomain($result);
         }catch (\Exception $exception){
             throw new \Exception($exception->getMessage());
         }
