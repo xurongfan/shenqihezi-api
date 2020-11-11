@@ -11,7 +11,7 @@ class GameTagService extends BaseService
      */
     public function all()
     {
-        return $this->model->newQuery()->select('id','title','title_en')
+        return $this->model->newQuery()->select('id',getLangField('title').' as title')
             ->orderBy('id','asc')->get();
     }
 }

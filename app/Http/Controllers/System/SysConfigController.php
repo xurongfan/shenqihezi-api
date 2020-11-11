@@ -18,10 +18,13 @@ class SysConfigController extends Controller
     /**
      * @return \App\Base\Services\BaseModel
      */
-    public function config()
+    public function config(Request $request)
     {
+        $this->validate($request,[
+            'keyword' => 'required' ,
+        ]);
         return $this->service->findOneBy([
-            'keyword' => \request('keyword')
+            'keyword' => getLangField(\request('keyword'))
         ],'content');
     }
 }

@@ -259,3 +259,12 @@ function sendSms($phoneNumber,$areaCode,$varifyCode)
   logger('sms-response:'.json_encode($result));
   throw new Exception($result['Message'] ?? transL('sms.send_error','发送失败'));
 }
+
+/**
+ * @return string
+ */
+function getLangField(string $field)
+{
+    $lang = config('app.locale');
+    return $lang == 'zh-CN' ? $field :($field.'_'.strtolower(config('app.locale')));
+}
