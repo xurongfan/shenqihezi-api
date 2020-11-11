@@ -63,10 +63,11 @@ class Handler extends ExceptionHandler
             }
             $code = Response::HTTP_INTERNAL_SERVER_ERROR;
 
+            $message = $exception->getMessage();
+
             if($exception instanceof ValidationException){
                 $message = array_values($exception->errors())[0][0];
             }
-            $message = $exception->getMessage();
 
             return new Response(compact('code','message'),Response::HTTP_OK);
 
