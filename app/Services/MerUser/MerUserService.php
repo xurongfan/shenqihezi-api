@@ -53,7 +53,7 @@ class MerUserService extends BaseService
         }
         //验证码校验
         if ($request['verify_code'] ?? '' != Redis::GET(self::smsKey($request['area_code'].$request['phone'],'login'))) {
-            throw new \Exception('sms.sms_code_error');
+            throw new \Exception(transL('sms.sms_code_error'));
         }
 
         $data = $this->model->filter($request);

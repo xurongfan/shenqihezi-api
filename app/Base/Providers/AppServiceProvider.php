@@ -2,9 +2,11 @@
 
 namespace App\Base\Providers;
 
+use App\Models\Game\GamePackage;
 use App\Models\Game\GameTag;
 use App\Models\System\SysConfig;
 use App\Models\User\MerUser;
+use App\Services\Game\GamePackageService;
 use App\Services\Game\GameTagService;
 use App\Services\MerUser\MerUserService;
 use App\Services\System\SysConfigService;
@@ -23,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(GameTagService::class, function () {
             return new GameTagService(new GameTag());
+        });
+
+        $this->app->bind(GamePackageService::class, function () {
+            return new GamePackageService(new GamePackage());
         });
 
         $this->app->bind(SysConfigService::class, function () {

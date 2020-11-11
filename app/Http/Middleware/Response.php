@@ -35,7 +35,7 @@ class Response
             if($request->expectsJson() || $request->ajax()) {
                 $content = json_encode([
                     'code' => 0,
-                    'msg' => 'success.',
+                    'message' => 'success.',
                     'data' => ($this->isJson($content) ? json_decode($content, true) : $content)
                 ]);
                 $response->setContent($content)->withHeaders(['Content-Type' => 'application/json']);

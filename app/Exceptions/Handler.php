@@ -56,16 +56,17 @@ class Handler extends ExceptionHandler
     {
 
         if ($request->expectsJson()) {
-            if ($exception->getCode()) {
+//            if ($exception->getCode() || $exception->getMessage()) {
                 $message = $exception->getMessage();
-                $code = $exception->getCode();
-                return new Response(compact('code','message'),Response::HTTP_INTERNAL_SERVER_ERROR);
-            }
+                if($exception instanceof ValidationException){
+                    $message = array_values($exception->errors())[0][0];
+    //                    return new Response(compact('message'),Response::HTTP_UNPROCESSABLE_ENTITY);
+                }
+                $code = $exception->getCode() ? $exception->getCode() : Response::HTTP_INTERNAL_SERVER_ERROR;
+                return new Response(compact('code','message'),Response::HTTP_OK);
+//            }
 
-            if($exception instanceof ValidationException){
-                $message = array_values($exception->errors())[0][0];
-                return new Response(compact('message'),Response::HTTP_UNPROCESSABLE_ENTITY);
-            }
+
 //
 //            if($exception instanceof NotFoundHttpException){
 //                $message = '方法不存在';
