@@ -18,11 +18,17 @@ use Illuminate\Support\Facades\Route;
 //})->where(['all' => '([a-zA-Z0-9-]|/)+']);
 
 
-Route::group(['namespace' => 'MerUser','prefix' => 'user'],function (Router $router){
+Route::group([],function (Router $router){
 
-    $router->post('reg', 'MerUserController@reg')->name('user.reg');
-    $router->post('sendSms', 'MerUserController@sendSms')->name('user.sms');
-    $router->post('login', 'MerUserController@login')->name('user.login');
+    $router->group(['namespace' => 'MerUser','prefix' => 'user'],function ($router){
+        $router->post('reg', 'MerUserController@reg')->name('user.reg');
+        $router->post('sendSms', 'MerUserController@sendSms')->name('user.sms');
+        $router->post('login', 'MerUserController@login')->name('user.login');
+    });
+
+    $router->group(['namespace' => 'Game','prefix' => 'game'],function ($router){
+        $router->get('tag', 'GameTagController@all')->name('game.tag');
+    });
 
 });
 
@@ -36,7 +42,6 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
     });
 
     $router->group(['namespace' => 'Game','prefix' => 'game'],function ($router){
-        $router->get('tag', 'GameTagController@all')->name('game.tag');
         $router->get('/', 'GamePackageController@index')->name('game.index');
     });
 

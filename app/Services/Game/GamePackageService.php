@@ -14,7 +14,6 @@ class GamePackageService extends BaseService
      */
     public function index()
     {
-
        $result = GamePackageTag::query()->selectRaw(DB::raw('
         DISTINCT game_package_tag.package_id as id,
         game_package.title, 
@@ -31,7 +30,6 @@ class GamePackageService extends BaseService
             ->whereIn('game_package_tag.tag_id',$this->gameTagRandom())
             ->orderBy(DB::raw('rid'),'desc')->limit(20)->get();
         return $result;
-
     }
 
     /**
@@ -59,4 +57,6 @@ class GamePackageService extends BaseService
 
         return array_merge($tags,$random);
     }
+
+
 }
