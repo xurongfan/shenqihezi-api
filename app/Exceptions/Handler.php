@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -56,17 +57,20 @@ class Handler extends ExceptionHandler
     {
 
         if ($request->expectsJson()) {
-//            if ($exception->getCode() || $exception->getMessage()) {
+            if ($exception->getCode()) {
                 $message = $exception->getMessage();
-                if($exception instanceof ValidationException){
-                    $message = array_values($exception->errors())[0][0];
-    //                    return new Response(compact('message'),Response::HTTP_UNPROCESSABLE_ENTITY);
-                }
-                $code = $exception->getCode() ? $exception->getCode() : Response::HTTP_INTERNAL_SERVER_ERROR;
-                return new Response(compact('code','message'),Response::HTTP_OK);
-//            }
+                $code = $exception->getCode();
+                return new Response(compact('code','message'),Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+            if($exception instanceof ValidationException){
+                $message = array_values($exception->errors())[0][0];
+                return new Response(compact('message'),Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
 
-
+            if($exception instanceof UnauthorizedHttpException){
+                $message = $exception->getMessage();
+                return new Response(compact('message'),Response::HTTP_UNAUTHORIZED);
+            }
 //
 //            if($exception instanceof NotFoundHttpException){
 //                $message = '方法不存在';
