@@ -268,3 +268,15 @@ function getLangField(string $field)
     $lang = config('app.locale');
     return $lang == 'zh-CN' ? $field :($field.'_'.strtolower(config('app.locale')));
 }
+
+/**
+ * @param $path
+ * @return string
+ */
+function ossDomain($path)
+{
+    if ($path && !\Illuminate\Support\Str::startsWith($path,'http://') && !\Illuminate\Support\Str::startsWith($path,'https://')) {
+        return config('filesystems.disks.oss.domain_url') . $path;
+    }
+    return $path;
+}

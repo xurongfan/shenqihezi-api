@@ -29,6 +29,12 @@ class GamePackageService extends BaseService
             ->leftJoin('game_package','game_package_tag.package_id','=','game_package.id')
             ->whereIn('game_package_tag.tag_id',$this->gameTagRandom())
             ->orderBy(DB::raw('rid'),'desc')->limit(20)->get();
+       foreach ($result as $key => &$item) {
+           $item['icon_img'] = ossDomain($item['icon_img']);
+           $item['background_img'] = ossDomain($item['background_img']);
+           $item['url'] = config('app.game_url').$item['url'];
+           $item['crack_url'] = $item['crack_url'] ? config('app.game_url').$item['crack_url'] : '';
+       }
         return $result;
     }
 

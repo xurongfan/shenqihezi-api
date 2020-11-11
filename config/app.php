@@ -130,7 +130,7 @@ return [
 
     'ali_access_secret' => env('ALI_ACCESS_SECRET'),
 
-
+    'game_url' => env('GAME_URL'),
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers
