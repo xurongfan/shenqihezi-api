@@ -52,7 +52,7 @@ class MerUserService extends BaseService
             throw new \Exception(transL('mer-user.user_exist','用户已存在'));
         }
         //验证码校验
-        if ($request['verify_code'] ?? '' != Redis::GET(self::smsKey($request['area_code'].$request['phone'],'login'))) {
+        if (($request['verify_code'] ?? '') != Redis::GET(self::smsKey($request['area_code'].$request['phone'],'login'))) {
             throw new \Exception(transL('sms.sms_code_error'));
         }
 
@@ -66,7 +66,7 @@ class MerUserService extends BaseService
         //生成token
         $this->model->token = 'Bearer '.auth()->login($this->model);
 
-        return $this->model;
+        return $this->model->toArray();
     }
 
     /**
