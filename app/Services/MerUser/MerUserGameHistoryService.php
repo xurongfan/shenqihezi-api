@@ -66,6 +66,6 @@ class MerUserGameHistoryService extends BaseService
             );
             return $report;
         }
-        throw new \Exception('12212');
+        throw new \Exception('common.system_error');
     }
 }
