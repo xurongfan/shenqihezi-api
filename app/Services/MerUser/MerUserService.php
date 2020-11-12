@@ -58,7 +58,7 @@ class MerUserService extends BaseService
             throw new \Exception(transL('sms.sms_code_error'));
         }
         $keys = Arr::only($request, ['facebook_auth_code', 'google_auth_code']);
-        if (self::finOneUser(array_filter($keys))){
+        if ($keys && self::finOneUser(array_filter($keys))){
             throw new \Exception(transL('mer-user.user_exist_from_third','用户已存在'));
         }
 
@@ -94,7 +94,7 @@ class MerUserService extends BaseService
             }
             //检查第三方key是否已被注册
             $keys = array_filter(Arr::only($request, ['facebook_auth_code', 'google_auth_code']));
-            if (self::finOneUser($keys)){
+            if ($keys && self::finOneUser($keys)){
                 throw new \Exception(transL('mer-user.user_exist_from_third','用户已存在'));
             }
             $user->update($keys);
