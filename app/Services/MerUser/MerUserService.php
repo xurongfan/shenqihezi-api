@@ -20,9 +20,13 @@ class MerUserService extends BaseService
     {
 
         $keys = request()->only('facebook_auth_code','google_auth_code');
-        if (($type == 'login') && $keys) {
+        if ($type == 'login' && $keys) {
             if (self::finOneUser($keys)){
                 throw new \Exception(transL('mer-user.user_exist_from_third','用户已存在'));
+            }
+
+            if ($this->getUserByPhone($phone,$areaCode)) {
+                throw new \Exception(transL('mer-user.user_exist','用户已存在'));
             }
         }
 
