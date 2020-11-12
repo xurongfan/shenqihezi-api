@@ -39,7 +39,17 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
         $router->post('out', 'MerUserController@out')->name('user.out');
         $router->put('edit', 'MerUserController@edit')->name('user.edit');
 
+        $router->post('game-like', 'MerUserGameLikeController@like')->name('user.game-like');
+
+        $router->post('game-collect', 'MerUserGameCollectionController@collect')->name('user.game-collect');
+        $router->get('game-collect', 'MerUserGameCollectionController@index')->name('user.game-collect-index');
+
+        $router->get('game-history', 'MerUserGameHistoryController@index')->name('user.game-history-index');
+        $router->post('game-history', 'MerUserGameHistoryController@store')->name('user.game-history-store');
+        $router->put('game-history/{uid}', 'MerUserGameHistoryController@report')->name('user.game-history-report');
+
     });
+
 
     $router->group(['namespace' => 'Game','prefix' => 'game'],function ($router){
         $router->get('/', 'GamePackageController@index')->name('game.index');

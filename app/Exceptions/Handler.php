@@ -57,6 +57,15 @@ class Handler extends ExceptionHandler
     {
 
         if ($request->expectsJson()) {
+            if($exception instanceof NotFoundHttpException){
+                $message = 'NotFoundHttp';
+                return new Response(compact('message'),Response::HTTP_NOT_FOUND);
+            }
+
+            if($exception instanceof MethodNotAllowedHttpException){
+                $message = 'MethodNotAllowedHttp';
+                return new Response(compact('message'),Response::HTTP_METHOD_NOT_ALLOWED);
+            }
             $code = Response::HTTP_INTERNAL_SERVER_ERROR;
             if ($exception->getCode()) {
                 $code = $exception->getCode();
@@ -69,21 +78,6 @@ class Handler extends ExceptionHandler
             }
 
             return new Response(compact('code','message'),Response::HTTP_OK);
-
-//            if($exception instanceof UnauthorizedHttpException){
-//                $message = $exception->getMessage();
-//                return new Response(compact('code','message'),Response::HTTP_OK);
-//            }
-//
-//            if($exception instanceof NotFoundHttpException){
-//                $message = '方法不存在';
-//                return new Response(compact('message'),Response::HTTP_NOT_FOUND);
-//            }
-
-//            if($exception instanceof MethodNotAllowedHttpException){
-//                return new Response('',compact('message'),Response::HTTP_METHOD_NOT_ALLOWED);
-//            }
-
         }
         return parent::render($request, $exception);
     }

@@ -3,8 +3,10 @@
 namespace App\Services\Game;
 
 use App\Base\Services\BaseService;
-use App\Models\Game\GamePackageTag;
 use App\Models\Game\GameTag;
+use App\Services\MerUser\MerUserGameCollectionService;
+use App\Services\MerUser\MerUserGameLikeService;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 class GamePackageService extends BaseService
@@ -14,8 +16,9 @@ class GamePackageService extends BaseService
      */
     public function index()
     {
-       $result = GamePackageTag::query()->selectRaw(DB::raw('
-        DISTINCT game_package_tag.package_id as id,
+
+        $result = $this->model->query()->selectRaw(DB::raw('
+        game_package.id,
         game_package.title, 
         game_package.icon_img, 
         game_package.background_img, 
@@ -26,14 +29,34 @@ class GamePackageService extends BaseService
         game_package.is_landscape, 
         game_package.is_rank, 
         ( rand( ) * TIMESTAMP ( now( ) ) ) AS rid '))
-            ->leftJoin('game_package','game_package_tag.package_id','=','game_package.id')
+            ->leftJoin('game_package_tag','game_package_tag.package_id','=','game_package.id')
             ->whereIn('game_package_tag.tag_id',$this->gameTagRandom())
+            ->groupBy('game_package.id')
             ->orderBy(DB::raw('rid'),'desc')->limit(20)->get();
+
+       if ($result) {
+           $gamePackageIds = Arr::pluck($result,'id');
+
+           $likeArr = app(MerUserGameLikeService::class)->findBy([
+               'mer_user_id' => $this->userId(),
+               'game_package_id' => [['in',$gamePackageIds]],
+           ],'id,game_package_id');
+           $likeArr = Arr::pluck($likeArr,'id','game_package_id');
+
+           $collectArr = app(MerUserGameCollectionService::class)->findBy([
+               'mer_user_id' => $this->userId(),
+               'game_package_id' => [['in',$gamePackageIds]],
+           ],'id,game_package_id');
+           $collectArr = Arr::pluck($collectArr,'id','game_package_id');
+
+       }
        foreach ($result as $key => &$item) {
            $item['icon_img'] = ossDomain($item['icon_img']);
            $item['background_img'] = ossDomain($item['background_img']);
            $item['url'] = config('app.game_url').$item['url'];
            $item['crack_url'] = $item['crack_url'] ? config('app.game_url').$item['crack_url'] : '';
+           $item['is_like'] = isset($likeArr[$item['id']]);
+           $item['is_collect'] = isset($collectArr[$item['id']]);
        }
         return $result;
     }
