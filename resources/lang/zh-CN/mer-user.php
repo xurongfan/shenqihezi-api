@@ -8,6 +8,7 @@ return [
     'tags_error' => '游戏标签至少选择一个',
 
     'user_exist' => '手机号已存在',
+    'user_exist_from_third' => '该手机号已绑定其他账号',
     'user_not_exist' => '该手机号未注册',
     'third_login_user_not_exist' => '需绑定手机号',
 ];

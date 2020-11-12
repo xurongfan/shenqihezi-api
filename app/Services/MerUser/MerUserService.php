@@ -3,6 +3,7 @@
 namespace App\Services\MerUser;
 
 use App\Base\Services\BaseService;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redis;
 
@@ -17,13 +18,14 @@ class MerUserService extends BaseService
      */
     public function sendSmsCode( $phone , $areaCode = '',$type = 'login' )
     {
-//        if ($type == 'reg' && self::getUserByPhone($phone , $areaCode)) {
-//            throw new \Exception(transL('mer-user.user_exist'));
-//        }
-//
-//        if ($type == 'login' && !self::getUserByPhone($phone , $areaCode)) {
-//            throw new \Exception(transL('mer-user.user_not_exist'));
-//        }
+
+        $keys = request()->only('facebook_auth_code','google_auth_code');
+        if (($type == 'login') && $keys) {
+            if (self::finOneUser($keys)){
+                throw new \Exception(transL('mer-user.user_exist_from_third','用户已存在'));
+            }
+        }
+
         $varifyCode = mt_rand(1000,9999);
         if (sendSms($phone,$areaCode,$varifyCode)) {
             Redis::SETEX(self::smsKey($areaCode.$phone,$type),300,$varifyCode);
@@ -54,6 +56,10 @@ class MerUserService extends BaseService
         //验证码校验
         if (($request['verify_code'] ?? '') != Redis::GET(self::smsKey($request['area_code'].$request['phone'],'login'))) {
             throw new \Exception(transL('sms.sms_code_error'));
+        }
+        $keys = Arr::only($request, ['facebook_auth_code', 'google_auth_code']);
+        if (self::finOneUser(array_filter($keys))){
+            throw new \Exception(transL('mer-user.user_exist_from_third','用户已存在'));
         }
 
         $data = $this->model->filter($request);
@@ -86,6 +92,12 @@ class MerUserService extends BaseService
             if (!isset($user)) {
                 throw new \Exception(transL('mer-user.user_not_exist'),100);
             }
+            //检查第三方key是否已被注册
+            $keys = array_filter(Arr::only($request, ['facebook_auth_code', 'google_auth_code']));
+            if (self::finOneUser($keys)){
+                throw new \Exception(transL('mer-user.user_exist_from_third','用户已存在'));
+            }
+            $user->update($keys);
         } else if (isset($request['facebook_auth_code']) && $request['facebook_auth_code']) {
             $user = $this->finOneUser(['facebook_auth_code' => $request['facebook_auth_code']]);
             if (!isset($user)) {
