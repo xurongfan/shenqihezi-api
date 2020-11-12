@@ -57,11 +57,10 @@ class Handler extends ExceptionHandler
     {
 
         if ($request->expectsJson()) {
-
+            $code = Response::HTTP_INTERNAL_SERVER_ERROR;
             if ($exception->getCode()) {
                 $code = $exception->getCode();
             }
-            $code = Response::HTTP_INTERNAL_SERVER_ERROR;
 
             $message = $exception->getMessage();
 

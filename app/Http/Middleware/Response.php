@@ -30,7 +30,7 @@ class Response
 //        \DB::enableQueryLog();
         $response = $next($request);
 //        print_r(\DB::getQueryLog());
-        if ($response->getStatusCode()==200 && $response->exception == null) {
+        if (in_array($response->getStatusCode(),[200,201]) && $response->exception == null) {
             $content = $response->getContent();
             if($request->expectsJson() || $request->ajax()) {
                 $content = json_encode([
@@ -38,7 +38,7 @@ class Response
                     'message' => 'success.',
                     'data' => ($this->isJson($content) ? json_decode($content, true) : $content)
                 ]);
-                $response->setContent($content)->withHeaders(['Content-Type' => 'application/json']);
+                $response->setStatusCode(200)->setContent($content)->withHeaders(['Content-Type' => 'application/json']);
             }
         }
 //        $this->saveAccessLog($request->method(),$request->path(),$params,$response);
