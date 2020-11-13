@@ -12,10 +12,18 @@ class MerUserGameCollectionService extends BaseService
      */
     public function collect($gamePackageId)
     {
-        return $this->model->firstOrCreate( [
+        if ($res = $this->findOneBy( [
             'mer_user_id' => $this->userId(),
             'game_package_id' => $gamePackageId
-        ]);
+        ])) {
+            $res->delete();
+        }else{
+            return $this->save( [
+                'mer_user_id' => $this->userId(),
+                'game_package_id' => $gamePackageId
+            ]);
+        }
+        return ;
     }
 
     /**
