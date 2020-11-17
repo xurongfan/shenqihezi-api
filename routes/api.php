@@ -30,6 +30,10 @@ Route::group([],function (Router $router){
         $router->get('tag', 'GameTagController@all')->name('game.tag');
     });
 
+    $router->group(['namespace' => 'System','prefix' => 'system'],function ($router){
+        $router->get('config', 'SysConfigController@config')->name('system.config');
+    });
+
 });
 
 Route::group(['middleware' => 'auth_token'],function (Router $router){
@@ -55,9 +59,6 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
         $router->get('/', 'GamePackageController@index')->name('game.index');
     });
 
-    $router->group(['namespace' => 'System','prefix' => 'system'],function ($router){
-        $router->get('config', 'SysConfigController@config')->name('system.config');
-    });
 
     $router->group(['namespace' => 'Tool','prefix' => 'tool'],function ($router){
 
