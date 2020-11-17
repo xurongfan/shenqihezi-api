@@ -88,3 +88,39 @@ Route::any('game/list', function (){
     return $list;
 })->name('game-list');
 
+Route::any('ad-game/list', function (){
+
+    return [
+        [
+            'img' => 'https://android-artworks.25pp.com/fs08/2018/02/06/4/106_508240d7599857dec1b1efd5534464ed_con_130x130.png',
+            'dec' => '史上最强的开心消消乐熊出没消除游戏消灭星星',
+            'title' => '消灭星星',
+            'url' => 'https://www.wandoujia.com/apps/6623588/binding?source=web_seo_baidu_binded',
+        ],
+        [
+            'img' => 'https://android-artworks.25pp.com/fs08/2020/06/01/7/1_64d55e77e2564eb274a55ab64b49b521_con_130x130.png',
+            'dec' => '开心消消乐」姐妹篇，全新玩法，快乐升级',
+            'title' => '海滨消消乐',
+            'url' => 'https://www.wandoujia.com/apps/7589903/binding?source=web_seo_baidu_binded',
+        ],
+        [
+            'img' => 'https://android-artworks.25pp.com/fs08/2020/10/14/4/110_38d99afc681a81f7f147e41b96e9935a_con_130x130.png',
+            'dec' => '不仅是加速器更是黑科技，内含大量海外游戏，终于能愉快玩外服了。',
+            'title' => 'biubiu加速器',
+            'url' => 'https://www.wandoujia.com/apps/7854150/binding?source=web_seo_baidu_binded',
+        ],
+        [
+            'img' => 'https://android-artworks.25pp.com/fs08/2019/05/08/10/1_e46c4b93938451b2be8630e7a4dea8e8_con_130x130.png',
+            'dec' => '腾讯光子打造的反恐军事竞赛手游',
+            'title' => '和平精英',
+            'url' => 'https://www.wandoujia.com/apps/7701857/binding?source=web_seo_baidu_binded',
+        ],
+        [
+            'img' => 'https://android-artworks.25pp.com/fs08/2020/06/09/6/109_69cec412575af9cc2d0e60efd8d27924_con_130x130.png',
+            'dec' => '大球吃小球，努力成为巨无霸，在游戏里处处都能学到套路。',
+            'title' => '球球大作战',
+            'url' => 'https://www.wandoujia.com/apps/6618368/binding?source=web_seo_baidu_binded',
+        ]
+    ];
+})->name('ad-game-list');
+
