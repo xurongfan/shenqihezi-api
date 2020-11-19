@@ -9,6 +9,7 @@
         "alibabacloud/sdk": "^1.8",
         "aliyuncs/oss-sdk-php": "^2.4",
         "aws/aws-sdk-php": "^3.103",
+        "dcat/laravel-wherehasin": "^0.5.0",
         "fideloper/proxy": "^4.0",
         "fruitcake/laravel-cors": "^2.0",
         "iidestiny/laravel-filesystem-oss": "^2.0",

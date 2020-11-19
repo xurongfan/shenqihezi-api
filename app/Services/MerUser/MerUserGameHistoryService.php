@@ -3,6 +3,7 @@
 namespace App\Services\MerUser;
 
 use App\Base\Services\BaseService;
+use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 
 class MerUserGameHistoryService extends BaseService
@@ -67,5 +68,33 @@ class MerUserGameHistoryService extends BaseService
             return $report;
         }
         throw new \Exception(transL('common.system_error'));
+    }
+
+    /**
+     * @return array
+     */
+    public function hotGame()
+    {
+        $result = $this->model->newQuery()
+            ->select('game_package_id',DB::raw('sum(`duration`) as duration') )
+            ->where('duration','>',30)
+            ->with(['gamePackage'=>function($query){
+                $query->select('id','title','icon_img','background_img','url','is_crack','crack_url','is_landscape','is_rank','crack_des');
+            }])
+            ->whereHasIn('gamePackage')
+            ->groupBy('game_package_id')
+            ->orderBy(DB::raw('duration'),'desc')
+            ->get()->toArray();
+
+        if ($result) {
+            foreach ($result as $key => &$item) {
+                $item['game_package']['icon_img'] = ossDomain($item['game_package']['icon_img']);
+                $item['game_package']['background_img'] = ossDomain($item['game_package']['background_img']);
+                $item['game_package']['url'] = config('app.game_url').$item['game_package']['url'];
+                $item['game_package']['crack_url'] = $item['game_package']['crack_url'] ? config('app.game_url').$item['game_package']['crack_url'] : '';
+            }
+        }
+
+        return $result;
     }
 }

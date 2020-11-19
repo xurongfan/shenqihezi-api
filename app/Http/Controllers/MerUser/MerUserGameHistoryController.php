@@ -54,4 +54,13 @@ class MerUserGameHistoryController extends Controller
 
     }
 
+    /**
+     * @return array
+     */
+    public function hotGame()
+    {
+        return $this->service->hotGame();
+    }
+
+
 }
