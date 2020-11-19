@@ -14,3 +14,8 @@ Route::get('/', function () {
     abort(404);
     return view('welcome');
 });
+
+
+//Route::get('happy-glass-3a', function () {
+//    return file_get_contents('/var/www/public/shenqihezi/happy-glass-3a/index.html');
+//});

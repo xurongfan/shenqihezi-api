@@ -8,11 +8,13 @@ use App\Models\System\SysConfig;
 use App\Models\User\MerUser;
 use App\Models\User\MerUserGameCollection;
 use App\Models\User\MerUserGameHistory;
+use App\Models\User\MerUserGameIntegral;
 use App\Models\User\MerUserGameLike;
 use App\Services\Game\GamePackageService;
 use App\Services\Game\GameTagService;
 use App\Services\MerUser\MerUserGameCollectionService;
 use App\Services\MerUser\MerUserGameHistoryService;
+use App\Services\MerUser\MerUserGameIntegralService;
 use App\Services\MerUser\MerUserGameLikeService;
 use App\Services\MerUser\MerUserService;
 use App\Services\System\SysConfigService;
@@ -39,6 +41,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(MerUserGameLikeService::class, function () {
             return new MerUserGameLikeService(new MerUserGameLike());
+        });
+
+        $this->app->bind(MerUserGameIntegralService::class, function () {
+            return new MerUserGameIntegralService(new MerUserGameIntegral());
         });
 
         $this->app->bind(GameTagService::class, function () {
