@@ -44,7 +44,9 @@ class MerUserGameIntegralService extends BaseService
 //            }])
             ->with(['user'=>function($query){
                 $query->select('id','nick_name','profile_img');
-            }])->orderBy('integral','desc')->limit(50)->get();
+            }])
+            ->where('game_package_id',$gamePackageId)
+            ->orderBy('integral','desc')->limit(50)->get();
 
         $myIntegral = $this->userPackageIntegral($gamePackageId);
         if ($myIntegral) {
