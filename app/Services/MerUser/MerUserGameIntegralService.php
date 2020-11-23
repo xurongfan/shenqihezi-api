@@ -25,7 +25,7 @@ class MerUserGameIntegralService extends BaseService
         );
         if ($integral > $integralInfo['integral']) {
             $integralInfo->update([
-                'integral' => intval($request['integral'] ?? 0)
+                'integral' => intval($integral)
             ]);
         }
         return $integralInfo;
