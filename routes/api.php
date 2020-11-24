@@ -129,3 +129,6 @@ Route::any('ad-game/list', function (){
     ];
 })->name('ad-game-list');
 
+Route::get('/test', function () {
+   logger('baidu-api:'.json_encode(request()->all()));
+});
