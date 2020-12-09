@@ -128,10 +128,12 @@ class TopicContentCommentService extends BaseService
      */
     public function myComment()
     {
-        return $this->model->query()->select('id','mer_user_id','content_id','comment')
+        return $this->model->query()->select('id','mer_user_id','content_id','comment','created_at')
             ->where('mer_user_id',$this->userId())
             ->with(['user' => function($query){
                 $query->select('id','nick_name','profile_img');
+            },'content' => function($query){
+                $query->select('id','content','image_resource',);
             }])
             ->paginate(20)
             ->toArray();

@@ -42,6 +42,7 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
         $router->get('info', 'MerUserController@info')->name('user.info');
         $router->post('out', 'MerUserController@out')->name('user.out');
         $router->put('edit', 'MerUserController@edit')->name('user.edit');
+        $router->get('{id}', 'MerUserController@user')->name('user.show');
 
         $router->post('game-like', 'MerUserGameLikeController@like')->name('user.game-like');
 
@@ -73,6 +74,9 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
 
         $router->post('content', 'TopicContentController@publish')->name('topic.content.publish');
         $router->get('my-topic-content', 'TopicContentController@myTopicContent')->name('topic.my-topic-content');
+
+        $router->delete('content', 'TopicContentController@delete')->name('topic.content.delete');
+
 
         $router->post('comment', 'TopicContentController@comment')->name('topic.comment.publish');
         $router->get('comment', 'TopicContentController@commentList')->name('topic.comment.list');

@@ -142,4 +142,23 @@ class TopicContentController extends Controller
         ]);
         return app(TopicContentLikeService::class)->like($request->content_id);
     }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function delete(Request $request)
+    {
+        $this->validate($request,[
+            'content_id' => [
+                'required' ,
+                Rule::exists('topic_content','id')
+            ],
+        ],[
+            'content_id.required' => transL('topic.content_id_empty_error'),
+        ]);
+
+        return app(TopicContentService::class)->deleteContent($request->content_id);
+
+    }
 }

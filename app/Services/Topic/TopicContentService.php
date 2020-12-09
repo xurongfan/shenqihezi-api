@@ -125,4 +125,16 @@ class TopicContentService extends BaseService
         return $content;
     }
 
+    /**
+     * @param $id
+     * @return bool|null
+     */
+    public function deleteContent($id)
+    {
+        return $this->deleteBy([
+            'id' => $id,
+            'mer_user_id' => $this->userId()
+        ]);
+    }
+
 }

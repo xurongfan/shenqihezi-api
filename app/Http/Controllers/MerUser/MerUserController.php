@@ -148,4 +148,14 @@ class MerUserController extends Controller
     {
         return $this->service->editUser(\request()->all());
     }
+
+    /**
+     * 查询用户信息
+     * @param $id
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
+     */
+    public function user($id)
+    {
+        return $this->service->userInfo($id);
+    }
 }

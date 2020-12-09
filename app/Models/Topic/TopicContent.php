@@ -6,9 +6,11 @@ namespace App\Models\Topic;
 use App\Base\Models\BaseModel;
 use App\Models\User\MerUser;
 use App\Models\User\MerUserFollow;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TopicContent extends BaseModel
 {
+    use SoftDeletes;
     const ISANONYMOUS_YES = 1;
     const ISANONYMOUS_NO = 0;
 

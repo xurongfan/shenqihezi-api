@@ -70,4 +70,12 @@ class MerUser extends BaseModel implements
     {
         return $this->hasMany(TopicUser::class,'mer_user_id');
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function follow()
+    {
+        return $this->hasMany(MerUserFollow::class,'follow_user_id','id');
+    }
 }

@@ -171,4 +171,18 @@ class MerUserService extends BaseService
         $user->update($request);
         return $user;
     }
+
+    /**
+     * 用户信息
+     * @param $userId
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
+     */
+    public function userInfo($userId)
+    {
+        return $this->model->query()
+            ->select('id','profile_img','nick_name','description','sex','birth')
+            ->where('id',$userId)
+            ->withCount('follow')
+            ->firstOrFail();
+    }
 }
