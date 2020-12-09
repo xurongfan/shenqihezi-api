@@ -3,6 +3,8 @@
 namespace App\Models\User;
 
 use App\Models\Game\GameTag;
+use App\Models\Topic\Topic;
+use App\Models\Topic\TopicUser;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
@@ -59,5 +61,13 @@ class MerUser extends BaseModel implements
     public function tagsId()
     {
         return $this->hasMany(MerUserTag::class,'user_id','id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function topic()
+    {
+        return $this->hasMany(TopicUser::class,'mer_user_id');
     }
 }

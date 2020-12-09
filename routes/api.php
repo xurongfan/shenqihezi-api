@@ -56,11 +56,38 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
         $router->post('game-integral', 'MerUserGameIntegralController@store')->name('user.game-integral');
         $router->get('game-integral-rank', 'MerUserGameIntegralController@rank')->name('user.game-integral-rank');
 
-    });
+        $router->post('follow', 'MerUserFollowController@follow')->name('user.follow');
 
+
+    });
 
     $router->group(['namespace' => 'Game','prefix' => 'game'],function ($router){
         $router->get('/', 'GamePackageController@index')->name('game.index');
+    });
+
+    $router->group(['namespace' => 'Topic','prefix' => 'topic'],function ($router){
+        $router->get('search', 'TopicController@search')->name('topic.search');
+        $router->get('/', 'TopicController@index')->name('topic.index');
+        $router->get('user-topic-list', 'TopicController@userTopicList')->name('topic.user.topic');
+        $router->post('/', 'TopicController@follow')->name('topic.follow');
+
+        $router->post('content', 'TopicContentController@publish')->name('topic.content.publish');
+        $router->get('my-topic-content', 'TopicContentController@myTopicContent')->name('topic.my-topic-content');
+
+        $router->post('comment', 'TopicContentController@comment')->name('topic.comment.publish');
+        $router->get('comment', 'TopicContentController@commentList')->name('topic.comment.list');
+        $router->post('comment-like', 'TopicContentController@commentLike')->name('topic.comment.like');
+        $router->post('content-like', 'TopicContentController@like')->name('topic.content.like');
+
+        $router->get('content', 'TopicContentController@index')->name('topic.content.list');
+        $router->get('content/{contentId}', 'TopicContentController@show')->name('topic.content.show');
+
+
+        $router->get('notice', 'NoticeController@index')->name('topic.notice.list');
+        $router->get('my-comment', 'TopicContentController@myComment')->name('topic.comment.my-comment');
+
+
+
     });
 
 
@@ -130,5 +157,22 @@ Route::any('ad-game/list', function (){
 })->name('ad-game-list');
 
 Route::any('/test', function () {
-   logger('baidu-api:'.json_encode(request()->all()));
+    $config = [
+        // 必要配置
+        'app_id'             => 'wx9570383f3e10adb1',
+        'mch_id'             => '1604486511',
+        'key'                => '4a9f2c433adcc2698ba7704faedeaf82',   // API 密钥
+
+        'notify_url'         => 'http://api.sqhezi.cn/api/test',     // 你也可以在下单时单独设置来想覆盖它
+    ];
+    $app = \EasyWeChat\Factory::payment($config);
+
+    $result = $app->order->unify([
+        'body' => 'test11',
+        'out_trade_no' => '20150806125346',
+        'total_fee' => 88,
+        'trade_type' => 'APP', // 请对应换成你的支付方式对应的值类型
+    ]);
+
+    echo"<pre>";print_r($result);exit;
 });
