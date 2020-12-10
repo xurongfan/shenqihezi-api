@@ -42,8 +42,7 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
         $router->get('info', 'MerUserController@info')->name('user.info');
         $router->post('out', 'MerUserController@out')->name('user.out');
         $router->put('edit', 'MerUserController@edit')->name('user.edit');
-        $router->get('{id}', 'MerUserController@user')->name('user.show');
-
+        $router->get('/info/{id}', 'MerUserController@user')->name('user.show');
         $router->post('game-like', 'MerUserGameLikeController@like')->name('user.game-like');
 
         $router->post('game-collect', 'MerUserGameCollectionController@collect')->name('user.game-collect');
