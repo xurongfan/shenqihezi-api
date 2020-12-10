@@ -77,7 +77,6 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
 
         $router->delete('content', 'TopicContentController@delete')->name('topic.content.delete');
 
-
         $router->post('comment', 'TopicContentController@comment')->name('topic.comment.publish');
         $router->get('comment', 'TopicContentController@commentList')->name('topic.comment.list');
         $router->post('comment-like', 'TopicContentController@commentLike')->name('topic.comment.like');
@@ -91,6 +90,7 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
         $router->get('my-comment', 'TopicContentController@myComment')->name('topic.comment.my-comment');
 
 
+        $router->post('report', 'TopicContentController@report')->name('topic.content.report');
 
     });
 

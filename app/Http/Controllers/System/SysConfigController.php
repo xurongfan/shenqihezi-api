@@ -23,8 +23,12 @@ class SysConfigController extends Controller
         $this->validate($request,[
             'keyword' => 'required' ,
         ]);
-        return $this->service->findOneBy([
+        $result = $this->service->findOneBy([
             'keyword' => getLangField(\request('keyword'))
         ],'content');
+        if (isset($result['content']) && $result['content']) {
+            $result['content'] = json_decode($result['content'],true);
+        }
+        return $result;
     }
 }

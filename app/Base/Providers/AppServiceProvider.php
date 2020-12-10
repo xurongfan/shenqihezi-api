@@ -11,6 +11,7 @@ use App\Models\Topic\TopicContent;
 use App\Models\Topic\TopicContentComment;
 use App\Models\Topic\TopicContentCommentLike;
 use App\Models\Topic\TopicContentLike;
+use App\Models\Topic\TopicContentReport;
 use App\Models\Topic\TopicUser;
 use App\Models\User\MerUser;
 use App\Models\User\MerUserFollow;
@@ -31,6 +32,7 @@ use App\Services\System\SysConfigService;
 use App\Services\Topic\TopicContentCommentLikeService;
 use App\Services\Topic\TopicContentCommentService;
 use App\Services\Topic\TopicContentLikeService;
+use App\Services\Topic\TopicContentReportService;
 use App\Services\Topic\TopicContentService;
 use App\Services\Topic\TopicService;
 use App\Services\Topic\TopicUserService;
@@ -42,6 +44,17 @@ class AppServiceProvider extends ServiceProvider
      * 注册
      */
     public function register()
+    {
+        $this->registerMerUser();
+        $this->registerGame();
+        $this->registerSystem();
+        $this->registerTopic();
+    }
+
+    /**
+     * MerUser
+     */
+    public function registerMerUser()
     {
         $this->app->bind(MerUserService::class, function () {
             return new MerUserService(new MerUser());
@@ -63,6 +76,16 @@ class AppServiceProvider extends ServiceProvider
             return new MerUserGameIntegralService(new MerUserGameIntegral());
         });
 
+        $this->app->bind(MerUserFollowService::class, function () {
+            return new MerUserFollowService(new MerUserFollow());
+        });
+    }
+
+    /**
+     * Game
+     */
+    public function registerGame()
+    {
         $this->app->bind(GameTagService::class, function () {
             return new GameTagService(new GameTag());
         });
@@ -70,11 +93,13 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(GamePackageService::class, function () {
             return new GamePackageService(new GamePackage());
         });
+    }
 
-        $this->app->bind(SysConfigService::class, function () {
-            return new SysConfigService(new SysConfig());
-        });
-
+    /**
+     * Topic
+     */
+    public function registerTopic()
+    {
         $this->app->bind(TopicContentService::class, function () {
             return new TopicContentService(new TopicContent());
         });
@@ -99,14 +124,22 @@ class AppServiceProvider extends ServiceProvider
             return new TopicContentLikeService(new TopicContentLike());
         });
 
-        $this->app->bind(MerUserFollowService::class, function () {
-            return new MerUserFollowService(new MerUserFollow());
+        $this->app->bind(TopicContentReportService::class, function () {
+            return new TopicContentReportService(new TopicContentReport());
         });
 
         $this->app->bind(NoticeService::class, function () {
             return new NoticeService(new Notice());
         });
+    }
 
-
+    /**
+     * System
+     */
+    public function registerSystem()
+    {
+        $this->app->bind(SysConfigService::class, function () {
+            return new SysConfigService(new SysConfig());
+        });
     }
 }

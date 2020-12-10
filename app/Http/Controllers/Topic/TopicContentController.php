@@ -6,6 +6,7 @@ use App\Base\Controllers\Controller;
 use App\Services\Topic\TopicContentCommentLikeService;
 use App\Services\Topic\TopicContentCommentService;
 use App\Services\Topic\TopicContentLikeService;
+use App\Services\Topic\TopicContentReportService;
 use App\Services\Topic\TopicContentService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -159,6 +160,26 @@ class TopicContentController extends Controller
         ]);
 
         return app(TopicContentService::class)->deleteContent($request->content_id);
+    }
 
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function report(Request $request)
+    {
+        $this->validate($request,[
+            'content_id' => [
+                'required' ,
+                Rule::exists('topic_content','id')
+            ],
+            'report_content' => [
+                'required'
+            ]
+        ],[
+            'content_id.required' => transL('topic.content_id_empty_error'),
+        ]);
+
+        return app(TopicContentReportService::class)->store($request->content_id,$request->report_content);
     }
 }
