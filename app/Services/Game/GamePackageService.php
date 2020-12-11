@@ -16,7 +16,6 @@ class GamePackageService extends BaseService
      */
     public function index()
     {
-
         $result = $this->model->query()->selectRaw(DB::raw('
         game_package.id,
         game_package.title, 
@@ -30,10 +29,9 @@ class GamePackageService extends BaseService
         game_package.is_rank, 
         ( rand( ) * TIMESTAMP ( now( ) ) ) AS rid '))
             ->leftJoin('game_package_tag','game_package_tag.package_id','=','game_package.id')
-            ->whereIn('game_package_tag.tag_id',$this->gameTagRandom())
+//            ->whereIn('game_package_tag.tag_id',$this->gameTagRandom())
             ->groupBy('game_package.id')
             ->orderBy(DB::raw('rid'),'desc')->limit(20)->get();
-
        if ($result) {
            $gamePackageIds = Arr::pluck($result,'id');
 
