@@ -45,7 +45,7 @@ class TopicContentService extends BaseService
     public function index($isFollow = 0,$topicId = 0,$isHot = 0,$userId = 0)
     {
        $res = $this->model->query()
-           ->select('id','mer_user_id','content','image_resource','is_anonymous','like_count','created_at')
+           ->select('id','mer_user_id','content','image_resource','is_anonymous','like_count','position_info','created_at')
            ->with(['user' => function($query){
                $query->select('id','profile_img','nick_name');
            },'topic'=>function($query){
