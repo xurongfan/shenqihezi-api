@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Auth;
 use Closure;
+use Illuminate\Support\Carbon;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
@@ -39,6 +40,13 @@ class AuthToken extends BaseMiddleware
                 );
                 //更新请求中的token
                 $request->headers->set('Authorization','Bearer '.$token);
+                //更新登录时间
+                auth($role)->user()->update(
+                    [
+                        'last_login_ip' => request()->getClientIp(),
+                        'last_login_date' => Carbon::now()->toDateTimeString()
+                    ]
+                );
             } catch(JWTException $exception) {
                 // 如果捕获到此异常，即代表 refresh 也过期了，用户无法刷新令牌，需要重新登录。
                 throw new UnauthorizedHttpException('jwt-auth', $exception->getMessage());

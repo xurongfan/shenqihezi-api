@@ -25,11 +25,11 @@ class TopicContentController extends Controller
      */
     public function publish(Request $request)
     {
-        $this->validate($request,[
-            'topic' => 'required|array' ,
-        ],[
-            'topic.required' => transL('topic.topic_empty_error'),
-        ]);
+//        $this->validate($request,[
+//            'topic' => 'required|array' ,
+//        ],[
+//            'topic.required' => transL('topic.topic_empty_error'),
+//        ]);
         return app(TopicContentService::class)->publish(\request()->all());
     }
 

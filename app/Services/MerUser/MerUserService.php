@@ -69,7 +69,7 @@ class MerUserService extends BaseService
         $data = $this->model->filter($request);
 
         $data['last_login_ip'] = request()->getClientIp();
-        $data['last_login_date'] = Carbon::now()->toDateString();
+        $data['last_login_date'] = Carbon::now()->toDateTimeString();
 
         $this->model->fill($data)->save();
         $this->model->tags()->sync($request['tags']);
@@ -114,7 +114,7 @@ class MerUserService extends BaseService
             }
         }
 
-        $user->token =  'Bearer '.auth()->login($user);
+        $user->token =  'Bearer '.self::loginToken($user);
         return $user;
     }
 
@@ -125,6 +125,11 @@ class MerUserService extends BaseService
      */
     protected function loginToken($user)
     {
+        $user->update([
+            'last_login_ip' => request()->getClientIp(),
+            'last_login_date' => Carbon::now()->toDateTimeString()
+        ]);
+
         return auth()->login($user);
     }
 

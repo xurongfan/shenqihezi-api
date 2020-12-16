@@ -20,13 +20,16 @@ class TopicContentService extends BaseService
         $request['mer_user_id'] = $this->userId();
         $this->model->fill($this->model->filter($request))->save();
         $topicService = app(TopicService::class);
-        $topicArr = [];
-        foreach ($request['topic'] as $key => $value) {
-            $topicArr[] = $topicService->findOrCreate($value)->id;
+
+        if (isset($request['topic']) && $request['topic']) {
+            $topicArr = [];
+            foreach ($request['topic'] as $key => $value) {
+                $topicArr[] = $topicService->findOrCreate($value)->id;
+            }
+            $topicArr && $this->model->topic()->sync($topicArr);
+            //自动关注此话题
+            app(TopicService::class)->follow($topicArr);
         }
-        $topicArr && $this->model->topic()->sync($topicArr);
-        //自动关注此话题
-        app(TopicService::class)->follow($topicArr);
 
         return $this->model;
     }
