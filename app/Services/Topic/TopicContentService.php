@@ -14,9 +14,9 @@ class TopicContentService extends BaseService
      */
     public function publish($request)
     {
-        if (!isset($request['topic']) || empty($request['topic'])) {
-            throw new \Exception(transL('topic.topic_empty_error'));
-        }
+//        if (!isset($request['topic']) || empty($request['topic'])) {
+//            throw new \Exception(transL('topic.topic_empty_error'));
+//        }
         $request['mer_user_id'] = $this->userId();
         $this->model->fill($this->model->filter($request))->save();
         $topicService = app(TopicService::class);
