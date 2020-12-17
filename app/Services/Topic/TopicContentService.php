@@ -44,9 +44,8 @@ class TopicContentService extends BaseService
      */
     public function index($isFollow = 0,$topicId = 0,$isHot = 0,$userId = 0)
     {
-        sqlDump();
        $res = $this->model->query()
-           ->select('id','mer_user_id','content','image_resource','is_anonymous','like_count','position_info','created_at')
+           ->select('id','mer_user_id','content','image_resource','is_anonymous','position_info','created_at')
            ->with(['user' => function($query){
                $query->select('id','profile_img','nick_name');
            },'topic'=>function($query){
@@ -81,7 +80,7 @@ class TopicContentService extends BaseService
            ->when($userId,function ($query)use ($userId){
                $query->where('mer_user_id',$userId == -1 ? $this->userId() : $userId);
            })
-           ->withCount('comment')
+           ->withCount(['comment','like'])
            ->paginate(20)
            ->toArray();
 

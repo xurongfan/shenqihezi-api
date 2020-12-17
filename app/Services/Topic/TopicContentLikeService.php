@@ -22,9 +22,9 @@ class TopicContentLikeService extends BaseService
         ])) {
             $res->delete();
 
-            $comment->query()->where('id',$commentId)->decrement('like_count');
+//            $comment->query()->where('id',$commentId)->decrement('like_count');
         }else{
-            $comment->query()->where('id',$commentId)->increment('like_count');
+//            $comment->query()->where('id',$commentId)->increment('like_count');
             $res = $this->save( [
                 'mer_user_id' => $this->userId(),
                 'content_id' => $commentId
