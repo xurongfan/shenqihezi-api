@@ -53,6 +53,11 @@ class TopicContent extends BaseModel
         return $this->hasMany(MerUserFollow::class,'follow_user_id','mer_user_id');
     }
 
+    public function IsUserFollow()
+    {
+        return $this->hasOne(MerUserFollow::class,'follow_user_id','mer_user_id');
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */

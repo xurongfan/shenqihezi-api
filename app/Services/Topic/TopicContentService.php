@@ -44,6 +44,7 @@ class TopicContentService extends BaseService
      */
     public function index($isFollow = 0,$topicId = 0,$isHot = 0,$userId = 0)
     {
+        sqlDump();
        $res = $this->model->query()
            ->select('id','mer_user_id','content','image_resource','is_anonymous','like_count','position_info','created_at')
            ->with(['user' => function($query){
@@ -52,6 +53,8 @@ class TopicContentService extends BaseService
                $query->select('topic.id','topic.title')->where('topic.status',1);
            },'like'=>function($query){
                $query->select('id','content_id')->where('mer_user_id',$this->userId());
+           },'IsUserFollow' => function($query){
+               $query->where('mer_user_id',$this->userId());
            }])
            //指定话题
            ->when($topicId,function ($query)use($topicId){
@@ -95,7 +98,6 @@ class TopicContentService extends BaseService
                $item['user']['nick_name'] = 'AM';
            }
        }
-
        return $res;
     }
 
