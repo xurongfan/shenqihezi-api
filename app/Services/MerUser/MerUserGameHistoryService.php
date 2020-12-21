@@ -19,7 +19,9 @@ class MerUserGameHistoryService extends BaseService
                 $query->selectRaw('id,title,icon_img,background_img,url,is_crack,crack_url,is_landscape,crack_des');
             }])
             ->where('mer_user_id', $this->userId())
-            ->orderBy('id', 'desc')->paginate(20)->toArray();
+            ->orderBy('id', 'desc')
+            ->groupBy('game_package_id')
+            ->paginate(20)->toArray();
         if ($result) {
             foreach ($result['data'] as $key => &$item) {
                 $item['game_package']['icon_img'] = ossDomain($item['game_package']['icon_img']);
