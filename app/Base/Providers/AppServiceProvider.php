@@ -2,6 +2,7 @@
 
 namespace App\Base\Providers;
 
+use App\Models\Game\AdBurying;
 use App\Models\Game\GamePackage;
 use App\Models\Game\GameTag;
 use App\Models\Notice\Notice;
@@ -19,6 +20,7 @@ use App\Models\User\MerUserGameCollection;
 use App\Models\User\MerUserGameHistory;
 use App\Models\User\MerUserGameIntegral;
 use App\Models\User\MerUserGameLike;
+use App\Services\Game\AdBuryingService;
 use App\Services\Game\GamePackageService;
 use App\Services\Game\GameTagService;
 use App\Services\MerUser\MerUserFollowService;
@@ -92,6 +94,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(GamePackageService::class, function () {
             return new GamePackageService(new GamePackage());
+        });
+
+        $this->app->bind(AdBuryingService::class, function () {
+            return new AdBuryingService(new AdBurying());
         });
     }
 
