@@ -180,6 +180,6 @@ class TopicContentController extends Controller
             'content_id.required' => transL('topic.content_id_empty_error'),
         ]);
 
-        return app(TopicContentReportService::class)->store($request->content_id,$request->report_content);
+        return app(TopicContentReportService::class)->store($request->content_id,$request->comment_id,$request->report_content);
     }
 }
