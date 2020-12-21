@@ -59,6 +59,9 @@ class TopicContentCommentService extends BaseService
                             ->with(['replyUser' => function($query2){
                                 $query2->select('id','profile_img','nick_name');
                             }])
+                            ->with(['like' => function($query2){
+                                $query2->select('id','comment_id')->where('mer_user_id',$this->userId());
+                            }])
                             ->orderBy('id','desc')
                             ->take(2);
                     }]);
