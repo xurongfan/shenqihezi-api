@@ -21,6 +21,7 @@ class TopicContentCommentService extends BaseService
             $pidInfo = $this->model->newQuery()->where('id' , $request['pid'])->firstOrFail();
             $request['reply_user_id'] = $pidInfo['mer_user_id'];
         }
+        $request['ip'] = getClientIp();
         $this->model->fill($request)->save();
 
         $content = app(TopicContentService::class)->findOneBy([

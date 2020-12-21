@@ -18,6 +18,7 @@ class TopicContentService extends BaseService
 //            throw new \Exception(transL('topic.topic_empty_error'));
 //        }
         $request['mer_user_id'] = $this->userId();
+        $request['ip'] = getClientIp();
         $this->model->fill($this->model->filter($request))->save();
         $topicService = app(TopicService::class);
 
