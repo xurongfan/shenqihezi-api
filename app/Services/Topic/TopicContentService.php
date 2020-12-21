@@ -84,6 +84,14 @@ class TopicContentService extends BaseService
            ->paginate(20)
            ->toArray();
 
+       if ($topicId) {
+           $topicFollow = app(TopicUserService::class)->findOneBy([
+               'topic_id' => $topicId,
+               'mer_user_id' => $this->userId(),
+           ]);
+           $res['topic_follow'] = $topicFollow ? true : false;
+       }
+
        foreach ($res['data'] as $key => &$item){
            //匿名处理
            if (
