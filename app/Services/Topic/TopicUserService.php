@@ -21,7 +21,7 @@ class TopicUserService extends BaseService
                 $query->select('id','title')->where('status',1);
             })
             ->where('mer_user_id',$this->userId())
-            ->get();
+            ->paginate(20);
     }
 
     /**
