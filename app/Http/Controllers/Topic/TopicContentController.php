@@ -169,17 +169,20 @@ class TopicContentController extends Controller
     public function report(Request $request)
     {
         $this->validate($request,[
+            'topic_id' => [
+                Rule::exists('topic','id')
+            ],
             'content_id' => [
-                'required' ,
                 Rule::exists('topic_content','id')
+            ],
+            'comment_id' => [
+                Rule::exists('topic_content_comment','id')
             ],
             'report_content' => [
                 'required'
             ]
-        ],[
-            'content_id.required' => transL('topic.content_id_empty_error'),
         ]);
 
-        return app(TopicContentReportService::class)->store($request->content_id,$request->comment_id,$request->report_content);
+        return app(TopicContentReportService::class)->store($request->topic_id,$request->content_id,$request->comment_id,$request->report_content);
     }
 }

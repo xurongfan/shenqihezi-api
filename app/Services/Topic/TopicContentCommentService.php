@@ -72,7 +72,7 @@ class TopicContentCommentService extends BaseService
             }])
             ->where('pid',$pid ?? 0)
             ->orderBy('like_count','desc')
-            ->orderBy('id','desc')
+            ->orderBy('created_at','desc')
             ->paginate(20)
             ->toArray();
 
