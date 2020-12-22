@@ -10,16 +10,18 @@ use Ramsey\Uuid\Uuid;
 class MerUserGameHistoryService extends BaseService
 {
     /**
+     * @param $userId
      * @return mixed
      */
-    public function index()
+    public function index($userId = 0)
     {
+        $userId = $userId ? $userId : $this->userId();
         $result = $this->model->newQuery()->select('id', 'game_package_id', 'created_at')
             ->whereHas('gamePackage')
             ->with(['gamePackage' => function ($query) {
                 $query->selectRaw('id,title,icon_img,background_img,url,is_crack,crack_url,is_landscape,crack_des');
             }])
-            ->where('mer_user_id', $this->userId())
+            ->where('mer_user_id', $userId)
             ->orderBy('id', 'desc')
             ->groupBy('game_package_id')
             ->paginate(20)->toArray();
@@ -99,10 +101,5 @@ class MerUserGameHistoryService extends BaseService
         }
 
         return $result;
-    }
-
-    public function common($otherId , $userId = 0 )
-    {
-
     }
 }

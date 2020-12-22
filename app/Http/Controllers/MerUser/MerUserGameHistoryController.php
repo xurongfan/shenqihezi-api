@@ -23,8 +23,11 @@ class MerUserGameHistoryController extends Controller
     /**
      * @return mixed
      */
-    public function index()
+    public function index(Request $request)
     {
+        $this->validate($request,[
+            'user_id' => [ Rule::exists('mer_users','id')],
+        ]);
         return $this->service->index();
     }
 
@@ -55,12 +58,12 @@ class MerUserGameHistoryController extends Controller
     }
 
     /**
+     * 热门游戏
      * @return array
      */
     public function hotGame()
     {
         return $this->service->hotGame();
     }
-
 
 }
