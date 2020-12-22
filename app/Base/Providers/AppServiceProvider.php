@@ -5,6 +5,7 @@ namespace App\Base\Providers;
 use App\Models\Game\AdBurying;
 use App\Models\Game\GamePackage;
 use App\Models\Game\GameTag;
+use App\Models\Topic\TopicContentUserShield;
 use App\Models\User\MerRetainLog;
 use App\Models\Notice\Notice;
 use App\Models\System\SysConfig;
@@ -38,6 +39,7 @@ use App\Services\Topic\TopicContentCommentService;
 use App\Services\Topic\TopicContentLikeService;
 use App\Services\Topic\TopicContentReportService;
 use App\Services\Topic\TopicContentService;
+use App\Services\Topic\TopicContentUserShieldService;
 use App\Services\Topic\TopicService;
 use App\Services\Topic\TopicUserService;
 use Illuminate\Support\ServiceProvider;
@@ -142,6 +144,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(NoticeService::class, function () {
             return new NoticeService(new Notice());
+        });
+
+        $this->app->bind(TopicContentUserShieldService::class, function () {
+            return new TopicContentUserShieldService(new TopicContentUserShield());
         });
     }
 

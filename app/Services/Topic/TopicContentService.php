@@ -45,6 +45,11 @@ class TopicContentService extends BaseService
      */
     public function index($isFollow = 0,$topicId = 0,$isHot = 0,$userId = 0)
     {
+        //已屏蔽用户
+        if ($topicId || $isHot) {
+            $shiedlUser = app(TopicContentUserShieldService::class)->index($this->userId());
+        }
+
        $res = $this->model->query()
            ->select('id','mer_user_id','content','image_resource','is_anonymous','position_info','created_at')
            ->with(['user' => function($query){
@@ -80,6 +85,9 @@ class TopicContentService extends BaseService
            //指定人
            ->when($userId,function ($query)use ($userId){
                $query->where('mer_user_id',$userId == -1 ? $this->userId() : $userId);
+           })
+           ->when(isset($shiedlUser) && $shiedlUser ,function ($query) use ($shiedlUser){
+               $query->whereNotIn('mer_user_id',$shiedlUser);
            })
            ->withCount(['comment','like'])
            ->paginate(20)

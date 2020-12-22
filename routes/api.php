@@ -93,6 +93,8 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
 
         $router->post('report', 'TopicContentController@report')->name('topic.content.report');
 
+        $router->post('shield', 'TopicContentController@shield')->name('topic.content.shield');
+
     });
 
 

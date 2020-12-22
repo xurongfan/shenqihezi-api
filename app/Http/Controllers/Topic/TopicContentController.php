@@ -8,6 +8,7 @@ use App\Services\Topic\TopicContentCommentService;
 use App\Services\Topic\TopicContentLikeService;
 use App\Services\Topic\TopicContentReportService;
 use App\Services\Topic\TopicContentService;
+use App\Services\Topic\TopicContentUserShieldService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -184,5 +185,20 @@ class TopicContentController extends Controller
         ]);
 
         return app(TopicContentReportService::class)->store($request->topic_id,$request->content_id,$request->comment_id,$request->report_content);
+    }
+
+    /**
+     * 屏蔽用户
+     * @return mixed
+     */
+    public function shield(Request $request)
+    {
+        $this->validate($request,[
+            'shield_user_id' => [
+                'required' ,
+                Rule::exists('mer_users','id')
+            ],
+        ]);
+        return app(TopicContentUserShieldService::class)->store($request->shield_user_id);
     }
 }

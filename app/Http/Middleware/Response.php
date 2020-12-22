@@ -65,9 +65,9 @@ class Response
             $request = app()->make(Request::class);
             $routeUrl = $request->root().'/'.trim($route,'/');
 
-            if(empty($user) && $routeUrl != route('auth.login')){
-                return ;
-            }
+//            if(empty($user) && $routeUrl != route('auth.login')){
+//                return ;
+//            }
 
             $data = [
                 'method' => strtolower($method),
