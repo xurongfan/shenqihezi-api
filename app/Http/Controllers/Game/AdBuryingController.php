@@ -20,6 +20,12 @@ class AdBuryingController extends \App\Base\Controllers\Controller
             'device_uid' => 'required',
             'show_type' => 'required',
         ]);
-        return app(AdBuryingService::class)->report($request->package_id,$request->type,$request->device_uid,$request->show_type);
+        return app(AdBuryingService::class)->report(
+            $request->package_id,
+            $request->type,
+            $request->device_uid,
+            $request->show_type,
+            $request->uid
+        );
     }
 }
