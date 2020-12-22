@@ -5,7 +5,7 @@ namespace App\Base\Providers;
 use App\Models\Game\AdBurying;
 use App\Models\Game\GamePackage;
 use App\Models\Game\GameTag;
-use App\Models\MerUser\MerRetainLog;
+use App\Models\User\MerRetainLog;
 use App\Models\Notice\Notice;
 use App\Models\System\SysConfig;
 use App\Models\Topic\Topic;

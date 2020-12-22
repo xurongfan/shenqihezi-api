@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\MerUser;
+namespace App\Models\User;
 
 
 use App\Base\Models\BaseModel;

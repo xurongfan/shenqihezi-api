@@ -78,4 +78,12 @@ class MerUser extends BaseModel implements
     {
         return $this->hasMany(MerUserFollow::class,'follow_user_id','id');
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function isUserFollow()
+    {
+        return $this->hasOne(MerUserFollow::class,'follow_user_id','id');
+    }
 }

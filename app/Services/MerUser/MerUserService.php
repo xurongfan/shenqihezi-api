@@ -189,6 +189,9 @@ class MerUserService extends BaseService
             ->select('id','profile_img','nick_name','description','sex','birth')
             ->where('id',$userId)
             ->withCount('follow')
+            ->with(['isUserFollow' => function($query){
+                $query->where('mer_user_id',$this->userId());
+            }])
             ->firstOrFail();
     }
 }
