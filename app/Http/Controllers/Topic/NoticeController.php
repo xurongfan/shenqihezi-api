@@ -26,4 +26,12 @@ class NoticeController extends Controller
     {
         return $this->service->index();
     }
+
+    /**
+     * @return int
+     */
+    public function noticeCount()
+    {
+        return $this->service->noticeCount();
+    }
 }

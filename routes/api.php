@@ -87,6 +87,7 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
 
 
         $router->get('notice', 'NoticeController@index')->name('topic.notice.list');
+        $router->get('notice-count', 'NoticeController@noticeCount')->name('topic.notice.count');
         $router->get('my-comment', 'TopicContentController@myComment')->name('topic.comment.my-comment');
 
 

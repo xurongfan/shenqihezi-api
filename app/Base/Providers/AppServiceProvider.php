@@ -5,6 +5,7 @@ namespace App\Base\Providers;
 use App\Models\Game\AdBurying;
 use App\Models\Game\GamePackage;
 use App\Models\Game\GameTag;
+use App\Models\MerUser\MerRetainLog;
 use App\Models\Notice\Notice;
 use App\Models\System\SysConfig;
 use App\Models\Topic\Topic;
@@ -23,6 +24,7 @@ use App\Models\User\MerUserGameLike;
 use App\Services\Game\AdBuryingService;
 use App\Services\Game\GamePackageService;
 use App\Services\Game\GameTagService;
+use App\Services\MerUser\MerRetainLogService;
 use App\Services\MerUser\MerUserFollowService;
 use App\Services\MerUser\MerUserGameCollectionService;
 use App\Services\MerUser\MerUserGameHistoryService;
@@ -80,6 +82,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(MerUserFollowService::class, function () {
             return new MerUserFollowService(new MerUserFollow());
+        });
+
+        $this->app->bind(MerRetainLogService::class, function () {
+            return new MerRetainLogService(new MerRetainLog());
         });
     }
 

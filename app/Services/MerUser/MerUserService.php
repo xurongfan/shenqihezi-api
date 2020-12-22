@@ -49,6 +49,7 @@ class MerUserService extends BaseService
     }
 
     /**
+     * 注册
      * @param $request
      * @return \App\Base\Models\BaseModel|\App\Base\Services\BaseModel
      */
@@ -68,13 +69,13 @@ class MerUserService extends BaseService
 
         $data = $this->model->filter($request);
 
-        $data['last_login_ip'] = request()->getClientIp();
-        $data['last_login_date'] = Carbon::now()->toDateTimeString();
+//        $data['last_login_ip'] = request()->getClientIp();
+//        $data['last_login_date'] = Carbon::now()->toDateTimeString();
 
         $this->model->fill($data)->save();
         $this->model->tags()->sync($request['tags']);
         //生成token
-        $this->model->token = 'Bearer '.auth()->login($this->model);
+        $this->model->token = 'Bearer '.self::loginToken($this->model);
 
         return $this->model->toArray();
     }

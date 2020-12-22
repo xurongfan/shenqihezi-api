@@ -78,6 +78,7 @@ class NoticeService extends BaseService
             }])
             ->paginate(20)
             ->toArray();
+
         foreach ($result['data'] as $key => &$datum) {
             if (isset($datum['content']['is_anonymous']) && $datum['content']['is_anonymous']) {
                 //评论通知用户匿名处理
@@ -133,8 +134,29 @@ class NoticeService extends BaseService
                 }
 
             }
+
+            if ($datum['status'] == 1) {
+                $arr[] = $datum['id'];
+            }
+        }
+        //更新未读状态
+        if (isset($arr) && $arr) {
+            $this->model->query()->whereIn('id',$arr)->update([
+                'status' => 0
+            ]);
         }
         return $result;
+    }
+
+    /**
+     * @return int
+     */
+    public function noticeCount()
+    {
+        return $this->model->query()
+            ->where('status',1)
+            ->where('mer_user_id',$this->userId())
+            ->count();
     }
 
 }
