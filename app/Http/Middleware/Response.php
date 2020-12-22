@@ -41,7 +41,7 @@ class Response
                 $response->setStatusCode(200)->setContent($content)->withHeaders(['Content-Type' => 'application/json']);
             }
         }
-//        $this->saveAccessLog($request->method(),$request->path(),$params,$response);
+        $this->saveAccessLog($request->method(),$request->path(),$request->all(),$response);
         return $response;
     }
 
@@ -71,14 +71,15 @@ class Response
 
             $data = [
                 'method' => strtolower($method),
-                'route' => $request->root().'/'.trim($route,'/'),
+                'route' => '/'.trim($route,'/'),
                 'params' => $params ? json_encode($params,JSON_UNESCAPED_UNICODE):'',
-                'status_code' => $response->getStatusCode(),
+//                'status_code' => $response->getStatusCode(),
                 'response' => $response->getContent(),
-                'error_code' => $response->exception ? $response->exception->getCode() : 0,
+//                'error_code' => $response->exception ? $response->exception->getCode() : 0,
                 'error_message' => $response->exception ? $response->exception->getMessage() : '',
-                'user_id' => $user->id ?? '',
+                'user_id' => $user->id ?? 0,
                 'ip'        => getClientIp(),
+                'device_uid' => $params['device_uid'] ?? '',
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             ];
