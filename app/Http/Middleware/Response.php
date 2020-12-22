@@ -60,7 +60,7 @@ class Response
      * @param $response
      */
     private function saveAccessLog($method,$route,$params,$response){
-//        try{
+        if ($response->exception) {
             $user = auth()->guard('api')->user();
             $request = app()->make(Request::class);
             $routeUrl = $request->root().'/'.trim($route,'/');
@@ -84,9 +84,6 @@ class Response
                 'updated_at' => date('Y-m-d H:i:s')
             ];
             SysOperateLog::query()->insert($data);
-
-//        }catch(\Exception $e){
-//
-//        }
+        }
     }
 }
