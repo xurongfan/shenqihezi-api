@@ -3,6 +3,7 @@
 namespace App\Services\MerUser;
 
 use App\Base\Services\BaseService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 
@@ -52,12 +53,11 @@ class MerUserGameHistoryService extends BaseService
     /**
      * @param $gamePackageId
      * @param $uid
-     * @param $duration
      */
-    public function report($gamePackageId,$uid,$duration)
+    public function report($gamePackageId,$uid)
     {
-        logger('history:'.json_encode(request()->all()));
         if ($report = $this->findOneBy(['uid' => $uid])){
+            $report['created_at'] = Carbon::parse($report['created_at']);
             $this->updateBy(
                 [
                     'mer_user_id' => $this->userId(),
@@ -65,7 +65,7 @@ class MerUserGameHistoryService extends BaseService
                     'uid' => $uid
                 ],
                 [
-                    'duration' => $duration
+                    'duration' => (new Carbon())->diffInSeconds($report['created_at'])
                 ]
             );
             return $report;

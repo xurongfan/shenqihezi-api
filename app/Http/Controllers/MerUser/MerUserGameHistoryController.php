@@ -48,9 +48,9 @@ class MerUserGameHistoryController extends Controller
     {
         $this->validate($request,[
             'game_package_id' => ['required', Rule::exists('game_package','id')],
-            'duration' => 'required'
+//            'duration' => 'required'
         ]);
-        return $this->service->report($request->game_package_id,$uid,$request->duration);
+        return $this->service->report($request->game_package_id,$uid);
 
     }
 
