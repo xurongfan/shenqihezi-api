@@ -28,7 +28,7 @@ class MerUserGameHistoryController extends Controller
         $this->validate($request,[
             'user_id' => [ Rule::exists('mer_users','id')],
         ]);
-        return $this->service->index();
+        return $this->service->index($request->user_id);
     }
 
     /**
