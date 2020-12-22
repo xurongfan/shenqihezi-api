@@ -56,6 +56,7 @@ class MerUserGameHistoryService extends BaseService
      */
     public function report($gamePackageId,$uid,$duration)
     {
+        logger('history:'.json_encode(request()->all()));
         if ($report = $this->findOneBy(['uid' => $uid])){
             $this->updateBy(
                 [
@@ -98,5 +99,10 @@ class MerUserGameHistoryService extends BaseService
         }
 
         return $result;
+    }
+
+    public function common($otherId , $userId = 0 )
+    {
+
     }
 }
