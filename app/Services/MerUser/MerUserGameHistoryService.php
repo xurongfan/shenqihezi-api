@@ -83,6 +83,7 @@ class MerUserGameHistoryService extends BaseService
         $result = $this->model->newQuery()
             ->select('game_package_id',DB::raw('sum(`duration`) as score') )
 //            ->where('duration','>',30)
+            ->where('is_rank',1)
             ->with(['gamePackage'=>function($query){
                 $query->select('id','title','icon_img','background_img','url','is_crack','crack_url','is_landscape','is_rank','crack_des');
             }])
