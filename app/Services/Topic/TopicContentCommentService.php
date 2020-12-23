@@ -20,6 +20,8 @@ class TopicContentCommentService extends BaseService
         if (isset($request['pid']) && $request['pid']) {
             $pidInfo = $this->model->newQuery()->where('id' , $request['pid'])->firstOrFail();
             $request['reply_user_id'] = $pidInfo['mer_user_id'];
+            $request['pid'] = $pidInfo['pid'] ?? 0;
+            $request['fid'] = $pidInfo['id'] ?? 0;
         }
         $request['ip'] = getClientIp();
         $this->model->fill($request)->save();
