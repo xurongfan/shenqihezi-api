@@ -50,7 +50,10 @@ class MerUserGameIntegralService extends BaseService
 
         $myIntegral = $this->userPackageIntegral($gamePackageId);
         if ($myIntegral) {
-            $rank = $this->model->newQuery()->where('integral','>',$myIntegral)->count();
+            $rank = $this->model->newQuery()
+                ->where('game_package_id',$gamePackageId)
+                ->where('integral','>',$myIntegral)
+                ->count();
         }
 
         return [
