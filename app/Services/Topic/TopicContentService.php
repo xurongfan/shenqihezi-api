@@ -36,6 +36,21 @@ class TopicContentService extends BaseService
     }
 
     /**
+     * 取消匿名
+     * @param $contentId
+     * @return bool
+     */
+    public function cancelAnonymous($contentId)
+    {
+        return $this->updateBy([
+            'id' => $contentId,
+            'mer_user_id' => $this->userId()
+        ],[
+            'is_anonymous' => 0
+        ]);
+    }
+
+    /**
      * 话题列表
      * @param int $isFollow 关注人
      * @param int $topicId 话题

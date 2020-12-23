@@ -5,9 +5,12 @@ namespace App\Models\Topic;
 
 use App\Base\Models\BaseModel;
 use App\Models\User\MerUser;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TopicContentComment extends BaseModel
 {
+    use SoftDeletes;
+
     protected $table = 'topic_content_comment';
 
     /**

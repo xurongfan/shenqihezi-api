@@ -36,6 +36,20 @@ class TopicContentCommentService extends BaseService
     }
 
     /**
+     * @param $commentId
+     */
+    public function deleteComment($commentId)
+    {
+        if ($this->model->newQuery()
+            ->where('mer_user_id',$this->userId())
+            ->where('id',$commentId)->delete()){
+            $this->model->query()->where('pid',$commentId)->delete();
+        }
+        return ;
+
+    }
+
+    /**
      * 评论列表
      * @param $contentId
      * @param $pid

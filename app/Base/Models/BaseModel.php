@@ -4,7 +4,6 @@ namespace App\Base\Models;
 
 use App\Base\Traits\Criteria;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\Builder;
 
 class BaseModel extends Model

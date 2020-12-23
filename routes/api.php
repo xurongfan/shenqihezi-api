@@ -73,12 +73,16 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
         $router->post('/', 'TopicController@follow')->name('topic.follow');
 
         $router->post('content', 'TopicContentController@publish')->name('topic.content.publish');
+        $router->post('cancel-anonymous', 'TopicContentController@cancelAnonymous')->name('topic.content.anonymous');
+
         $router->get('my-topic-content', 'TopicContentController@myTopicContent')->name('topic.my-topic-content');
 
         $router->delete('content', 'TopicContentController@delete')->name('topic.content.delete');
 
         $router->post('comment', 'TopicContentController@comment')->name('topic.comment.publish');
         $router->get('comment', 'TopicContentController@commentList')->name('topic.comment.list');
+        $router->delete('comment', 'TopicContentController@deleteComment')->name('topic.comment.delete');
+
         $router->post('comment-like', 'TopicContentController@commentLike')->name('topic.comment.like');
         $router->post('content-like', 'TopicContentController@like')->name('topic.content.like');
 

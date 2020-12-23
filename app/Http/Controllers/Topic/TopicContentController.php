@@ -35,6 +35,23 @@ class TopicContentController extends Controller
     }
 
     /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function cancelAnonymous(Request $request)
+    {
+        $this->validate($request,[
+            'content_id' => [
+                'required' ,
+                Rule::exists('topic_content','id')
+            ],
+        ],[
+            'content_id.required' => transL('topic.content_id_empty_error'),
+        ]);
+        return app(TopicContentService::class)->cancelAnonymous($request->content_id);
+    }
+
+    /**
      * 发表评论
      * @param Request $request
      * @return mixed
@@ -50,6 +67,22 @@ class TopicContentController extends Controller
             'content_id.required' => transL('topic.content_id_empty_error'),
         ]);
         return app(TopicContentCommentService::class)->publish($request->all());
+    }
+
+    /**
+     * 删除评论
+     * @param Request $request
+     * @return mixed
+     */
+    public function deleteComment(Request $request)
+    {
+        $this->validate($request,[
+            'comment_id' => [
+                'required' ,
+                Rule::exists('topic_content_comment','id')
+            ],
+        ]);
+        return app(TopicContentCommentService::class)->deleteComment($request->comment_id);
     }
 
     /**
