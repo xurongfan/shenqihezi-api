@@ -66,7 +66,7 @@ class MerUserService extends BaseService
         if ($keys && self::finOneUser(array_filter($keys))){
             throw new \Exception(transL('mer-user.user_exist_from_third','用户已存在'));
         }
-
+        logger('Reg Data:'.json_encode($request));
         $data = $this->model->filter($request);
 
 //        $data['last_login_ip'] = request()->getClientIp();
