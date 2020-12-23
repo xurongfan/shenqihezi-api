@@ -61,7 +61,7 @@ class TopicContentService extends BaseService
     public function index($isFollow = 0,$topicId = 0,$isHot = 0,$userId = 0)
     {
         //已屏蔽用户
-        if ($topicId || $isHot) {
+        if (empty($isFollow)) {
             $shiedlUser = app(TopicContentUserShieldService::class)->index($this->userId());
         }
         $shiedlUser = $shiedlUser ?? [];
