@@ -20,7 +20,7 @@ class TopicContentCommentService extends BaseService
         if (isset($request['pid']) && $request['pid']) {
             $pidInfo = $this->model->newQuery()->where('id' , $request['pid'])->firstOrFail();
             $request['reply_user_id'] = $pidInfo['mer_user_id'];
-            $request['pid'] = $pidInfo['pid'] ?? 0;
+            $request['pid'] = $pidInfo['pid'] ? $pidInfo['pid'] : $request['pid'] ;
             $request['fid'] = $pidInfo['id'] ?? 0;
         }
         $request['ip'] = getClientIp();
@@ -32,7 +32,12 @@ class TopicContentCommentService extends BaseService
         //更新最后评论时间
         $content->update([ 'last_comment_at' => Carbon::now()]);
 
-        app(NoticeService::class)->publish($content['mer_user_id'],1,$request['content_id'],$request['fid']??$request['pid']);
+        app(NoticeService::class)->publish(
+            $content['mer_user_id'],
+            1,
+            $request['content_id'],
+            (isset($request['fid'])&&$request['fid']?$request['fid']:$request['pid'])
+        );
 
         return $this->model;
     }
