@@ -33,10 +33,11 @@ class TopicContentCommentService extends BaseService
         $content->update([ 'last_comment_at' => Carbon::now()]);
 
         app(NoticeService::class)->publish(
-            $content['mer_user_id'],
+            //通知用户
+            $pidInfo['mer_user_id'] ?? $content['mer_user_id'],
             1,
             $request['content_id'],
-            (isset($request['fid'])&&$request['fid']?$request['fid']:$request['pid'])
+            $this->model->id
         );
 
         return $this->model;

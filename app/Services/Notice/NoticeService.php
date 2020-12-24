@@ -9,7 +9,7 @@ class NoticeService extends BaseService
 {
     /**
      * @param $merUserId
-     * @param $type
+     * @param $type 1评论2点赞
      * @param $contentId
      * @param $commentId
      * @return \App\Base\Services\BaseModel|void
