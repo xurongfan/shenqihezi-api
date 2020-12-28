@@ -38,7 +38,7 @@ class MerUserFollowService extends BaseService
             ->with(['follow' =>function($query){
                 $query->where('mer_user_id',$this->userId());
             },'userInfo' => function($query){
-                $query->select('id','profile_img','nick_name','sex','vip');
+                $query->select('id','profile_img','nick_name','sex','vip','description');
             }])
             ->paginate(20);
     }
@@ -54,7 +54,7 @@ class MerUserFollowService extends BaseService
             ->with(['followed' =>function($query){
                 $query->where('follow_user_id',$this->userId());
             },'followUserInfo' => function($query){
-                $query->select('id','profile_img','nick_name','sex','vip');
+                $query->select('id','profile_img','nick_name','sex','vip','description');
             }])
             ->paginate(20);
     }
