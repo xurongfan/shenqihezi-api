@@ -144,8 +144,10 @@ class TopicContentService extends BaseService
                 $query->select('id','profile_img','nick_name');
             },'topic'=>function($query){
                 $query->select('topic.id','topic.title')->where('topic.status',1);
+            },'like'=>function($query){
+                $query->select('id','content_id')->where('mer_user_id',$this->userId());
             }])
-            ->withCount('comment')
+            ->withCount(['comment','like'])
             ->firstOrFail();
         //匿名处理
         if (
