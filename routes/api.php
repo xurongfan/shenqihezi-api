@@ -122,11 +122,13 @@ Route::any('/captcha', function (){
 Route::any('game/list', function (){
     $list = \App\Models\Game\GamePackage::query()->orderBy('id','desc')->paginate(20);
     $list = $list ? $list->toArray() : [];
+
     foreach ($list['data'] as $k => &$v){
         $v['icon_img'] = config('filesystems.disks.oss.domain_url').$v['icon_img'];
         $v['background_img'] = config('filesystems.disks.oss.domain_url').$v['background_img'];
-        $v['url'] = env('GAME_URL').$v['url'];
-        $v['crack_url'] = $v['crack_url']  ? 'http://h5-cdn.sqhezi.cn/'.$v['crack_url'] : '';
+        $gameUrl = $v['url_type'] == 1 ? env('GAME_URL') : 'http://shenqihezi-package.oss-cn-hongkong.aliyuncs.com/';
+        $v['url'] = $v['url'] ? $gameUrl.$v['url'] : '';
+        $v['crack_url'] = $v['crack_url']  ? $gameUrl.$v['crack_url'] : '';
     }
     return $list;
 })->name('game-list');
