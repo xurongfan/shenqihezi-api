@@ -34,27 +34,34 @@ class GamePackageService extends BaseService
             ->orderBy(DB::raw('rid'),'desc')->limit(20)->get();
        if ($result) {
            $gamePackageIds = Arr::pluck($result,'id');
-
+            //是否喜欢
            $likeArr = app(MerUserGameLikeService::class)->findBy([
                'mer_user_id' => $this->userId(),
                'game_package_id' => [['in',$gamePackageIds]],
            ],'id,game_package_id');
            $likeArr = Arr::pluck($likeArr,'id','game_package_id');
-
+            //是否收藏
            $collectArr = app(MerUserGameCollectionService::class)->findBy([
                'mer_user_id' => $this->userId(),
                'game_package_id' => [['in',$gamePackageIds]],
            ],'id,game_package_id');
            $collectArr = Arr::pluck($collectArr,'id','game_package_id');
 
+           $likeCount = app(MerUserGameLikeService::class)->getModel()
+               ->selectRaw('count(*) as count,game_package_id')
+               ->whereIn('game_package_id',$gamePackageIds)
+               ->groupBy('game_package_id')
+               ->pluck('count','game_package_id')
+               ->toArray();
        }
        foreach ($result as $key => &$item) {
            $item['icon_img'] = ossDomain($item['icon_img']);
            $item['background_img'] = ossDomain($item['background_img']);
            $item['url'] = config('app.game_url').$item['url'];
            $item['crack_url'] = $item['crack_url'] ? config('app.game_url').$item['crack_url'] : '';
-           $item['is_like'] = isset($likeArr[$item['id']]);
-           $item['is_collect'] = isset($collectArr[$item['id']]);
+           $item['is_like'] = isset($likeArr[$item['id']]) ? true : false;
+           $item['is_collect'] = isset($collectArr[$item['id']]) ? true : false;
+           $item['like_count'] = isset($likeCount[$item['id']]) ? $likeCount[$item['id']] : 0;
        }
         return $result;
     }
