@@ -35,4 +35,21 @@ class MerUserFollowController extends Controller
         ]);
         return $this->service->follow($request->follow_user_id);
     }
+
+    /**
+     * 我的粉丝
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function index()
+    {
+        return $this->service->index();
+    }
+
+    /**
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function myFollow()
+    {
+        return $this->service->myFollow();
+    }
 }

@@ -109,7 +109,7 @@ class MerUserController extends Controller
      */
     public function info()
     {
-        return $this->service->user();
+        return $this->service->userInfo();
     }
 
     /**

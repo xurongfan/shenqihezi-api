@@ -173,7 +173,7 @@ class MerUserService extends BaseService
     public function editUser($request)
     {
         $user = self::user();
-        $user->update($request);
+        $user->update($this->model->filter($request));
         return $user;
     }
 
@@ -182,15 +182,18 @@ class MerUserService extends BaseService
      * @param $userId
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
      */
-    public function userInfo($userId)
+    public function userInfo($userId = 0)
     {
+        $userId = $userId ? $userId : $this->userId();
         return $this->model->query()
-            ->select('id','profile_img','nick_name','description','sex','birth')
+            ->select('id','profile_img','nick_name','description','sex','birth','area_code','phone','vip')
             ->where('id',$userId)
-            ->withCount('follow')
-            ->with(['isUserFollow' => function($query){
-                $query->where('mer_user_id',$this->userId());
-            }])
+            ->withCount(['follow','followed'])
+            ->when($userId != $this->userId(),function ($query){
+                $query->with(['isUserFollow' => function($query1){
+                    $query1->where('mer_user_id',$this->userId());
+                }]);
+            })
             ->firstOrFail();
     }
 }

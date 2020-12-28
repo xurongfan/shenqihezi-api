@@ -72,6 +72,7 @@ class MerUser extends BaseModel implements
     }
 
     /**
+     * 粉丝数
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function follow()
@@ -80,10 +81,20 @@ class MerUser extends BaseModel implements
     }
 
     /**
+     * 是否关注
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function isUserFollow()
     {
         return $this->hasOne(MerUserFollow::class,'follow_user_id','id');
+    }
+
+    /**
+     * 关注数
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function followed()
+    {
+        return $this->hasMany(MerUserFollow::class,'mer_user_id','id');
     }
 }

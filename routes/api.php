@@ -57,6 +57,8 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
         $router->get('game-integral-rank', 'MerUserGameIntegralController@rank')->name('user.game-integral-rank');
 
         $router->post('follow', 'MerUserFollowController@follow')->name('user.follow');
+        $router->get('fans', 'MerUserFollowController@index')->name('user.fans');
+        $router->get('my-follow', 'MerUserFollowController@myFollow')->name('user.my-follow');
 
 
     });

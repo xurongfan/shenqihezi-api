@@ -26,4 +26,36 @@ class MerUserFollowService extends BaseService
         }
         return ;
     }
+
+    /**
+     * 我的粉丝
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function index()
+    {
+        return $this->model->query()
+            ->where('follow_user_id',$this->userId())
+            ->with(['follow' =>function($query){
+                $query->where('mer_user_id',$this->userId());
+            },'userInfo' => function($query){
+                $query->select('id','profile_img','nick_name','sex','vip');
+            }])
+            ->paginate(20);
+    }
+
+    /**
+     * 我的关注
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function myFollow()
+    {
+        return $this->model->query()
+            ->where('mer_user_id',$this->userId())
+            ->with(['followed' =>function($query){
+                $query->where('follow_user_id',$this->userId());
+            },'followUserInfo' => function($query){
+                $query->select('id','profile_img','nick_name','sex','vip');
+            }])
+            ->paginate(20);
+    }
 }
