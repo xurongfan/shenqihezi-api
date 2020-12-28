@@ -76,6 +76,7 @@ class NoticeService extends BaseService
                     }]);
 
             }])
+            ->orderBy('created_at','desc')
             ->paginate(20)
             ->toArray();
 
