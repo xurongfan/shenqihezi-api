@@ -37,13 +37,20 @@ class MerUserGameCollectionService extends BaseService
      */
     public function index()
     {
+        $page = request()->input('page',1);
+        if (!$isVip = app(MerUserService::class)->isVip()) {
+            $page = 1;
+            $limit = 5;
+        }
+
         $result =  $this->model->newQuery()->select('id','game_package_id')
             ->whereHas('gamePackage')
             ->with(['gamePackage' => function($query){
-                $query->selectRaw('id,title,icon_img,background_img,url,is_crack,crack_url,is_landscape,crack_des');
+                $query->selectRaw('id,title,icon_img,background_img,url,is_crack,crack_url,is_landscape,crack_des,status');
             }])
             ->where('mer_user_id',$this->userId())
-            ->orderBy('id','desc')->paginate(20)->toArray();
+            ->orderBy('id','desc')
+            ->paginate($limit ?? 20,['id', 'game_package_id', 'created_at'],'page',1)->toArray();
         if ($result){
             foreach ($result['data'] as $key => &$item) {
                 $item['game_package']['icon_img'] = ossDomain($item['game_package']['icon_img']);
@@ -52,7 +59,7 @@ class MerUserGameCollectionService extends BaseService
                 $item['game_package']['crack_url'] = $item['game_package']['crack_url'] ? config('app.game_url').$item['game_package']['crack_url'] : '';
             }
         }
-
+        $result['isVip'] = $isVip;
         return $result;
     }
 }

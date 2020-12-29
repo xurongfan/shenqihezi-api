@@ -15,16 +15,22 @@ class MerUserGameHistoryService extends BaseService
      */
     public function index($userId = 0)
     {
-        $userId = $userId ? $userId : $this->userId();
         $page = request()->input('page',1);
-        if (!app(MerUserService::class)->isVip()) {
+        if (!$isVip = app(MerUserService::class)->isVip() && !$userId) {
             $page = 1;
             $limit = 5;
         }
+        //查看他人历史
+        if ($userId) {
+            $limit = 5;
+        }
+
+        $userId = $userId ? $userId : $this->userId();
+
         $result = $this->model->newQuery()
         ->whereHas('gamePackage')
         ->with(['gamePackage' => function ($query) {
-            $query->selectRaw('id,title,icon_img,background_img,url,is_crack,crack_url,is_landscape,crack_des');
+            $query->selectRaw('id,title,icon_img,background_img,url,is_crack,crack_url,is_landscape,crack_des,status');
         }])
         ->where('mer_user_id', $userId)
         ->orderBy('id', 'desc')
@@ -39,6 +45,7 @@ class MerUserGameHistoryService extends BaseService
             }
         }
 
+        $result['isVip'] = $isVip;
         return $result;
     }
 
