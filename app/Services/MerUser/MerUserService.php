@@ -179,21 +179,34 @@ class MerUserService extends BaseService
 
     /**
      * 用户信息
-     * @param $userId
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
+     * @param int $userId
+     * @param bool $followData
+     * @return \Illuminate\Database\Concerns\BuildsQueries|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|mixed
      */
-    public function userInfo($userId = 0)
+    public function userInfo($userId = 0,$followData = true)
     {
         $userId = $userId ? $userId : $this->userId();
-        return $this->model->query()
+        $result = $this->model->query()
             ->select('id','profile_img','nick_name','description','sex','birth','area_code','phone','vip')
-            ->where('id',$userId)
-            ->withCount(['follow','followed'])
-            ->when($userId != $this->userId(),function ($query){
-                $query->with(['isUserFollow' => function($query1){
-                    $query1->where('mer_user_id',$this->userId());
-                }]);
-            })
-            ->firstOrFail();
+            ->where('id',$userId);
+        if ($followData) {
+            $result = $result->withCount(['follow','followed'])
+                ->when($userId != $this->userId(),function ($query){
+                    $query->with(['isUserFollow' => function($query1){
+                        $query1->where('mer_user_id',$this->userId());
+                    }]);
+                });
+        }
+        return $result->firstOrFail();
+    }
+
+    /**
+     * @param int $userId
+     * @return mixed
+     */
+    public function isVip($userId = 0)
+    {
+        $user = $this->userInfo($userId,false);
+        return $user['vip'];
     }
 }

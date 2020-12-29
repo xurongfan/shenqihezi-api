@@ -18,6 +18,12 @@ class MerUserGameCollectionService extends BaseService
         ])) {
             $res->delete();
         }else{
+            //收藏数量限制
+            if (!app(MerUserService::class)->isVip()) {
+                if ($this->model->query()->where('mer_user_id',$this->userId())->count() > 1) {
+                    throw new \Exception(transL('mer-user.user_game_collect_limit','收藏数量超额'));
+                }
+            }
             return $this->save( [
                 'mer_user_id' => $this->userId(),
                 'game_package_id' => $gamePackageId

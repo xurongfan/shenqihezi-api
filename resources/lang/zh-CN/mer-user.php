@@ -11,4 +11,6 @@ return [
     'user_exist_from_third' => '该手机号已绑定其他账号',
     'user_not_exist' => '该手机号未注册',
     'third_login_user_not_exist' => '需绑定手机号',
+
+    'user_game_collect_limit' => '收藏数量超额',
 ];

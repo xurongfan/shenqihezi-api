@@ -172,6 +172,29 @@ Route::any('ad-game/list', function (){
 })->name('ad-game-list');
 
 Route::any('/test', function () {
+
+    // 阿里云主账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM账号进行API访问或日常运维，请登录RAM控制台创建RAM账号。
+    $accessKeyId = "LTAI4GAeD3jcsVmvedfNw922";
+    $accessKeySecret = "HK3f7xu1gJlo4beVqSE3ygYiEF9qmG";
+// Endpoint以杭州为例，其它Region请按实际情况填写。
+    $endpoint = "http://oss-cn-hangzhou.aliyuncs.com";
+    $bucket= "cn-funtouch";
+    $object = "germ-squirmish.zip";
+
+// 设置URL的有效时长为3600s。
+    $timeout = 300;
+    try {
+        $ossClient = new \OSS\OssClient($accessKeyId, $accessKeySecret, $endpoint, false);
+
+        // 生成GetObject的签名URL。
+        $signedUrl = $ossClient->signUrl($bucket, $object, $timeout);
+    } catch (\OSS\Core\OssException $e) {
+        printf(__FUNCTION__ . ": FAILED\n");
+        printf($e->getMessage() . "\n");
+        return;
+    }
+    print(__FUNCTION__ . ": signedUrl: " . $signedUrl . "\n");
+    exit();
     $config = [
         // 必要配置
         'app_id'             => 'wx9570383f3e10adb1',

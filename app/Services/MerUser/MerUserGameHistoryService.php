@@ -16,15 +16,20 @@ class MerUserGameHistoryService extends BaseService
     public function index($userId = 0)
     {
         $userId = $userId ? $userId : $this->userId();
-        $result = $this->model->newQuery()->select('id', 'game_package_id', 'created_at')
-            ->whereHas('gamePackage')
-            ->with(['gamePackage' => function ($query) {
-                $query->selectRaw('id,title,icon_img,background_img,url,is_crack,crack_url,is_landscape,crack_des');
-            }])
-            ->where('mer_user_id', $userId)
-            ->orderBy('id', 'desc')
-            ->groupBy('game_package_id')
-            ->paginate(20)->toArray();
+        $page = request()->input('page',1);
+        if (!app(MerUserService::class)->isVip()) {
+            $page = 1;
+            $limit = 5;
+        }
+        $result = $this->model->newQuery()
+        ->whereHas('gamePackage')
+        ->with(['gamePackage' => function ($query) {
+            $query->selectRaw('id,title,icon_img,background_img,url,is_crack,crack_url,is_landscape,crack_des');
+        }])
+        ->where('mer_user_id', $userId)
+        ->orderBy('id', 'desc')
+        ->groupBy('game_package_id')
+        ->paginate($limit ?? 20,['id', 'game_package_id', 'created_at'],'page',1)->toArray();
         if ($result) {
             foreach ($result['data'] as $key => &$item) {
                 $item['game_package']['icon_img'] = ossDomain($item['game_package']['icon_img']);
