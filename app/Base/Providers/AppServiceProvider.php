@@ -4,6 +4,7 @@ namespace App\Base\Providers;
 
 use App\Models\Game\AdBurying;
 use App\Models\Game\GamePackage;
+use App\Models\Game\GamePackageSubscribe;
 use App\Models\Game\GameTag;
 use App\Models\Topic\TopicContentUserShield;
 use App\Models\User\MerRetainLog;
@@ -24,6 +25,7 @@ use App\Models\User\MerUserGameIntegral;
 use App\Models\User\MerUserGameLike;
 use App\Services\Game\AdBuryingService;
 use App\Services\Game\GamePackageService;
+use App\Services\Game\GamePackageSubscribeService;
 use App\Services\Game\GameTagService;
 use App\Services\MerUser\MerRetainLogService;
 use App\Services\MerUser\MerUserFollowService;
@@ -107,6 +109,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AdBuryingService::class, function () {
             return new AdBuryingService(new AdBurying());
         });
+
+        $this->app->bind(GamePackageSubscribeService::class, function () {
+            return new GamePackageSubscribeService(new GamePackageSubscribe());
+        });
     }
 
     /**
@@ -149,6 +155,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(TopicContentUserShieldService::class, function () {
             return new TopicContentUserShieldService(new TopicContentUserShield());
         });
+
     }
 
     /**

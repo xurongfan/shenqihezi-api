@@ -4,24 +4,26 @@ namespace App\Http\Controllers\Game;
 
 use App\Base\Controllers\Controller;
 use App\Services\Game\GamePackageService;
+use App\Services\Game\GamePackageSubscribeService;
 use Illuminate\Http\Request;
 
 class GamePackageController extends Controller
 {
-    protected $service ;
-
     /**
-     * GamePackageController constructor.
-     * @param GamePackageService $service
+     * 游戏列表
+     * @return mixed
      */
-    public function __construct(GamePackageService $service)
-    {
-        $this->service = $service;
-    }
-
-
     public function index()
     {
-        return $this->service->index();
+        return app(GamePackageService::class)->index();
+    }
+
+    /**
+     * 游戏订阅列表
+     * @return mixed
+     */
+    public function subscribe()
+    {
+        return app(GamePackageSubscribeService::class)->index();
     }
 }
