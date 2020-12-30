@@ -159,4 +159,58 @@ class MerUserController extends Controller
     {
         return $this->service->userInfo($id);
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
+     * @throws \Google\Exception
+     */
+    public function pay()
+    {
+        $requestData = request()->all();
+
+        $googleClient = new \Google_Client();
+        $googleClient->setScopes([\Google_Service_AndroidPublisher::ANDROIDPUBLISHER]);
+        $googleClient->setApplicationName('FouTouch');
+        $googleClient->setAuthConfig(public_path('FunTouch-6a5c57d1ce4e.json'));
+
+        $googleAndroidPublisher = new \Google_Service_AndroidPublisher($googleClient);
+        $validator = new \ReceiptValidator\GooglePlay\Validator($googleAndroidPublisher);
+
+        try {
+            $user = auth()->user();
+            $response = $validator->setPackageName('com.magic.taper')
+                ->setProductId($requestData['productId'])
+                ->setPurchaseToken($requestData['purchaseToken'])
+                ->validateSubscription();
+            //已付款
+            if ($response->getPaymentState() == 1) {
+                $orderNum = md5($requestData['purchaseToken']);
+                $order = \App\Models\Pay\PayOrder::query()->firstOrCreate(
+                    [
+                        'order_num' => $orderNum
+                    ],
+                    [
+                    'mer_user_id' => $user->id,
+                    'currency_code' =>$response->getPriceCurrencyCode(),
+                    'amount' =>$response->getPriceAmountMicros()/1000000,
+                    'pay_type' => 1,
+                    'status' => $response->getPaymentState(),
+                    'good_type' => 1,
+                    'pay_time' => date('Y-m-d H:i:s'),
+                    'created_at' => date('Y-m-d H:i:s')
+                    ]
+                );
+                //修改用户信息
+                $user->update([
+                    'vip' => 1,
+                    'vip_start_at' => date('Y-m-d H:i:s',$response->getStartTimeMillis()/1000),
+                    'vip_end_at' =>  date('Y-m-d H:i:s',$response->getExpiryTimeMillis()/1000),
+                ]);
+                return $order;
+            }
+        } catch (\Exception $e){
+            throw new \Exception($e->getMessage());
+        }
+        throw new \Exception(transL('common.order_not_pay'));
+    }
 }

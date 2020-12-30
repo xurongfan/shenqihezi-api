@@ -46,6 +46,8 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
         $router->get('/info/{id}', 'MerUserController@user')->name('user.show');
         $router->post('game-like', 'MerUserGameLikeController@like')->name('user.game-like');
 
+        $router->post('pay', 'MerUserController@pay')->name('user.pay');
+
         $router->post('game-collect', 'MerUserGameCollectionController@collect')->name('user.game-collect');
         $router->get('game-collect', 'MerUserGameCollectionController@index')->name('user.game-collect-index');
 
@@ -174,27 +176,7 @@ Route::any('ad-game/list', function (){
 })->name('ad-game-list');
 
 Route::any('/test', function () {
-    $googleClient = new \Google_Client();
-    $googleClient->setScopes([\Google_Service_AndroidPublisher::ANDROIDPUBLISHER]);
-    $googleClient->setApplicationName('FouTouch');
-    $googleClient->setAuthConfig(public_path('FunTouch-6a5c57d1ce4e.json'));
-
-    $googleAndroidPublisher = new \Google_Service_AndroidPublisher($googleClient);
-    $validator = new \ReceiptValidator\GooglePlay\Validator($googleAndroidPublisher);
-
-    try {
-        $response = $validator->setPackageName('com.magic.taper')
-            ->setProductId('dy123')
-            ->setPurchaseToken('mgbolnncnlgobghjokahffej.AO-J1OwUsKOlw2VBkERBALGnAowk_PrtIHHWUUeVajsPKaB02LjvTjySX0eFyka4xYesOIJPAUAbMMFVsqbw6cDCikenLOYi0w')
-            ->validateSubscription();
-        echo"<pre>";print_r($response);exit;
-    } catch (\Exception $e){
-        var_dump($e->getMessage());
-        // example message: Error calling GET ....: (404) Product not found for this application.
-    }
-// success
     exit();
-
     // 阿里云主账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM账号进行API访问或日常运维，请登录RAM控制台创建RAM账号。
     $accessKeyId = "LTAI4GAeD3jcsVmvedfNw922";
     $accessKeySecret = "HK3f7xu1gJlo4beVqSE3ygYiEF9qmG";
