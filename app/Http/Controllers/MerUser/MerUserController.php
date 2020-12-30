@@ -204,7 +204,7 @@ class MerUserController extends Controller
                 $user->update([
                     'vip' => 1,
                     'vip_start_at' => date('Y-m-d H:i:s',$response->getStartTimeMillis()/1000),
-                    'vip_end_at' =>  date('Y-m-d H:i:s',$response->getExpiryTimeMillis()/1000),
+//                    'vip_end_at' =>  date('Y-m-d H:i:s',$response->getExpiryTimeMillis()/1000),
                 ]);
                 return $order;
             }
