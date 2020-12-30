@@ -178,8 +178,8 @@ Route::any('/test', function () {
 
     $googleClient = new \Google_Client();
     $googleClient->setScopes([\Google_Service_AndroidPublisher::ANDROIDPUBLISHER]);
-    $googleClient->setApplicationName('Your_Purchase_Validator_Name');
-    $googleClient->setAuthConfig(public_path('FunTouch-fa4f600d12bb.json'));
+    $googleClient->setApplicationName('FouTouch');
+    $googleClient->setAuthConfig(public_path('FunTouch-6a5c57d1ce4e.json'));
 
     $googleAndroidPublisher = new \Google_Service_AndroidPublisher($googleClient);
     $validator = new \ReceiptValidator\GooglePlay\Validator($googleAndroidPublisher);
