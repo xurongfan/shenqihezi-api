@@ -179,19 +179,7 @@ Route::any('/test', function () {
     $googleClient = new \Google_Client();
     $googleClient->setScopes([\Google_Service_AndroidPublisher::ANDROIDPUBLISHER]);
     $googleClient->setApplicationName('Your_Purchase_Validator_Name');
-    $googleClient->setAuthConfig('{
-  "type": "service_account",
-  "project_id": "able-device-293401",
-  "private_key_id": "fa4f600d12bb216bd6077d34537bb23ed350b6a6",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCJYRGemSITqgHL\n22H3g1ntQe7XokRlBUM7ujYmX4LNxZse9bp6AvoHlBf1H5BcaRR/R0IganSgr807\nu8AGfZ1A0/a+ZjZ+7oZCAfP37rfQtk8U2DWTcSn1S8fIfGdgUePdFsczdzI+ik7F\nBElrPbU02wH8HMgJ9qwECWB++GmLYKBM5DgcldHi+AZ4YMknDKL1ZF4EFIWldM2C\naRVBzjuqdtH2c3eeG+vMgIt1ApJoeHeYalOXDL9xZSZMNpENBbh5M7vNDoiwTUQn\n6UG/cUxrNZZMuJdlV6BKUm2cgOdPbtMJvVwkPgDLW/P78wk9IRKIREendBvzTGnF\n134lmThjAgMBAAECggEACQPz6463bpyYB0BLkrot0xpMvx2Y08ZUzgfKLkTTU9yq\nxuKFDSUX3Rp0uLM3E+bDdReAjpmzM1Ow1MGH+FpoUPeiuDEDVNt4t76NZlEQrWOM\nF11EUCY7hNZRyJA9b9PqmmONyWICS+9jUZ5BO9vuAdzOKbTb0yeQd1Ku4KDoZZXm\nS66EZq7TFhO2sQXr+ag1xblZxGlmHtN9N2IBrsZ5Kqmx+WfgigQEc1vuWMg8qVGl\nN8nmyKUflRtktLABwCFMuN++hD2JvMAeatVTwX1r/vigBhM+jLahyF1wPXxQPG0t\nxS0TdSFcJJ7ZE30CdgOEyWrHC0+MqdbFh1fwsREEIQKBgQC+0+CZwd2l28INw/Cu\n3eJYL04L6RYXNfykVdrUoEs+GCdnwHKSuO+CzZyhUTH4jqWZTNSjj66gRXc38wXt\n06EfLhJjMSj790RiZE3ao8EtitPa0ABEQ28C65+iTdk1EMpWbkdH4AOnmMPKdqK1\n4lwR+dTNd7JUlrB0dKC1FASp4QKBgQC4TCynrX44S7vuwqCiV3CVXEbxIFTHK906\nnLG+i7JvH8F+PpVtkTPXt2joQxv1/VxYYa48lyRUtYTiK8pwj8nB8o+/pRHn5Tgx\nZjXUroL2i74GDFBmQwXICdWwPRKY0F7kaipMSRmQhpef7CUqDcwRS9Mzd7H8nK4X\nTFhI+VoSwwKBgBf2t4/XfqQjcr0TzBfJmXEFj8GDJdkIWI+ykGZ/MrO7iMdIrZqr\nSricZX0Em0fhcf5MXa+kjYNm9c+63xW8q9Ekkf6O39y0cowAmJ5KTioP8wbZdA8e\ngMRXHpbdO9ekIiS0eJMYGJ1lW8EDIO/CW1mOjCC5VVW2DraxJrVWrDdBAoGAF5ra\nFVfpVLiOh5QyEtj0OI0rIPMtKJ17pmgvc+JcplMA63SEmxX/998r9qOxzx32V/Oa\n53PMWXUuYfGN6kDgbJDuzHMOCg+X1OvsdSMs7vsTCZ9GJPLsqKRp1DreSOhXXxYh\n+MdcGODERt1uHSbLPmPh1zO7fklrGtzSafZWDRUCgYBMAJetK9pl+r4FrWQt5QuO\nh8rBKKmbUDEGCUzN3+sHKx6LJMY9PEL2xvYNiHIz6x8dJoAniedPCOAeBRZZCJOL\nLEYwxKoSTxKCQdcw2RYaaPAZZjz0hQKjencA/Z1VTz7HZlcqh3ORBWpIQdsQ4zzy\n/QdjsJhmmMchCC0Xd1Q9HQ==\n-----END PRIVATE KEY-----\n",
-  "client_email": "id-631@able-device-293401.iam.gserviceaccount.com",
-  "client_id": "103002766407790987728",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/id-631%40able-device-293401.iam.gserviceaccount.com"
-}
-');
+    $googleClient->setAuthConfig(public_path('FunTouch-fa4f600d12bb.json'));
 
     $googleAndroidPublisher = new \Google_Service_AndroidPublisher($googleClient);
     $validator = new \ReceiptValidator\GooglePlay\Validator($googleAndroidPublisher);
