@@ -174,8 +174,6 @@ Route::any('ad-game/list', function (){
 })->name('ad-game-list');
 
 Route::any('/test', function () {
-
-
     $googleClient = new \Google_Client();
     $googleClient->setScopes([\Google_Service_AndroidPublisher::ANDROIDPUBLISHER]);
     $googleClient->setApplicationName('FouTouch');
@@ -186,8 +184,8 @@ Route::any('/test', function () {
 
     try {
         $response = $validator->setPackageName('com.magic.taper')
-            ->setProductId('ceshi1')
-            ->setPurchaseToken('hbofoepfkmnkabeokneoanlb.AO-J1Ow_x43AB_IS-ORmazsVTrUbNVi3oq0fdBKlKX0PmvoIhNHaKoCB94BoZ52557WVYji5YDg3m-aCArRdr9G3H76b2ihYAQ')
+            ->setProductId('dy123')
+            ->setPurchaseToken('mgbolnncnlgobghjokahffej.AO-J1OwUsKOlw2VBkERBALGnAowk_PrtIHHWUUeVajsPKaB02LjvTjySX0eFyka4xYesOIJPAUAbMMFVsqbw6cDCikenLOYi0w')
             ->validateSubscription();
         echo"<pre>";print_r($response);exit;
     } catch (\Exception $e){
