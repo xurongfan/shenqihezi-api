@@ -161,6 +161,7 @@ class TopicContentCommentService extends BaseService
             },'content' => function($query){
                 $query->select('id','content','image_resource',);
             }])
+            ->orderBy('id','desc')
             ->paginate(20)
             ->toArray();
     }
