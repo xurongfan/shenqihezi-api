@@ -3,6 +3,7 @@
 namespace App\Services\Game;
 
 use App\Base\Services\BaseService;
+use App\Models\Game\GamePackageSubscribe;
 use App\Models\Game\GameTag;
 use App\Services\MerUser\MerUserGameCollectionService;
 use App\Services\MerUser\MerUserGameLikeService;
@@ -53,6 +54,13 @@ class GamePackageService extends BaseService
                ->groupBy('game_package_id')
                ->pluck('count','game_package_id')
                ->toArray();
+
+           //是否订阅
+           $subscribeArr = GamePackageSubscribe::query()
+               ->where('mer_user_id',$this->userId())
+               ->whereIn('game_package_id',$gamePackageIds)
+               ->pluck('id','game_package_id')
+               ->toArray();
        }
        foreach ($result as $key => &$item) {
            $item['icon_img'] = ossDomain($item['icon_img']);
@@ -61,6 +69,7 @@ class GamePackageService extends BaseService
            $item['crack_url'] = gameUrl($item['crack_url']);
            $item['is_like'] = isset($likeArr[$item['id']]) ? true : false;
            $item['is_collect'] = isset($collectArr[$item['id']]) ? true : false;
+           $item['is_subscribe'] = isset($subscribeArr[$item['id']]) ? true : false;
            $item['like_count'] = isset($likeCount[$item['id']]) ? $likeCount[$item['id']] : 0;
        }
         return $result;
