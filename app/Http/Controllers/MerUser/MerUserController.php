@@ -225,7 +225,7 @@ class MerUserController extends Controller
                 }else{
                     GamePackageSubscribe::query()->firstOrCreate([
                         'game_package_id' => $requestData['game_package_id']??0,
-                        'mer_id' => $user->id,
+                        'mer_user_id' => $user->id,
                     ]);
                 }
 
