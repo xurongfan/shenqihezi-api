@@ -190,7 +190,7 @@ Route::any('/test', function () {
         $response = $validator->setPackageName('com.magic.taper')
             ->setProductId('p2')
             ->setPurchaseToken('hfahodmhdliodbcbcmapdibm.AO-J1OzJmygXZCwxJO7YuxB21FILQrRFvGbpAJke80MCEmxDgnOuJmZbRO7gC-Bemj4ltTfwrJSk8XSZ2vS8xXzx1y-GIMDz8A')
-            ->validateSubscription();
+            ->validatePurchase();
         //已付款
         echo"<pre>";print_r($response);exit;
     } catch (\Exception $e){
