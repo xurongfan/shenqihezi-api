@@ -240,9 +240,9 @@ function sendSms($phoneNumber,$areaCode,$varifyCode)
           'RegionId' => "cn-hangzhou",
           'PhoneNumbers' => $phoneNumber,
           'SignName' => "FunTouch",
-          'TemplateCode' => "SMS_208440010",//"SMS_205123396",
+          'TemplateCode' => "SMS_205123396",//"SMS_208440010",
           'TemplateParam' => json_encode([
-              'name' => 'User',
+//              'name' => 'User',
             'code' => $varifyCode
           ]),
         ],
