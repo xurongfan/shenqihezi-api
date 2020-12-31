@@ -197,7 +197,8 @@ class MerUserController extends Controller
                     'status' => $response->getPaymentState(),
                     'good_type' => 1,
                     'pay_time' => date('Y-m-d H:i:s'),
-                    'created_at' => date('Y-m-d H:i:s')
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'token' => $requestData['purchaseToken']
                     ]
                 );
                 //修改用户信息
