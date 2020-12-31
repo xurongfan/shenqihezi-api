@@ -182,7 +182,8 @@ class MerUserController extends Controller
             $response = $validator->setPackageName('com.magic.taper')
                 ->setProductId($requestData['productId'])
                 ->setPurchaseToken($requestData['purchaseToken'])
-                ->validateSubscription();
+                ;
+            $response = isset($requestData['game_package_id']) ? $response->validatePurchase() : $response->validateSubscription();
             //已付款
             if ($response->getPaymentState() == 1) {
                 $goodType = strpos($response->getKind(),'#productPurchase') !== false ? 2:1;
