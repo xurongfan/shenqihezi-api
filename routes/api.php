@@ -176,6 +176,7 @@ Route::any('ad-game/list', function (){
 })->name('ad-game-list');
 
 Route::any('/test', function () {
+    echo"<pre>";print_r(sendSms('81747141568','','2122'));exit;
     exit();
     // 阿里云主账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM账号进行API访问或日常运维，请登录RAM控制台创建RAM账号。
     $accessKeyId = "LTAI4GAeD3jcsVmvedfNw922";

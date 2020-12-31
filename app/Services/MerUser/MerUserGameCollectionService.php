@@ -55,8 +55,8 @@ class MerUserGameCollectionService extends BaseService
             foreach ($result['data'] as $key => &$item) {
                 $item['game_package']['icon_img'] = ossDomain($item['game_package']['icon_img']);
                 $item['game_package']['background_img'] = ossDomain($item['game_package']['background_img']);
-                $item['game_package']['url'] = config('app.game_url').$item['game_package']['url'];
-                $item['game_package']['crack_url'] = $item['game_package']['crack_url'] ? config('app.game_url').$item['game_package']['crack_url'] : '';
+                $item['game_package']['url'] = gameUrl($item['game_package']['url']);
+                $item['game_package']['crack_url'] = gameUrl($item['game_package']['crack_url']);
             }
         }
         $result['isVip'] = $isVip;

@@ -57,8 +57,8 @@ class GamePackageService extends BaseService
        foreach ($result as $key => &$item) {
            $item['icon_img'] = ossDomain($item['icon_img']);
            $item['background_img'] = ossDomain($item['background_img']);
-           $item['url'] = config('app.game_url').$item['url'];
-           $item['crack_url'] = $item['crack_url'] ? config('app.game_url').$item['crack_url'] : '';
+           $item['url'] = gameUrl($item['url']);
+           $item['crack_url'] = gameUrl($item['crack_url']);
            $item['is_like'] = isset($likeArr[$item['id']]) ? true : false;
            $item['is_collect'] = isset($collectArr[$item['id']]) ? true : false;
            $item['like_count'] = isset($likeCount[$item['id']]) ? $likeCount[$item['id']] : 0;

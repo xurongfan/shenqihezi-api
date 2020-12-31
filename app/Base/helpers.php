@@ -240,8 +240,9 @@ function sendSms($phoneNumber,$areaCode,$varifyCode)
           'RegionId' => "cn-hangzhou",
           'PhoneNumbers' => $phoneNumber,
           'SignName' => "FunTouch",
-          'TemplateCode' => "SMS_205123396",
+          'TemplateCode' => "SMS_208440010",//"SMS_205123396",
           'TemplateParam' => json_encode([
+              'name' => 'User',
             'code' => $varifyCode
           ]),
         ],
@@ -279,4 +280,17 @@ function ossDomain($path)
         return config('filesystems.disks.oss.domain_url') . $path;
     }
     return $path;
+}
+
+/**
+ * @param $path
+ * @return string
+ */
+function gameUrl($path)
+{
+    if (empty($path)){
+        return '';
+    }
+    return (strpos($path,'zip') !== false ?  config('filesystems.disks.oss.domain_url') :  config('app.game_url'))
+        .$path;
 }
