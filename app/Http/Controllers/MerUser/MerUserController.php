@@ -195,7 +195,7 @@ class MerUserController extends Controller
                 //Possible values are: 0. Purchased 1. Canceled 2. Pending
                 $state = $response->getPurchaseState();
 
-                $state  = $state == 1 ? 0 : 1;
+                $state  = $state == 0 ? 1 : 0;
             }
             if ($state == 0) {
                 $order = \App\Models\Pay\PayOrder::query()->firstOrCreate(
