@@ -212,7 +212,8 @@ class MerUserController extends Controller
                         'game_package_id' => $goodType == 1 ? 0 :($requestData['game_package_id']??0),
                         'pay_time' => date('Y-m-d H:i:s'),
                         'created_at' => date('Y-m-d H:i:s'),
-                        'token' => $requestData['purchaseToken']
+                        'token' => $requestData['purchaseToken'],
+                        'request_data' => json_encode($requestData)
                     ]
                 );
                 if ($goodType == 1) {
