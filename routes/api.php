@@ -176,7 +176,26 @@ Route::any('ad-game/list', function (){
 })->name('ad-game-list');
 
 Route::any('/test', function () {
-    echo"<pre>";print_r(sendSms('81747141568','','2122'));exit;
+
+    $googleClient = new \Google_Client();
+    $googleClient->setScopes([\Google_Service_AndroidPublisher::ANDROIDPUBLISHER]);
+    $googleClient->setApplicationName('FouTouch');
+    $googleClient->setAuthConfig(public_path('FunTouch-6a5c57d1ce4e.json'));
+
+    $googleAndroidPublisher = new \Google_Service_AndroidPublisher($googleClient);
+    $validator = new \ReceiptValidator\GooglePlay\Validator($googleAndroidPublisher);
+
+    try {
+        $user = auth()->user();
+        $response = $validator->setPackageName('com.magic.taper')
+            ->setProductId('p2')
+            ->setPurchaseToken('hfahodmhdliodbcbcmapdibm.AO-J1OzJmygXZCwxJO7YuxB21FILQrRFvGbpAJke80MCEmxDgnOuJmZbRO7gC-Bemj4ltTfwrJSk8XSZ2vS8xXzx1y-GIMDz8A')
+            ->validateSubscription();
+        //已付款
+        echo"<pre>";print_r($response);exit;
+    } catch (\Exception $e){
+        throw new \Exception($e->getMessage());
+    }
     exit();
     // 阿里云主账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM账号进行API访问或日常运维，请登录RAM控制台创建RAM账号。
     $accessKeyId = "LTAI4GAeD3jcsVmvedfNw922";
