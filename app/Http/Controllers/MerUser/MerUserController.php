@@ -197,7 +197,7 @@ class MerUserController extends Controller
 
                 $state  = $state == 0 ? 1 : 0;
             }
-            if ($state == 0) {
+            if ($state == 1) {
                 $order = \App\Models\Pay\PayOrder::query()->firstOrCreate(
                     [
                         'order_num' => $orderNum
