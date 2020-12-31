@@ -204,7 +204,7 @@ class MerUserController extends Controller
                     ],
                     [
                         'mer_user_id' => $user->id,
-                        'currency_code' => $response->getPriceCurrencyCode(),
+                        'currency_code' => $goodType == 1 ? $response->getPriceCurrencyCode() : '',
                         'amount' => $goodType == 1 ? ($response->getPriceAmountMicros()/1000000) : ($requestData['amount']??0),
                         'pay_type' => 1,
                         'status' => $state,
