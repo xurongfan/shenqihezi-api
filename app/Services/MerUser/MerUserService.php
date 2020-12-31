@@ -25,9 +25,9 @@ class MerUserService extends BaseService
                 throw new \Exception(transL('mer-user.user_exist_from_third','用户已存在'));
             }
 
-            if ($this->getUserByPhone($phone,$areaCode)) {
-                throw new \Exception(transL('mer-user.user_exist','用户已存在'));
-            }
+//            if ($this->getUserByPhone($phone,$areaCode)) {
+//                throw new \Exception(transL('mer-user.user_exist','用户已存在'));
+//            }
         }
 
         $varifyCode = mt_rand(1000,9999);
