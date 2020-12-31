@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\MerUser;
 
 use App\Base\Controllers\Controller;
+use App\Models\Game\GamePackageSubscribe;
 use App\Services\MerUser\MerUserService;
 use Illuminate\Http\Request;
 
@@ -184,6 +185,7 @@ class MerUserController extends Controller
                 ->validateSubscription();
             //已付款
             if ($response->getPaymentState() == 1) {
+                $goodType = strpos($response->getKind(),'#productPurchase') !== false ? 2:1;
                 $orderNum = md5($requestData['purchaseToken']);
                 $order = \App\Models\Pay\PayOrder::query()->firstOrCreate(
                     [
@@ -191,22 +193,31 @@ class MerUserController extends Controller
                     ],
                     [
                     'mer_user_id' => $user->id,
-                    'currency_code' =>$response->getPriceCurrencyCode(),
-                    'amount' =>$response->getPriceAmountMicros()/1000000,
+                    'currency_code' => $response->getPriceCurrencyCode(),
+                    'amount' => $goodType == 1 ? ($response->getPriceAmountMicros()/1000000) : ($requestData['amount']??0),
                     'pay_type' => 1,
                     'status' => $response->getPaymentState(),
-                    'good_type' => 1,
+                    'good_type' => $goodType,
+                    'game_package_id' => $goodType == 1 ? ($requestData['game_package_id']??0) : 0,
                     'pay_time' => date('Y-m-d H:i:s'),
                     'created_at' => date('Y-m-d H:i:s'),
                     'token' => $requestData['purchaseToken']
                     ]
                 );
-                //修改用户信息
-                $user->update([
-                    'vip' => 1,
-                    'vip_start_at' => date('Y-m-d H:i:s',$response->getStartTimeMillis()/1000),
+                if ($goodType == 1) {
+                    //修改用户信息
+                    $user->update([
+                        'vip' => 1,
+                        'vip_start_at' => date('Y-m-d H:i:s',$goodType == 1?($response->getStartTimeMillis()/1000):time()),
 //                    'vip_end_at' =>  date('Y-m-d H:i:s',$response->getExpiryTimeMillis()/1000),
-                ]);
+                    ]);
+                }else{
+                    GamePackageSubscribe::query()->firstOrCreate([
+                        'game_package_id' => $requestData['game_package_id']??0,
+                        'mer_id' => $user->id,
+                    ]);
+                }
+
                 return $order;
             }
         } catch (\Exception $e){
