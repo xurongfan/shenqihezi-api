@@ -188,6 +188,16 @@ class MerUserController extends Controller
             if ($response->getPaymentState() == 1) {
                 $goodType = strpos($response->getKind(),'#productPurchase') !== false ? 2:1;
                 $orderNum = md5($requestData['purchaseToken']);
+                //订单状态判断
+
+                if ($goodType == 1 ) {
+                    $state = $response->getPaymentState();
+                }else{
+                    //Possible values are: 0. Purchased 1. Canceled 2. Pending
+                    $state = $response->getPurchaseState();
+
+                    $state  = $state == 1 ? 0 : 1;
+                }
                 $order = \App\Models\Pay\PayOrder::query()->firstOrCreate(
                     [
                         'order_num' => $orderNum
@@ -197,7 +207,7 @@ class MerUserController extends Controller
                     'currency_code' => $response->getPriceCurrencyCode(),
                     'amount' => $goodType == 1 ? ($response->getPriceAmountMicros()/1000000) : ($requestData['amount']??0),
                     'pay_type' => 1,
-                    'status' => $response->getPaymentState(),
+                    'status' => $state,
                     'good_type' => $goodType,
                     'game_package_id' => $goodType == 1 ? ($requestData['game_package_id']??0) : 0,
                     'pay_time' => date('Y-m-d H:i:s'),
