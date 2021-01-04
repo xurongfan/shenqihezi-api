@@ -168,59 +168,26 @@ class MerUserController extends Controller
     public function pay()
     {
         $requestData = request()->all();
-
-        $googleClient = new \Google_Client();
-        $googleClient->setScopes([\Google_Service_AndroidPublisher::ANDROIDPUBLISHER]);
-        $googleClient->setApplicationName('FouTouch');
-        $googleClient->setAuthConfig(public_path('FunTouch-6a5c57d1ce4e.json'));
-
-        $googleAndroidPublisher = new \Google_Service_AndroidPublisher($googleClient);
-        $validator = new \ReceiptValidator\GooglePlay\Validator($googleAndroidPublisher);
-
         try {
+            $response = getHttpContent('post','http://47.242.85.154:81/api/google-purchases',$requestData);
+            $response = json_decode($response,true);
+            $response['status'] = $response['status'] ?? 0;
+            $response['good_type'] = $response['good_type'] ?? 1;
             $user = auth()->user();
-            $response = $validator->setPackageName('com.magic.taper')
-                ->setProductId($requestData['productId'])
-                ->setPurchaseToken($requestData['purchaseToken'])
-                ;
-            $response = isset($requestData['game_package_id']) ? $response->validatePurchase() : $response->validateSubscription();
 
-            $goodType = strpos($response->getKind(),'#productPurchase') !== false ? 2:1;
-            $orderNum = md5($requestData['purchaseToken']);
-            //订单状态判断
-
-            if ($goodType == 1 ) {
-                $state = $response->getPaymentState();
-            }else{
-                //Possible values are: 0. Purchased 1. Canceled 2. Pending
-                $state = $response->getPurchaseState();
-
-                $state  = $state == 0 ? 1 : 0;
-            }
-            if ($state == 1) {
+            if ($response['status'] == 1) {
+                $response['request_data'] = json_encode($response['request_data']);
                 $order = \App\Models\Pay\PayOrder::query()->firstOrCreate(
                     [
-                        'order_num' => $orderNum
+                        'order_num' => md5($requestData['purchaseToken'])
                     ],
-                    [
-                        'mer_user_id' => $user->id,
-                        'currency_code' => $goodType == 1 ? $response->getPriceCurrencyCode() : '',
-                        'amount' => $goodType == 1 ? ($response->getPriceAmountMicros()/1000000) : ($requestData['amount']??0),
-                        'pay_type' => 1,
-                        'status' => $state,
-                        'good_type' => $goodType,
-                        'game_package_id' => $goodType == 1 ? 0 :($requestData['game_package_id']??0),
-                        'pay_time' => date('Y-m-d H:i:s'),
-                        'created_at' => date('Y-m-d H:i:s'),
-                        'token' => $requestData['purchaseToken'],
-                        'request_data' => json_encode($requestData)
-                    ]
+                    ['mer_user_id' => $user->id] + $response
                 );
-                if ($goodType == 1) {
+                if ($response['good_type'] == 1) {
                     //修改用户信息
                     $user->update([
                         'vip' => 1,
-                        'vip_start_at' => date('Y-m-d H:i:s',$goodType == 1?($response->getStartTimeMillis()/1000):time()),
+                        'vip_start_at' => date('Y-m-d H:i:s',time()),
 //                    'vip_end_at' =>  date('Y-m-d H:i:s',$response->getExpiryTimeMillis()/1000),
                     ]);
                 }else{
@@ -233,8 +200,8 @@ class MerUserController extends Controller
                 return $order;
             }
 
-        } catch (\Exception $e){
-            throw new \Exception($e->getMessage());
+        }catch (\Exception $exception){
+            throw new \Exception($exception->getMessage());
         }
         throw new \Exception(transL('common.order_not_pay'));
     }
