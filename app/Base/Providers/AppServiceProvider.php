@@ -2,6 +2,7 @@
 
 namespace App\Base\Providers;
 
+use App\Models\Channel\ChannelGoogle;
 use App\Models\Game\AdBurying;
 use App\Models\Game\GamePackage;
 use App\Models\Game\GamePackageSubscribe;
@@ -23,6 +24,7 @@ use App\Models\User\MerUserGameCollection;
 use App\Models\User\MerUserGameHistory;
 use App\Models\User\MerUserGameIntegral;
 use App\Models\User\MerUserGameLike;
+use App\Services\Channel\ChannelGoogleService;
 use App\Services\Game\AdBuryingService;
 use App\Services\Game\GamePackageService;
 use App\Services\Game\GamePackageSubscribeService;
@@ -57,6 +59,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerGame();
         $this->registerSystem();
         $this->registerTopic();
+        $this->registerChannel();
     }
 
     /**
@@ -165,6 +168,16 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(SysConfigService::class, function () {
             return new SysConfigService(new SysConfig());
+        });
+    }
+
+    /**
+     * Channel
+     */
+    public function registerChannel()
+    {
+        $this->app->bind(ChannelGoogleService::class, function () {
+            return new ChannelGoogleService(new ChannelGoogle());
         });
     }
 }

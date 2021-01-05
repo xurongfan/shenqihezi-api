@@ -107,6 +107,10 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
 
     });
 
+    $router->group(['namespace' => 'Channel','prefix' => 'channel'],function ($router){
+        $router->get('/user', 'ChannelController@userChannel')->name('channel.user');
+    });
+
 
     $router->group(['namespace' => 'Tool','prefix' => 'tool'],function ($router){
 
