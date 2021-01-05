@@ -18,11 +18,12 @@ class GamePackageSubscribeService extends BaseService
                 $query->selectRaw('id,title,icon_img,background_img,url,is_crack,crack_url,is_landscape,crack_des')
                     ->with(['subscribe' => function($query1){
                         $query1->select('id','game_package_id')->where('mer_user_id',$this->userId())
-                            ->where('end_at','>',date('Y-m-d H:i:s'))
+//                            ->where('end_at','>',date('Y-m-d H:i:s'))
                         ;
                     }]);
             }])
             ->where('mer_user_id',$this->userId())
+            ->where('end_at','>',date('Y-m-d H:i:s'))
             ->orderBy('id','desc')->paginate(20)->toArray();
         if ($result){
             foreach ($result['data'] as $key => &$item) {
