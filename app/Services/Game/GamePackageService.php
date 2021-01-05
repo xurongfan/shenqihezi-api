@@ -59,6 +59,7 @@ class GamePackageService extends BaseService
            $subscribeArr = GamePackageSubscribe::query()
                ->where('mer_user_id',$this->userId())
                ->whereIn('game_package_id',$gamePackageIds)
+               ->where('end_at','>',date('Y-m-d H:i:s'))
                ->pluck('id','game_package_id')
                ->toArray();
        }

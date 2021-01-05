@@ -32,7 +32,9 @@ class MerUserGameHistoryService extends BaseService
         ->with(['gamePackage' => function ($query) {
             $query->selectRaw('id,title,icon_img,background_img,url,is_crack,crack_url,is_landscape,crack_des,status')
             ->with(['subscribe' => function($query1){
-                $query1->select('id','game_package_id')->where('mer_user_id',$this->userId());
+                $query1->select('id','game_package_id')->where('mer_user_id',$this->userId())
+                    ->where('end_at','>',date('Y-m-d H:i:s'))
+                ;
             }]);
         }])
         ->where('mer_user_id', $userId)

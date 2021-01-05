@@ -73,6 +73,9 @@ class MerUserService extends BaseService
 
         $this->model->fill($data)->save();
         $this->model->tags()->sync($request['tags']);
+        $this->model->userInfo()->create([
+            'referrer' => $request['referrer'] ?? '',
+        ]);
         //生成token
         $this->model->token = 'Bearer '.self::loginToken($this->model);
 

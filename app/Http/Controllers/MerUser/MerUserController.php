@@ -191,10 +191,34 @@ class MerUserController extends Controller
 //                    'vip_end_at' =>  date('Y-m-d H:i:s',$response->getExpiryTimeMillis()/1000),
                     ]);
                 }else{
-                    GamePackageSubscribe::query()->firstOrCreate([
-                        'game_package_id' => $requestData['game_package_id']??0,
-                        'mer_user_id' => $user->id,
-                    ]);
+                    if (!str_is('funtouch_sp_*', $requestData['productId'])){
+                        throw new \Exception('Product Id Error.');
+                    }
+                    $day = intval(str_replace('funtouch_sp_','',$requestData['productId'])) ;
+                    if ($day == 0) {
+                        throw new \Exception('Order Days Error.');
+                    }
+                    //游戏订阅时长
+                    //funtouch_sp_3#funtouch_sp_7#funtouch_sp_30
+//                    $requestData['productId']
+                    $recharge = GamePackageSubscribe::query()
+                        ->where('game_package_id',$requestData['game_package_id']??0)
+                        ->where('mer_user_id',$user->id)
+                        ->where('end_at','>',date('Y-m-d H:i:s'))
+                        ->first();
+                    if ($recharge) {
+                        $recharge->update([
+                            'end_at' => date('Y-m-d H:i:s',strtotime("+{$day}days",strtotime($recharge['end_at'])))
+                        ]);
+                    }else{
+                        GamePackageSubscribe::query()->create([
+                            'game_package_id' => $requestData['game_package_id']??0,
+                            'mer_user_id' => $user->id,
+                            'start_at' => date('Y-m-d H:i:s'),
+                            'end_at' => date('Y-m-d 00:00:00',strtotime("+{$day}days")),
+                        ]);
+                    }
+
                 }
 
                 return $order;
