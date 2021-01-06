@@ -72,7 +72,7 @@ class TopicContentResourceService extends BaseService
                                     //违规图片替换
                                     $contentData = $content->query()->select('image_resource')->where('id',$item['content_id'])->first();
                                     $contentData = $contentData ? $contentData->toArray() : [];
-                                    if ($contentData['image_resource'][$item['index']]) {
+                                    if (isset($contentData['image_resource'][$item['index']])) {
                                         $contentData['image_resource'][$item['index']] = 'https://resource.funtouchpal.com/unlawfulness.jpg?x-oss-process=style/yasuo';
                                         $content->query()->where('id',$item['content_id'])->update([
                                             'image_resource' => json_encode($contentData['image_resource'])
