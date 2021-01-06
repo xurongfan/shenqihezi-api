@@ -14,6 +14,7 @@ return [
     */
 
     'default' => env('FILESYSTEM_DRIVER', 'local'),
+    'green_image_scan' => env('GREEN_IMAGE_SCAN','false'),
 
     /*
     |--------------------------------------------------------------------------
@@ -70,10 +71,10 @@ return [
             'root' => '', // 设置上传时根前缀
             'access_key' => env('ALI_ACCESS_KEYID','LTAI4GAeD3jcsVmvedfNw922'),
             'secret_key' => env('ALI_ACCESS_SECRET','HK3f7xu1gJlo4beVqSE3ygYiEF9qmG'),
-            'endpoint'   => env('OSS_ENDPOINT','http://oss-cn-shanghai.aliyuncs.com'), // 使用 ssl 这里设置如: https://oss-cn-beijing.aliyuncs.com
+            'endpoint'   => env('OSS_ENDPOINT','oss-cn-shanghai.aliyuncs.com'), // 使用 ssl 这里设置如: https://oss-cn-beijing.aliyuncs.com
             'bucket'     => env('OSS_BUCKET','fun-touch'),
             'isCName'    => env('OSS_IS_CNAME', false), // 如果 isCname 为 false，endpoint 应配置 oss 提供的域名如：`oss-cn-beijing.aliyuncs.com`，否则为自定义域名，，cname 或 cdn 请自行到阿里 oss 后台配置并绑定 bucket
-            'domain_url' => env('OSS_IMG_DOMAIN','http://fun-touch.oss-cn-shanghai.aliyuncs.com/')//'https://shenqihezi-image.oss-cn-hongkong.aliyuncs.com/')
+            'domain_url' => env('OSS_IMG_DOMAIN','https://resource.funtouchpal.com/'),
         ],
 
     ],

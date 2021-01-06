@@ -181,6 +181,44 @@ Route::any('ad-game/list', function (){
 
 Route::any('/test', function () {
 
+    $iClientProfile = \AlibabaCloud\Client\Profile\DefaultProfile::getProfile("cn-shanghai",'LTAI4GAeD3jcsVmvedfNw922', 'HK3f7xu1gJlo4beVqSE3ygYiEF9qmG'); // TODO
+    $client = new \AlibabaCloud\Client\DefaultAcsClient($iClientProfile);
+
+    $request = new \AlibabaCloud\Green\V20180509\ImageSyncScan();
+
+    $request->setMethod("POST");
+    $request->setAcceptFormat("JSON");
+
+    $task1 = array('dataId' =>  uniqid(),
+        'url' => 'https://fun-touch.oss-cn-shanghai.aliyuncs.com/game-images/20201229/7GAeoObnPPThWzxeyvmUlQEr6tPDilv3br306zgw.jpeg?x-oss-process=style/yasuo',
+        'time' => round(microtime(true)*1000)
+    );
+    $request->setContent(json_encode(array("tasks" => array($task1),
+        "scenes" => array("porn","terrorism",'ad','live'))));
+    try {
+        $response = $client->getAcsResponse($request);
+        echo"<pre>";print_r($response->data);exit;
+
+        if(200 == $response->code){
+            $taskResults = $response->data;
+
+            foreach ($taskResults as $taskResult) {
+                if(200 == $taskResult->code){
+                    $taskId = $taskResult->taskId;
+                    print_r($taskId);
+                    // 将taskId 保存下来，间隔一段时间来轮询结果, 参照ImageAsyncScanResultsRequest
+                }else{
+                    print_r("task process fail:" + $response->code);
+                }
+            }
+        }else{
+            print_r("detect not success. code:" + $response->code);
+        }
+    } catch (Exception $e) {
+        print_r($e);
+    }
+    exit();
+
     $googleClient = new \Google_Client();
     $googleClient->setScopes([\Google_Service_AndroidPublisher::ANDROIDPUBLISHER]);
     $googleClient->setApplicationName('FouTouch');
