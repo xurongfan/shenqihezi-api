@@ -27,6 +27,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('command:content-resource')
+        ->everyFiveMinutes();//每五分钟执行一次
     }
 
     /**
