@@ -18,7 +18,7 @@ class CommonController extends Controller
         $folder = env('APP_NAME') ? env('APP_NAME','').'-'.$folder : $folder;
         try {
             $result = Storage::disk('oss')->put($folder.'/'.date('Ymd'), $file);
-            if (config('filesystems.green_image_scan')){
+            if (strpos($folder,'profile_imgs') !== false && config('filesystems.green_image_scan')){
                 $iClientProfile = \AlibabaCloud\Client\Profile\DefaultProfile::getProfile("cn-shanghai",env('ALI_ACCESS_KEYID'), env('ALI_ACCESS_SECRET')); // TODO
                 $client = new \AlibabaCloud\Client\DefaultAcsClient($iClientProfile);
 

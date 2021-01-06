@@ -7,6 +7,7 @@ use App\Models\Game\AdBurying;
 use App\Models\Game\GamePackage;
 use App\Models\Game\GamePackageSubscribe;
 use App\Models\Game\GameTag;
+use App\Models\Topic\TopicContentResource;
 use App\Models\Topic\TopicContentUserShield;
 use App\Models\User\MerRetainLog;
 use App\Models\Notice\Notice;
@@ -42,6 +43,7 @@ use App\Services\Topic\TopicContentCommentLikeService;
 use App\Services\Topic\TopicContentCommentService;
 use App\Services\Topic\TopicContentLikeService;
 use App\Services\Topic\TopicContentReportService;
+use App\Services\Topic\TopicContentResourceService;
 use App\Services\Topic\TopicContentService;
 use App\Services\Topic\TopicContentUserShieldService;
 use App\Services\Topic\TopicService;
@@ -157,6 +159,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(TopicContentUserShieldService::class, function () {
             return new TopicContentUserShieldService(new TopicContentUserShield());
+        });
+
+        $this->app->bind(TopicContentResourceService::class, function () {
+            return new TopicContentResourceService(new TopicContentResource());
         });
 
     }

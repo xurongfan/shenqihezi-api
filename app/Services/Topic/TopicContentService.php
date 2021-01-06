@@ -3,6 +3,7 @@
 namespace App\Services\Topic;
 
 use App\Base\Services\BaseService;
+use App\Jobs\TopicContentResourceJob;
 
 class TopicContentService extends BaseService
 {
@@ -14,6 +15,8 @@ class TopicContentService extends BaseService
      */
     public function publish($request)
     {
+
+
 //        if (!isset($request['topic']) || empty($request['topic'])) {
 //            throw new \Exception(transL('topic.topic_empty_error'));
 //        }
@@ -31,6 +34,8 @@ class TopicContentService extends BaseService
             //自动关注此话题
             app(TopicService::class)->follow($topicArr);
         }
+        //资源入驻
+        app(TopicContentResourceService::class)->resource($this->model->id,$request['image_resource']??[]);
 
         return $this->model;
     }
