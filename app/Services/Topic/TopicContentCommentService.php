@@ -97,7 +97,9 @@ class TopicContentCommentService extends BaseService
                 $query4->select('id','is_anonymous','mer_user_id');
             }])
             ->where('pid',$pid ?? 0)
-            ->orderBy('like_count','desc')
+            ->when($pid ?? 0,function ($query){
+                $query ->orderBy('like_count','desc');
+            })
             ->orderBy('created_at','asc')
             ->paginate(20)
             ->toArray();
