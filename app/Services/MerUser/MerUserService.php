@@ -62,7 +62,7 @@ class MerUserService extends BaseService
         if (($request['verify_code'] ?? '') != Redis::GET(self::smsKey($request['area_code'].$request['phone'],'login'))) {
             throw new \Exception(transL('sms.sms_code_error'));
         }
-        $keys = Arr::only($request, ['facebook_auth_code', 'google_auth_code']);
+        $keys = Arr::only($request, ['facebook_auth_code', 'google_auth_code','wechat_auth_code']);
         if ($keys && self::finOneUser(array_filter($keys))){
             throw new \Exception(transL('mer-user.user_exist_from_third','用户已存在'));
         }
@@ -100,7 +100,7 @@ class MerUserService extends BaseService
                 throw new \Exception(transL('mer-user.user_not_exist'),100);
             }
             //检查第三方key是否已被注册
-            $keys = array_filter(Arr::only($request, ['facebook_auth_code', 'google_auth_code']));
+            $keys = array_filter(Arr::only($request, ['facebook_auth_code', 'google_auth_code','wechat_auth_code']));
             if ($keys && self::finOneUser($keys)){
                 throw new \Exception(transL('mer-user.user_exist_from_third','用户已存在'));
             }
@@ -112,6 +112,11 @@ class MerUserService extends BaseService
             }
         }else if (isset($request['google_auth_code']) && $request['google_auth_code']) {
             $user = $this->finOneUser(['google_auth_code' => $request['google_auth_code']]);
+            if (!isset($user)) {
+                throw new \Exception(transL('mer-user.third_login_user_not_exist'),100);
+            }
+        }else if (isset($request['wechat_auth_code']) && $request['wechat_auth_code']) {
+            $user = $this->finOneUser(['wechat_auth_code' => $request['wechat_auth_code']]);
             if (!isset($user)) {
                 throw new \Exception(transL('mer-user.third_login_user_not_exist'),100);
             }
