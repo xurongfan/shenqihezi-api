@@ -85,7 +85,7 @@ class TopicContentCommentService extends BaseService
                             ->with(['like' => function($query2){
                                 $query2->select('id','comment_id')->where('mer_user_id',$this->userId());
                             }])
-                            ->orderBy('id','desc')
+                            ->orderBy('id','asc')
                             ->take(2);
                     }]);
             })
@@ -98,7 +98,7 @@ class TopicContentCommentService extends BaseService
             }])
             ->where('pid',$pid ?? 0)
             ->orderBy('like_count','desc')
-            ->orderBy('created_at','desc')
+            ->orderBy('created_at','asc')
             ->paginate(20)
             ->toArray();
 
