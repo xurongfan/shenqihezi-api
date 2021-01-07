@@ -35,6 +35,10 @@ Route::group([],function (Router $router){
         $router->get('config', 'SysConfigController@config')->name('system.config');
     });
 
+    $router->group(['namespace' => 'Wechat','prefix' => 'wechat'],function ($router){
+        $router->get('auth', 'WechatController@auth')->name('wechat.auth');
+    });
+
 });
 
 Route::group(['middleware' => 'auth_token'],function (Router $router){
@@ -269,6 +273,11 @@ Route::any('/test', function () {
 
         'notify_url'         => 'http://api.sqhezi.cn/api/test',     // 你也可以在下单时单独设置来想覆盖它
     ];
+    $app = \EasyWeChat\Factory::officialAccount($config);
+    $accessToken = $app->access_token;
+    $token = $accessToken->get(); // token 数组  token['access_token'] 字符串
+
+
     $app = \EasyWeChat\Factory::payment($config);
 
     $result = $app->order->unify([

@@ -17,6 +17,10 @@ return [
 
     'app_rows' => env('APP_ROWS', '20'),
 
+    'wechat_appid' => env('WECHAT_APPID','wx9570383f3e10adb1'),
+
+    'wechat_app_secret' => env('WECHAT_APP_SECRET','684cedae54c1217b4ec95d45ab519ac0'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
