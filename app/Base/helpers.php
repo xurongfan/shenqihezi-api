@@ -291,7 +291,7 @@ function getLangField(string $field)
 function ossDomain($path)
 {
     if ($path && !\Illuminate\Support\Str::startsWith($path, 'http://') && !\Illuminate\Support\Str::startsWith($path, 'https://')) {
-        return config('filesystems.disks.oss.domain_url') . $path;
+        return config('filesystems.disks.oss.domain_url') . $path.'?x-oss-process=style/yasuo';
     }
     return $path;
 }
