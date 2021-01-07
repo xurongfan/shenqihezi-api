@@ -73,7 +73,7 @@ class TopicContentCommentService extends BaseService
                     $query1->select('id','profile_img','nick_name');
                 }]);
             },function ($query){
-                $query->withCount('childComment');
+                $query->withCount('childComment')->orderBy('created_at','desc');
             })
             ->with(['like' => function($query){
                 $query->select('id','comment_id')->where('mer_user_id',$this->userId());
@@ -84,9 +84,8 @@ class TopicContentCommentService extends BaseService
             }])
             ->where('pid',$pid ?? 0)
             ->when($pid ?? 0,function ($query){
-                $query ->orderBy('like_count','desc');
+                $query ->orderBy('like_count','desc')->orderBy('created_at','asc');
             })
-            ->orderBy('created_at','asc')
             ->paginate(20)
             ->toArray();
 
