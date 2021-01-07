@@ -65,7 +65,6 @@ class TopicContentCommentService extends BaseService
      */
     public function index($contentId,$pid=0)
     {
-        sqlDump();
         $res = $this->model->query()
             ->select('id','pid','mer_user_id','content_id','reply_user_id','like_count','comment','created_at')
             ->where('content_id',$contentId)
