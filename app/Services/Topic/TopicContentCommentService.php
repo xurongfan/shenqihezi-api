@@ -65,6 +65,7 @@ class TopicContentCommentService extends BaseService
      */
     public function index($contentId,$pid=0)
     {
+        sqlDump();
         $res = $this->model->query()
             ->select('id','pid','mer_user_id','content_id','reply_user_id','like_count','comment','created_at')
             ->where('content_id',$contentId)
@@ -73,21 +74,7 @@ class TopicContentCommentService extends BaseService
                     $query1->select('id','profile_img','nick_name');
                 }]);
             },function ($query){
-                $query->withCount('childComment')
-                    ->with(['childComment' => function($queryComment){
-                        $queryComment->select('id','pid','mer_user_id','reply_user_id','like_count','comment','created_at')
-                            ->with(['user' => function($query1){
-                                $query1->select('id','profile_img','nick_name');
-                            }])
-                            ->with(['replyUser' => function($query2){
-                                $query2->select('id','profile_img','nick_name');
-                            }])
-                            ->with(['like' => function($query2){
-                                $query2->select('id','comment_id')->where('mer_user_id',$this->userId());
-                            }])
-                            ->orderBy('id','asc')
-                            ->take(2);
-                    }]);
+                $query->withCount('childComment');
             })
             ->with(['like' => function($query){
                 $query->select('id','comment_id')->where('mer_user_id',$this->userId());
@@ -105,6 +92,26 @@ class TopicContentCommentService extends BaseService
             ->toArray();
 
         foreach ($res['data'] as $key => &$item) {
+            if (isset($item['child_comment_count']) && $item['child_comment_count']){
+                $childComment = $this->model->newQuery()
+                    ->where('id',126)->with(['childComment' => function($queryComment){
+                        $queryComment->select('id','pid','mer_user_id','reply_user_id','like_count','comment','created_at')
+                            ->with(['user' => function($query1){
+                                $query1->select('id','profile_img','nick_name');
+                            }])
+                            ->with(['replyUser' => function($query2){
+                                $query2->select('id','profile_img','nick_name');
+                            }])
+                            ->with(['like' => function($query2){
+                                $query2->select('id','comment_id')->where('mer_user_id',$this->userId());
+                            }])
+                            ->orderBy('id','asc')
+                            ->take(2);
+                    }])->first();
+                $childComment = $childComment ? $childComment->toArray() : [];
+                $item['child_comment'] = $childComment['child_comment'] ?? [];
+            }
+
             if (
                 $this->userId() != $item['content']['mer_user_id']
                 &&
