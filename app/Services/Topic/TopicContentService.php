@@ -105,6 +105,9 @@ class TopicContentService extends BaseService
            //指定人
            ->when($userId,function ($query)use ($userId){
                $query->where('mer_user_id',$userId == -1 ? $this->userId() : $userId);
+               if($userId > 0){
+                   $query->where('is_anonymous',$this->model::ISANONYMOUS_NO);
+               }
            })
            ->when(isset($shiedlUser) && $shiedlUser ,function ($query) use ($shiedlUser){
                $query->whereNotIn('mer_user_id',$shiedlUser);
