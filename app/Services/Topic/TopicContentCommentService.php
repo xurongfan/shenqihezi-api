@@ -92,7 +92,7 @@ class TopicContentCommentService extends BaseService
         foreach ($res['data'] as $key => &$item) {
             if (isset($item['child_comment_count']) && $item['child_comment_count']){
                 $childComment = $this->model->newQuery()
-                    ->where('id',126)->with(['childComment' => function($queryComment){
+                    ->where('id',$item['id'])->with(['childComment' => function($queryComment){
                         $queryComment->select('id','pid','mer_user_id','reply_user_id','like_count','comment','created_at')
                             ->with(['user' => function($query1){
                                 $query1->select('id','profile_img','nick_name');
