@@ -14,7 +14,7 @@ class CommonController extends Controller
     public function upload()
     {
         $file = request()->file('file');
-        $folder = request()->file('folder','content');//profile_imgs
+        $folder = request()->input('folder','content');//profile_imgs
         $folder = env('APP_NAME') ? env('APP_NAME','').'-'.$folder : $folder;
         try {
             $result = Storage::disk('oss')->put($folder.'/'.date('Ymd'), $file);
