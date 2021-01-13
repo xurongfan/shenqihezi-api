@@ -298,13 +298,55 @@ function ossDomain($path)
 
 /**
  * @param $path
+ * @param false $crack
  * @return string
  */
-function gameUrl($path)
+function gameUrl($path,$crack=false)
 {
     if (empty($path)) {
         return '';
     }
-    return (strpos($path, 'zip') !== false ? config('filesystems.disks.oss.domain_url') : config('app.game_url'))
+    $appName = $crack ? config('app.crack_game_url'):config('app.game_url');
+    return (strpos($path, 'zip') !== false ? config('filesystems.disks.oss.domain_url') : $appName)
         . $path;
+}
+
+/**
+ * @param string $str
+ * @return array|string
+ */
+function findNum($str=''){
+    $str=trim($str);
+    if(empty($str)){return '';}
+    $temp=array('1','2','3','4','5','6','7','8','9','0','.');
+    $amount=$mark='';
+    for($i=0;$i<strlen($str);$i++){
+        if(in_array($str[$i],$temp)){
+            $amount.=$str[$i];
+        }else{
+            $mark.=$str[$i];
+        }
+    }
+    return compact('mark','amount');
+}
+/**
+ * @return string
+ */
+function makeOrderNumber()
+{
+    $order_id_main = date('YmdHis') . rand(100000,999999);
+
+    $order_id_len = strlen($order_id_main);
+
+    $order_id_sum = 0;
+
+    for($i=0; $i<$order_id_len; $i++){
+
+        $order_id_sum += (int)(substr($order_id_main,$i,1));
+
+    }
+
+    $osn = $order_id_main . str_pad((100 - $order_id_sum % 100) % 100,2,'0',STR_PAD_LEFT);
+
+    return $osn;
 }

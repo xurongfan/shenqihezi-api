@@ -67,7 +67,8 @@ class GamePackageService extends BaseService
            $item['icon_img'] = ossDomain($item['icon_img']);
            $item['background_img'] = ossDomain($item['background_img']);
            $item['url'] = gameUrl($item['url']);
-           $item['crack_url'] = gameUrl($item['crack_url']);
+
+           $item['crack_url'] = gameUrl($item['crack_url'],$item['is_crack']);
            $item['is_like'] = isset($likeArr[$item['id']]) ? true : false;
            $item['is_collect'] = isset($collectArr[$item['id']]) ? true : false;
            $item['is_subscribe'] = isset($subscribeArr[$item['id']]) ? true : false;

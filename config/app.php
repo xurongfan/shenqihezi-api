@@ -21,6 +21,10 @@ return [
 
     'wechat_app_secret' => env('WECHAT_APP_SECRET','684cedae54c1217b4ec95d45ab519ac0'),
 
+    'wechat_pay_secret' => env('WECHAT_PAY_SECRET','4a9f2c433adcc2698ba7704faedeaf82'),
+
+    'wechat_mch_id' => env('WECHAT_MCH_ID','1604486511'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
@@ -135,6 +139,8 @@ return [
     'ali_access_secret' => env('ALI_ACCESS_SECRET'),
 
     'game_url' => env('GAME_URL'),
+
+    'crack_game_url' => env('CRACK_GAME_URL'),
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers

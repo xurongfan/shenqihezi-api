@@ -61,7 +61,7 @@ class MerUserGameCollectionService extends BaseService
                 $item['game_package']['icon_img'] = ossDomain($item['game_package']['icon_img']);
                 $item['game_package']['background_img'] = ossDomain($item['game_package']['background_img']);
                 $item['game_package']['url'] = gameUrl($item['game_package']['url']);
-                $item['game_package']['crack_url'] = gameUrl($item['game_package']['crack_url']);
+                $item['game_package']['crack_url'] = gameUrl($item['game_package']['crack_url'],$item['game_package']['is_crack']);
             }
         }
         $result['isVip'] = $isVip;
