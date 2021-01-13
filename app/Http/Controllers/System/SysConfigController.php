@@ -26,9 +26,10 @@ class SysConfigController extends Controller
         $result = $this->service->findOneBy([
             'keyword' => getLangField(\request('keyword'))
         ],'content');
-        if (isset($result['content']) && $result['content']) {
+        if (isset($result['content']) && $result['content'] && in_array(\request('keyword'),['report'])) {
             $result['content'] = json_decode($result['content'],true);
         }
+
         return $result;
     }
 }
