@@ -40,7 +40,7 @@ class MerUserGameHistoryService extends BaseService
         ->where('mer_user_id', $userId)
         ->orderBy('id', 'desc')
         ->groupBy('game_package_id')
-        ->paginate($limit ?? 20,['id', 'game_package_id', 'created_at'],'page',1)->toArray();
+        ->paginate($limit ?? 50,['id', 'game_package_id', 'created_at'],'page',1)->toArray();
         if ($result) {
             foreach ($result['data'] as $key => &$item) {
                 $item['game_package']['icon_img'] = ossDomain($item['game_package']['icon_img']);
