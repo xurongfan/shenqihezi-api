@@ -19,4 +19,12 @@ class WechatController extends Controller
         ]);
         return app(WechatService::class)->auth($request->code);
     }
+
+    /**
+     * @return mixed
+     */
+    public function pay()
+    {
+        return app(WechatService::class)->pay();
+    }
 }

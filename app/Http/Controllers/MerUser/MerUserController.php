@@ -162,6 +162,7 @@ class MerUserController extends Controller
     }
 
     /**
+     * google play pay
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
      * @throws \Google\Exception
      */

@@ -121,8 +121,10 @@ class MerUserService extends BaseService
                 throw new \Exception(transL('mer-user.third_login_user_not_exist'),100);
             }
         }
-
         $user->token =  'Bearer '.self::loginToken($user);
+        $this->cacheToken($user);
+
+
         return $user;
     }
 
@@ -137,8 +139,39 @@ class MerUserService extends BaseService
             'last_login_ip' => request()->getClientIp(),
             'last_login_date' => Carbon::now()->toDateTimeString()
         ]);
-
         return auth()->login($user);
+    }
+
+    /**
+     * @param $user
+     */
+    public function cacheToken($user)
+    {
+//        Redis::setex('auth_token_'.md5($user['token']),config('jwt.refresh_ttl')*60,json_encode($user));
+        Redis::setex('auth_user_'.$user->id,config('jwt.refresh_ttl')*60+30,json_encode($user));
+
+    }
+
+    /**
+     * @param $token
+     * @return bool
+     */
+    public function compareToken($token,$userId = 0)
+    {
+        $token = 'Bearer '.$token;
+
+//        $tokenUser = Redis::get('auth_token_'.md5($token));
+
+//        $tokenUser = $tokenUser ? json_decode($tokenUser,true) : [];
+
+//        if ($tokenUser) {
+            $user = Redis::get('auth_user_'.$userId);
+
+            $user = $user ? json_decode($user,true) : [];
+
+            return $user['token'] == $token ? true : false;
+//        }
+        return false;
     }
 
     /**

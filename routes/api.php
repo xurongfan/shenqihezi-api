@@ -1,4 +1,6 @@
 <?php
+
+use App\Services\Topic\TopicService;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use ReceiptValidator\iTunes\Validator as iTunesValidator;
@@ -24,7 +26,7 @@ Route::group([],function (Router $router){
     $router->group(['namespace' => 'MerUser','prefix' => 'user'],function ($router){
         $router->post('reg', 'MerUserController@reg')->name('user.reg');
         $router->post('sendSms', 'MerUserController@sendSms')->name('user.sms');
-        $router->post('login', 'MerUserController@login')->name('user.login');
+        $router->any('login', 'MerUserController@login')->name('user.login');
     });
 
     $router->group(['namespace' => 'Game','prefix' => 'game'],function ($router){
@@ -37,6 +39,7 @@ Route::group([],function (Router $router){
 
     $router->group(['namespace' => 'Wechat','prefix' => 'wechat'],function ($router){
         $router->get('auth', 'WechatController@auth')->name('wechat.auth');
+        $router->any('notify', 'WechatController@notify')->name('wechat.notify');
     });
 
 });
@@ -185,6 +188,48 @@ Route::any('ad-game/list', function (){
 
 Route::any('/test', function () {
 
+    $aliPayOrder = [
+        'out_trade_no' => time(),
+        'total_amount' => 0.01, // 支付金额
+        'subject'      => $request->subject ?? '默认' // 备注
+    ];
+
+    $config = config('alipay.pay');
+
+    $config['return_url'] = $config['return_url'].'?id=1';
+    $data = \Yansongda\Pay\Pay::alipay($config)->app($aliPayOrder);
+
+    echo"<pre>";print_r( $data->getContent());exit;
+//    $data = 'a=111&b=222';
+//
+//    $sign = \LaraRsa\LaraRsa::createdSign($data);                // 生成签名
+//
+//    $result = \LaraRsa\LaraRsa::verifySign($data, $sign);        // 验证签名
+//
+//    $result = \LaraRsa\LaraRsa::encrypt($data);                  // 加密
+//    echo"<pre>";print_r($result);exit;
+
+//    $result = \LaraRsa\LaraRsa::decrypt('qA2qoc4XDufnDiRKJP3QTUvOfFwwDYE3R4ORT+2wIzHyc1Um42I1TvzVErdX+gAo8QW1nFUVjqjeA4iTMIHzyXCrTW74XVPvjp5f8WyoQC7TY3XEVRkkTuD/fbGXKT7oQztvx9S6DKPPAd4NRFyLwQqxgKfYWYyYNbaik7NxKWc=');                  // 解密
+//    echo"<pre>";print_r($result);exit;
+
+    $config = [
+        // 必要配置
+        'app_id'             => config('app.wechat_appid'),
+        'mch_id'             => '1604486511',
+        'key'                => config('app.wechat_pay_secret'),
+        'notify_url'         => \route('wechat.notify')
+    ];
+    $app = \EasyWeChat\Factory::payment($config);
+    $result = $app->order->unify([
+        'body' => 'test11',
+        'out_trade_no' => '2015080116125346',
+        'total_fee' => 88,
+        'trade_type' => 'APP', // 请对应换成你的支付方式对应的值类型
+    ]);
+
+    echo"<pre>";print_r($result);exit;
+
+
     $iClientProfile = \AlibabaCloud\Client\Profile\DefaultProfile::getProfile("cn-shanghai",'LTAI4GAeD3jcsVmvedfNw922', 'HK3f7xu1gJlo4beVqSE3ygYiEF9qmG'); // TODO
     $client = new \AlibabaCloud\Client\DefaultAcsClient($iClientProfile);
 
@@ -224,6 +269,10 @@ Route::any('/test', function () {
     exit();
 
     $googleClient = new \Google_Client();
+//    $client->useApplicationDefaultCredentials();
+//    $client->setAuthConfig($config_path);
+//    $client->setScopes(['https://www.googleapis.com/auth/firebase.messaging']);     # 授予访问 FCM 的权限
+//    return $client->fetchAccessTokenWithAssertion();
     $googleClient->setScopes([\Google_Service_AndroidPublisher::ANDROIDPUBLISHER]);
     $googleClient->setApplicationName('FouTouch');
     $googleClient->setAuthConfig(public_path('FunTouch-6a5c57d1ce4e.json'));
@@ -265,27 +314,39 @@ Route::any('/test', function () {
     }
     print(__FUNCTION__ . ": signedUrl: " . $signedUrl . "\n");
     exit();
-    $config = [
-        // 必要配置
-        'app_id'             => 'wx9570383f3e10adb1',
-        'mch_id'             => '1604486511',
-        'key'                => '4a9f2c433adcc2698ba7704faedeaf82',   // API 密钥
 
-        'notify_url'         => 'http://api.sqhezi.cn/api/test',     // 你也可以在下单时单独设置来想覆盖它
-    ];
-    $app = \EasyWeChat\Factory::officialAccount($config);
-    $accessToken = $app->access_token;
-    $token = $accessToken->get(); // token 数组  token['access_token'] 字符串
+});
 
+Route::any('/topic-content', function () {
+    set_time_limit(0);
+    $file = request()->input('file');
+    $data = file_get_contents(storage_path('content/'.$file));
+    $data = json_decode($data,true);
+    $count = 0;
+    foreach ($data['data'] as $k => $datum){
+        $user = \App\Models\User\MerUser::query()->firstOrCreate([
+            'phone' => $datum['uid']
+        ],[
+            'nick_name' => $datum['username'],
+            'profile_img' => $datum['avatar_url'],
+            'sex' => $datum['gender'] == 1 ? 'male' : 'female',
+            'birth' => $datum['birthday'],
+        ]);
+        $content = \App\Models\Topic\TopicContent::query()->create([
+            'mer_user_id' => $user->id,
+            'content' => $datum['content'],
+            'image_resource' => $datum['pic_urls'],
+        ]);
 
-    $app = \EasyWeChat\Factory::payment($config);
-
-    $result = $app->order->unify([
-        'body' => 'test11',
-        'out_trade_no' => '20150806125346',
-        'total_fee' => 88,
-        'trade_type' => 'APP', // 请对应换成你的支付方式对应的值类型
-    ]);
-
-    echo"<pre>";print_r($result);exit;
+        $topicService = app(TopicService::class);
+        if (isset($datum['topicnames']) && $datum['topicnames']) {
+            $topicArr = [];
+            foreach ($datum['topicnames'] as $key => $value) {
+                $topicArr[] = $topicService->findOrCreate($value,$user->id)->id;
+            }
+            $topicArr && $content->topic()->sync($topicArr);
+        }
+        $count++;
+    }
+    echo '导入'.$count.'条数据';
 });
