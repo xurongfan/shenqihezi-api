@@ -38,6 +38,10 @@ class SendMessageFcmJob implements ShouldQueue
     {
         try {
             $info = MerUserInfo::query()->where('mer_user_id',$this->merUserId)->select('fcm_id')->first();
+
+            logger('send message:'.json_encode($info));
+
+
             if (isset($info['fcm_id']) && $info['fcm_id']) {
                 $res = getHttpContent('post','http://47.242.85.154:81/api/message-send',[
                     'to_id' => $info['fcm_id'],
