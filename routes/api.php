@@ -144,9 +144,9 @@ Route::any('game/list', function (){
     foreach ($list['data'] as $k => &$v){
         $v['icon_img'] = config('filesystems.disks.oss.domain_url').$v['icon_img'];
         $v['background_img'] = config('filesystems.disks.oss.domain_url').$v['background_img'];
-        $gameUrl = $v['url_type'] == 1 ? env('GAME_URL') : 'http://fun-touch.oss-cn-shanghai.aliyuncs.com/';
+        $gameUrl = env('GAME_URL');
         $v['url'] = $v['url'] ? $gameUrl.$v['url'] : '';
-        $v['crack_url'] = $v['crack_url']  ? $gameUrl.$v['crack_url'] : '';
+        $v['crack_url'] = $v['crack_url']  ? env('CRACK_GAME_URL').$v['crack_url'] : '';
     }
     return $list;
 })->name('game-list');
