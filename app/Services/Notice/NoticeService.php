@@ -3,6 +3,7 @@
 namespace App\Services\Notice;
 
 use App\Base\Services\BaseService;
+use App\Jobs\SendMessageFcmJob;
 use App\Services\Topic\TopicContentCommentService;
 
 class NoticeService extends BaseService
@@ -34,6 +35,11 @@ class NoticeService extends BaseService
         ])) {
             $res->delete();
         }else{
+
+            //推送
+//            Someone commented on your feed.
+            SendMessageFcmJob::dispatchNow($merUserId,config('app.app_name'),transL('topic.message_'.$type));
+
             return $this->save( [
                 'originate_user_id' => $this->userId(),
                 'mer_user_id' => $merUserId,

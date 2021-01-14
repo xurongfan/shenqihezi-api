@@ -15,6 +15,8 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'app_name' => env('PACKAGE_NAME', 'FunTouch'),
+
     'app_rows' => env('APP_ROWS', '20'),
 
     'wechat_appid' => env('WECHAT_APPID','wx9570383f3e10adb1'),
