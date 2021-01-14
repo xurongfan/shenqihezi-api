@@ -38,7 +38,7 @@ class NoticeService extends BaseService
 
             //推送
 //            Someone commented on your feed.
-            SendMessageFcmJob::dis($merUserId,config('app.app_name'),transL('topic.message_'.$type));
+            SendMessageFcmJob::dispatch($merUserId,config('app.app_name'),transL('topic.message_'.$type));
 
             return $this->save( [
                 'originate_user_id' => $this->userId(),
