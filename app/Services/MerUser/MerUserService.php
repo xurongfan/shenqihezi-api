@@ -3,6 +3,7 @@
 namespace App\Services\MerUser;
 
 use App\Base\Services\BaseService;
+use App\Models\User\MerUserInfo;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redis;
@@ -216,6 +217,17 @@ class MerUserService extends BaseService
         $user = self::user();
         $user->update($this->model->filter($request));
         return $user;
+    }
+
+    /**
+     * @param $request
+     * @return int
+     */
+    public function editUserInfo($request)
+    {
+        return MerUserInfo::query()->updateOrCreate([
+            'mer_user_id'=>$this->userId()
+        ],$request);
     }
 
     /**
