@@ -62,7 +62,7 @@ class AuthToken extends BaseMiddleware
 
             } catch(JWTException $exception) {
                 // 如果捕获到此异常，即代表 refresh 也过期了，用户无法刷新令牌，需要重新登录。
-                throw new \Exception( $exception->getMessage(),401);
+                throw new \Exception(transL('mer-user.login_expired','登录失效,请重新登录.'),401);
 //                throw new UnauthorizedHttpException('jwt-auth', $exception->getMessage());
             }
         }
@@ -77,7 +77,7 @@ class AuthToken extends BaseMiddleware
     private function CheckSsoToken($token,$userId=0)
     {
         if (app(MerUserService::class)->compareToken($token,$userId) == false) {
-            throw new \Exception('Your account is logged in elsewhere.',401);
+            throw new \Exception(transL('mer-user.need_relogin','Your account is logged in elsewhere.'),401);
         }
     }
 

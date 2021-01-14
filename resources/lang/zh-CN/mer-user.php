@@ -13,4 +13,6 @@ return [
     'third_login_user_not_exist' => '需绑定手机号',
 
     'user_game_collect_limit' => '收藏数量超额',
+    'need_relogin' => '您的账号在别处登录.',
+    'login_expired' => '登录失效,请重新登录.'
 ];
