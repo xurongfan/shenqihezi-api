@@ -30,7 +30,7 @@ class AuthToken extends BaseMiddleware
         try {
             if (auth($role)->payload())  {
                 //单点登录
-//                $this->CheckSsoToken(auth('api')->getToken(),auth($role)->user()->id);
+                $this->CheckSsoToken(auth('api')->getToken(),auth($role)->user()->id);
                 app('auth')->shouldUse($role);
                 return $next($request);
             }
@@ -43,7 +43,7 @@ class AuthToken extends BaseMiddleware
                 auth($role)->onceUsingId(
                     auth($role)->payload()->get('sub')
                 );
-//                $this->CheckSsoToken($oldToken,auth($role)->user()->id);
+                $this->CheckSsoToken($oldToken,auth($role)->user()->id);
 
                 //更新请求中的token
                 $newToken = 'Bearer '.$token;
