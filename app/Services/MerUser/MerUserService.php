@@ -80,6 +80,8 @@ class MerUserService extends BaseService
         //生成token
         $this->model->token = 'Bearer '.self::loginToken($this->model);
 
+        $this->cacheToken($this->model);
+
         return $this->model->toArray();
     }
 
