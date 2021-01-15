@@ -3,6 +3,7 @@
 namespace App\Services\MerUser;
 
 use App\Base\Services\BaseService;
+use App\Services\Notice\NoticeService;
 
 class MerUserFollowService extends BaseService
 {
@@ -19,6 +20,13 @@ class MerUserFollowService extends BaseService
         ])) {
             $res->delete();
         }else{
+            app(NoticeService::class)->publish(
+            //通知用户
+                $commentId,
+                3,
+                0,
+                0
+            );
             return $this->save( [
                 'mer_user_id' => $this->userId(),
                 'follow_user_id' => $commentId
