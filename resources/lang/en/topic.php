@@ -2,8 +2,8 @@
 
 
 return [
-    'topic_empty_error' => '请选择话题',
-    'keyword_empty_error' => '请输入关键词',
+    'topic_empty_error' => 'Please choose a topic',
+    'keyword_empty_error' => 'Please enter key words',
 
 
     'message_1' => 'Someone commented on your feed.',
