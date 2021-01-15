@@ -55,7 +55,7 @@ class MerUserGameCollectionService extends BaseService
             }])
             ->where('mer_user_id',$this->userId())
             ->orderBy('id','desc')
-            ->paginate($limit ?? 20,['id', 'game_package_id', 'created_at'],'page',1)->toArray();
+            ->paginate($limit ?? 20,['id', 'game_package_id', 'created_at'],'page',$page)->toArray();
         if ($result){
             foreach ($result['data'] as $key => &$item) {
                 $item['game_package']['icon_img'] = ossDomain($item['game_package']['icon_img']);
