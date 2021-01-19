@@ -66,10 +66,10 @@ class AuthToken extends BaseMiddleware
 
                     app(MerUserService::class)->cacheToken($user);
 
-                    //是同一个则删除锁
-                    if (Redis::get('token_lock_'.$user->id) == $token) {
-                        Redis::del('token_lock_'.$user->id);
-                    }
+//                    //是同一个则删除锁
+//                    if (Redis::get('token_lock_'.$user->id) == $token) {
+//                        Redis::del('token_lock_'.$user->id);
+//                    }
                     // 在响应头中返回新的 token
                     return $this->setAuthenticationHeader($next($request), $token);
                 }
