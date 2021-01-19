@@ -64,7 +64,7 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
         $router->put('game-history/{uid}', 'MerUserGameHistoryController@report')->name('user.game-history-report');
         $router->get('game-hot', 'MerUserGameHistoryController@hotGame')->name('user.game-hot');
 
-        $router->post('game-integral', 'MerUserGameIntegralController@store')->name('user.game-integral');
+        $router->post('game-integral', 'MerUserGameIntegralController@store')->middleware('LaraRsa')->name('user.game-integral');
         $router->get('game-integral-rank', 'MerUserGameIntegralController@rank')->name('user.game-integral-rank');
 
         $router->post('follow', 'MerUserFollowController@follow')->name('user.follow');
@@ -193,18 +193,18 @@ Route::any('ad-game/list', function (){
 
 Route::any('/test', function () {
 
-    $aliPayOrder = [
-        'out_trade_no' => time(),
-        'total_amount' => 0.01, // 支付金额
-        'subject'      => $request->subject ?? '默认' // 备注
-    ];
+//    $aliPayOrder = [
+//        'out_trade_no' => time(),
+//        'total_amount' => 0.01, // 支付金额
+//        'subject'      => $request->subject ?? '默认' // 备注
+//    ];
+//
+//    $config = config('alipay.pay');
+//
+//    $config['return_url'] = $config['return_url'].'?id=1';
+//    $data = \Yansongda\Pay\Pay::alipay($config)->app($aliPayOrder);
 
-    $config = config('alipay.pay');
-
-    $config['return_url'] = $config['return_url'].'?id=1';
-    $data = \Yansongda\Pay\Pay::alipay($config)->app($aliPayOrder);
-
-    echo"<pre>";print_r( $data->getContent());exit;
+//    echo"<pre>";print_r( $data->getContent());exit;
 //    $data = 'a=111&b=222';
 //
 //    $sign = \LaraRsa\LaraRsa::createdSign($data);                // 生成签名
@@ -214,8 +214,10 @@ Route::any('/test', function () {
 //    $result = \LaraRsa\LaraRsa::encrypt($data);                  // 加密
 //    echo"<pre>";print_r($result);exit;
 
-//    $result = \LaraRsa\LaraRsa::decrypt('qA2qoc4XDufnDiRKJP3QTUvOfFwwDYE3R4ORT+2wIzHyc1Um42I1TvzVErdX+gAo8QW1nFUVjqjeA4iTMIHzyXCrTW74XVPvjp5f8WyoQC7TY3XEVRkkTuD/fbGXKT7oQztvx9S6DKPPAd4NRFyLwQqxgKfYWYyYNbaik7NxKWc=');                  // 解密
-//    echo"<pre>";print_r($result);exit;
+    $result = \LaraRsa\LaraRsa::decrypt('ZQMnXG7sabW9sEDqzoHtPuKGstDJ89myw6PydKMRF4qbx31YxNV5oigKCDOd8YTdxRN7EgniOJ5S
++spcvFVF/55+Klemy6dlIQtxXFcLbEX5ABCsAOS3mcQEzwJn6GCxrG8mAP0gc3oRilCJxjEnw7mC
+crG5Y0vo2lYvqB5+2cs=');                  // 解密
+    echo"<pre>";print_r($result);exit;
 
     $config = [
         // 必要配置
