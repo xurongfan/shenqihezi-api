@@ -32,7 +32,8 @@ class GamePackageService extends BaseService
             ->leftJoin('game_package_tag','game_package_tag.package_id','=','game_package.id')
 //            ->whereIn('game_package_tag.tag_id',$this->gameTagRandom())
             ->groupBy('game_package.id')
-            ->orderBy(DB::raw('rid'),'desc')->limit(20)->get();
+            ->orderBy(DB::raw('rid'),'desc')
+            ->limit(50)->get();
        if ($result) {
            $gamePackageIds = Arr::pluck($result,'id');
             //是否喜欢

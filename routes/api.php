@@ -125,6 +125,10 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
         $router->post('upload', 'CommonController@upload')->name('tool.upload');
     });
 
+    $router->group(['namespace' => 'System','prefix' => 'system'],function ($router){
+        $router->post('feedback', 'SysFeedBackController@store')->name('feedback.store');
+    });
+
 
 
 
