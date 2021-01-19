@@ -45,7 +45,7 @@ class AuthToken extends BaseMiddleware
                     auth($role)->payload()->get('sub')
                 );
                 $user = auth($role)->user();
-                logger($token);
+
                 //并发token过期处理
                 $res = Redis::set('token_lock_'.$user->id,$token,'nx','ex',5);
                 if ($res){
