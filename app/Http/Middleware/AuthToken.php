@@ -6,6 +6,7 @@ use App\Services\MerUser\MerUserService;
 use Auth;
 use Closure;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Redis;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
@@ -43,22 +44,36 @@ class AuthToken extends BaseMiddleware
                 auth($role)->onceUsingId(
                     auth($role)->payload()->get('sub')
                 );
-                $this->CheckSsoToken($oldToken,auth($role)->user()->id);
-
-                //更新请求中的token
-                $newToken = 'Bearer '.$token;
-                $request->headers->set('Authorization',$newToken);
-                //更新登录时间
                 $user = auth($role)->user();
-                $user->update(
-                    [
-                        'last_login_ip' => request()->getClientIp(),
-                        'last_login_date' => Carbon::now()->toDateTimeString()
-                    ]
-                );
-                $user->token =$newToken;
+                logger($token);
+                //并发token过期处理
+                $res = Redis::set('token_lock_'.$user->id,$token,'nx','ex',5);
+                if ($res){
+                    $this->CheckSsoToken($oldToken,auth($role)->user()->id);
 
-                app(MerUserService::class)->cacheToken($user);
+                    //更新请求中的token
+                    $newToken = 'Bearer '.$token;
+                    $request->headers->set('Authorization',$newToken);
+                    //更新登录时间
+
+                    $user->update(
+                        [
+                            'last_login_ip' => request()->getClientIp(),
+                            'last_login_date' => Carbon::now()->toDateTimeString()
+                        ]
+                    );
+                    $user->token =$newToken;
+
+                    app(MerUserService::class)->cacheToken($user);
+
+                    //是同一个则删除锁
+                    if (Redis::get('token_lock_'.$user->id) == $token) {
+                        Redis::del('token_lock_'.$user->id);
+                    }
+                    // 在响应头中返回新的 token
+                    return $this->setAuthenticationHeader($next($request), $token);
+                }
+
 
             } catch(JWTException $exception) {
                 // 如果捕获到此异常，即代表 refresh 也过期了，用户无法刷新令牌，需要重新登录。
@@ -66,8 +81,7 @@ class AuthToken extends BaseMiddleware
 //                throw new UnauthorizedHttpException('jwt-auth', $exception->getMessage());
             }
         }
-        // 在响应头中返回新的 token
-        return $this->setAuthenticationHeader($next($request), $token);
+        return $next($request);
     }
 
     /**
