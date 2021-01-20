@@ -72,8 +72,11 @@ class MerUserGameHistoryService extends BaseService
     /**
      * @param $gamePackageId
      * @param $uid
+     * @param int $duration
+     * @return \App\Base\Services\BaseModel
+     * @throws \Exception
      */
-    public function report($gamePackageId,$uid)
+    public function report($gamePackageId,$uid,$duration=0)
     {
         if ($report = $this->findOneBy(['uid' => $uid])){
             $report['created_at'] = Carbon::parse($report['created_at']);
@@ -84,7 +87,7 @@ class MerUserGameHistoryService extends BaseService
                     'uid' => $uid
                 ],
                 [
-                    'duration' => (new Carbon())->diffInSeconds($report['created_at'])
+                    'duration' => $duration ? $duration : (new Carbon())->diffInSeconds($report['created_at'])
                 ]
             );
             return $report;
