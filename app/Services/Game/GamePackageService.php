@@ -76,7 +76,7 @@ class GamePackageService extends BaseService
            $item['is_like'] = isset($likeArr[$item['id']]) ? true : false;
            $item['is_collect'] = isset($collectArr[$item['id']]) ? true : false;
            $item['is_subscribe'] = isset($subscribeArr[$item['id']]) ? true : false;
-           $item['like_count'] = isset($likeCount[$item['id']]) ? ($likeCount[$item['id']]+$item['like_base']) : 0;
+           $item['like_count'] = $item['like_base'] + (isset($likeCount[$item['id']]) ? $likeCount[$item['id']] : 0);
        }
         return $result;
     }
