@@ -24,5 +24,8 @@ return [
 
     'need_relogin' => 'Your account is logged in elsewhere.',
 
-    'login_expired' => 'Login expired, please login again.'
+    'login_expired' => 'Login expired, please login again.',
+
+    'follow_self' => 'You can\'t follow yourself .'
+
 ];

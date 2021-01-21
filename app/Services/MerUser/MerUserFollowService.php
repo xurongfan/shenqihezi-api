@@ -14,6 +14,9 @@ class MerUserFollowService extends BaseService
      */
     public function follow($commentId)
     {
+        if ($commentId == $this->userId()){
+            throw new \Exception();
+        }
         if ($res = $this->findOneBy( [
             'mer_user_id' => $this->userId(),
             'follow_user_id' => $commentId
