@@ -350,3 +350,12 @@ function makeOrderNumber()
 
     return $osn;
 }
+
+/**
+ * @param $path
+ * @return string
+ */
+function importImage($path)
+{
+    return config('filesystems.disks.oss.domain_url').'import/'.$path.'?x-oss-process=style/yasuo';
+}

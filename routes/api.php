@@ -3,6 +3,7 @@
 use App\Services\Topic\TopicService;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
+use Ramsey\Uuid\Uuid;
 use ReceiptValidator\iTunes\Validator as iTunesValidator;
 
 /*
@@ -193,50 +194,6 @@ Route::any('ad-game/list', function (){
 
 Route::any('/test', function () {
 
-//    $aliPayOrder = [
-//        'out_trade_no' => time(),
-//        'total_amount' => 0.01, // 支付金额
-//        'subject'      => $request->subject ?? '默认' // 备注
-//    ];
-//
-//    $config = config('alipay.pay');
-//
-//    $config['return_url'] = $config['return_url'].'?id=1';
-//    $data = \Yansongda\Pay\Pay::alipay($config)->app($aliPayOrder);
-
-//    echo"<pre>";print_r( $data->getContent());exit;
-//    $data = 'a=111&b=222';
-//
-//    $sign = \LaraRsa\LaraRsa::createdSign($data);                // 生成签名
-//
-//    $result = \LaraRsa\LaraRsa::verifySign($data, $sign);        // 验证签名
-//
-//    $result = \LaraRsa\LaraRsa::encrypt($data);                  // 加密
-//    echo"<pre>";print_r($result);exit;
-
-    $result = \LaraRsa\LaraRsa::decrypt('ZQMnXG7sabW9sEDqzoHtPuKGstDJ89myw6PydKMRF4qbx31YxNV5oigKCDOd8YTdxRN7EgniOJ5S
-+spcvFVF/55+Klemy6dlIQtxXFcLbEX5ABCsAOS3mcQEzwJn6GCxrG8mAP0gc3oRilCJxjEnw7mC
-crG5Y0vo2lYvqB5+2cs=');                  // 解密
-    echo"<pre>";print_r($result);exit;
-
-    $config = [
-        // 必要配置
-        'app_id'             => config('app.wechat_appid'),
-        'mch_id'             => '1604486511',
-        'key'                => config('app.wechat_pay_secret'),
-        'notify_url'         => \route('wechat.notify')
-    ];
-    $app = \EasyWeChat\Factory::payment($config);
-    $result = $app->order->unify([
-        'body' => 'test11',
-        'out_trade_no' => '2015080116125346',
-        'total_fee' => 88,
-        'trade_type' => 'APP', // 请对应换成你的支付方式对应的值类型
-    ]);
-
-    echo"<pre>";print_r($result);exit;
-
-
     $iClientProfile = \AlibabaCloud\Client\Profile\DefaultProfile::getProfile("cn-shanghai",'LTAI4GAeD3jcsVmvedfNw922', 'HK3f7xu1gJlo4beVqSE3ygYiEF9qmG'); // TODO
     $client = new \AlibabaCloud\Client\DefaultAcsClient($iClientProfile);
 
@@ -331,29 +288,75 @@ Route::any('/topic-content', function () {
     $data = json_decode($data,true);
     $count = 0;
     foreach ($data['data'] as $k => $datum){
+        if (isset($datum['pic_urls']) && $datum['pic_urls']) {
+            foreach ($datum['pic_urls'] as &$v){
+                $v =  importImage('pic/'.$v.'.png');
+            }
+        }
         $user = \App\Models\User\MerUser::query()->firstOrCreate([
             'phone' => $datum['uid']
         ],[
             'nick_name' => $datum['username'],
-            'profile_img' => $datum['avatar_url'],
+            'profile_img' => importImage('avatar/'.$datum['avatar_url'].'.png'),
             'sex' => $datum['gender'] == 1 ? 'male' : 'female',
             'birth' => $datum['birthday'],
         ]);
+
         $content = \App\Models\Topic\TopicContent::query()->create([
             'mer_user_id' => $user->id,
             'content' => $datum['content'],
             'image_resource' => $datum['pic_urls'],
+            'created_at' => date('Y-m-d H:i:s',$datum['timestamp']),
+            'updated_at' => date('Y-m-d H:i:s',$datum['timestamp'])
         ]);
 
         $topicService = app(TopicService::class);
         if (isset($datum['topicnames']) && $datum['topicnames']) {
             $topicArr = [];
-            foreach ($datum['topicnames'] as $key => $value) {
-                $topicArr[] = $topicService->findOrCreate($value,$user->id)->id;
-            }
+//            foreach ($datum['topicnames'] as $key => $value) {
+//                $topicArr[] = $topicService->findOrCreate($value,$user->id)->id;
+//            }
+            $topicArr[] = $topicService->findOrCreate($datum['topicnames'],$user->id)->id;
             $topicArr && $content->topic()->sync($topicArr);
+        }
+
+        //游戏历史
+        $gameList = \App\Models\Game\GamePackage::query()
+            ->select('id')
+            ->where('id','>=',rand(8,160))
+            ->where('status','=',1)
+            ->limit(5)
+            ->get()
+            ->toArray();
+
+        foreach ($gameList as $game){
+            \App\Models\User\MerUserGameHistory::query()->create([
+                'uid' => Uuid::uuid1()->toString(),
+                'mer_user_id' => $user->id,
+                'game_package_id' => $game['id']
+            ]);
+        }
+
+        //游戏虚拟积分
+        $gameRankList = \App\Models\Game\GamePackage::query()
+            ->select('id')
+            ->where('id','>=',rand(8,160))
+            ->where('is_rank',1)
+            ->where('status','=',1)
+            ->limit(5)
+            ->get()
+            ->toArray();
+
+        foreach ($gameRankList as $game){
+            \App\Models\User\MerUserGameIntegral::query()->create([
+                'integral' => rand(10,50),
+                'mer_user_id' => $user->id,
+                'game_package_id' => $game['id']
+            ]);
         }
         $count++;
     }
     echo '导入'.$count.'条数据';
 });
+
+

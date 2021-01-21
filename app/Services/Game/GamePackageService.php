@@ -29,11 +29,13 @@ class GamePackageService extends BaseService
         game_package.is_landscape, 
         game_package.is_rank, 
         ( rand( ) * TIMESTAMP ( now( ) ) ) AS rid '))
-            ->leftJoin('game_package_tag','game_package_tag.package_id','=','game_package.id')
+//            ->leftJoin('game_package_tag','game_package_tag.package_id','=','game_package.id')
 //            ->whereIn('game_package_tag.tag_id',$this->gameTagRandom())
-            ->groupBy('game_package.id')
+//            ->groupBy('game_package.id')
+            ->where('game_package.status',1)
+            ->orderBy('game_package.is_rec','desc')
             ->orderBy(DB::raw('rid'),'desc')
-            ->limit(50)->get();
+            ->get();
        if ($result) {
            $gamePackageIds = Arr::pluck($result,'id');
             //是否喜欢
