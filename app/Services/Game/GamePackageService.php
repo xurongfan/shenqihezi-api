@@ -28,6 +28,7 @@ class GamePackageService extends BaseService
         game_package.crack_des, 
         game_package.is_landscape, 
         game_package.is_rank, 
+        game_package.like_base, 
         ( rand( ) * TIMESTAMP ( now( ) ) ) AS rid '))
 //            ->leftJoin('game_package_tag','game_package_tag.package_id','=','game_package.id')
 //            ->whereIn('game_package_tag.tag_id',$this->gameTagRandom())
@@ -75,7 +76,7 @@ class GamePackageService extends BaseService
            $item['is_like'] = isset($likeArr[$item['id']]) ? true : false;
            $item['is_collect'] = isset($collectArr[$item['id']]) ? true : false;
            $item['is_subscribe'] = isset($subscribeArr[$item['id']]) ? true : false;
-           $item['like_count'] = isset($likeCount[$item['id']]) ? $likeCount[$item['id']] : 0;
+           $item['like_count'] = isset($likeCount[$item['id']]) ? ($likeCount[$item['id']]+$item['like_base']) : 0;
        }
         return $result;
     }
