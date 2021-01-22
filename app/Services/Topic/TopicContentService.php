@@ -154,6 +154,8 @@ class TopicContentService extends BaseService
                 $query->select('topic.id','topic.title')->where('topic.status',1);
             },'like'=>function($query){
                 $query->select('id','content_id')->where('mer_user_id',$this->userId());
+            },'IsUserFollow' => function($query){
+                $query->where('mer_user_id',$this->userId());
             }])
             ->withCount(['comment','like'])
             ->firstOrFail();
