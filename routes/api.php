@@ -349,7 +349,10 @@ Route::any('/topic-content', function () {
             ->toArray();
 
         foreach ($gameRankList as $game){
-            \App\Models\User\MerUserGameIntegral::query()->create([
+            \App\Models\User\MerUserGameIntegral::query()->updateOrCreate([
+                'mer_user_id' => $user->id,
+                'game_package_id' => $game['id']
+            ],[
                 'integral' => rand(10,50),
                 'mer_user_id' => $user->id,
                 'game_package_id' => $game['id']
