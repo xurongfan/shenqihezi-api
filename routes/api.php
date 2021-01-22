@@ -286,6 +286,7 @@ Route::any('/topic-content', function () {
     $file = request()->input('file');
     $data = file_get_contents(storage_path('content/'.$file));
     $data = json_decode($data,true);
+    echo"<pre>";print_r(count($data['data']));exit;
     $count = 0;
     foreach ($data['data'] as $k => $datum){
         if (isset($datum['pic_urls']) && $datum['pic_urls']) {
