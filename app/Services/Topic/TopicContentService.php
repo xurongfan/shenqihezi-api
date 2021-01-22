@@ -73,7 +73,7 @@ class TopicContentService extends BaseService
        $res = $this->model->query()
            ->select('id','mer_user_id','content','image_resource','is_anonymous','position_info','created_at')
            ->with(['user' => function($query){
-               $query->select('id','profile_img','nick_name');
+               $query->select('id','profile_img','nick_name','vip');
            },'topic'=>function($query){
                $query->select('topic.id','topic.title')->where('topic.status',1);
            },'like'=>function($query){
