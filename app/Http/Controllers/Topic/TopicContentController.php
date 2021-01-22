@@ -63,6 +63,9 @@ class TopicContentController extends Controller
                 'required' ,
                 Rule::exists('topic_content','id')
             ],
+            'comment' => [
+                'required' ,
+            ]
         ],[
             'content_id.required' => transL('topic.content_id_empty_error'),
         ]);
