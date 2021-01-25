@@ -19,6 +19,7 @@ class Response
       if ($request->header('lang')) {
         config(['app.locale' => $request->header('lang')]);
       }
+      logger($request->header('timezone'));
 //        //去除请求参数左右两边空格
 //        $params = $request->all();
 //        foreach($params as $key=>$value){
