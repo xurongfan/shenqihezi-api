@@ -66,5 +66,14 @@ class TopicContent extends BaseModel
         return $this->hasOne(TopicContentLike::class,'content_id','id');
     }
 
+    /**
+     * @param $value
+     * @return string
+     */
+    public function getCreatedAtAttribute($value)
+    {
+        return (new \Carbon\Carbon($value))->timezone(config('app.timezone'))->toDateTimeString();
+    }
+
 
 }

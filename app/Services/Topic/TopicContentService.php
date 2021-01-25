@@ -70,6 +70,7 @@ class TopicContentService extends BaseService
             $shiedlUser = app(TopicContentUserShieldService::class)->index($this->userId());
         }
         $shiedlUser = $shiedlUser ?? [];
+
        $res = $this->model->query()
            ->select('id','mer_user_id','content','image_resource','is_anonymous','position_info','created_at')
            ->with(['user' => function($query){

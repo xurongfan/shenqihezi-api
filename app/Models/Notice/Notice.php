@@ -34,4 +34,13 @@ class Notice extends BaseModel
     {
         return $this->hasOne(MerUser::class,'id','originate_user_id');
     }
+
+    /**
+     * @param $value
+     * @return string
+     */
+    public function getCreatedAtAttribute($value)
+    {
+        return (new \Carbon\Carbon($value))->timezone(config('app.timezone'))->toDateTimeString();
+    }
 }

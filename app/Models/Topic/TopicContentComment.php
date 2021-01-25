@@ -60,5 +60,14 @@ class TopicContentComment extends BaseModel
     {
         return $this->hasOne(TopicContentCommentLike::class,'comment_id','id');
     }
+
+    /**
+     * @param $value
+     * @return string
+     */
+    public function getCreatedAtAttribute($value)
+    {
+        return (new \Carbon\Carbon($value))->timezone(config('app.timezone'))->toDateTimeString();
+    }
 }
 
