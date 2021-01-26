@@ -22,32 +22,33 @@ use ReceiptValidator\iTunes\Validator as iTunesValidator;
 //})->where(['all' => '([a-zA-Z0-9-]|/)+']);
 
 
-Route::group([],function (Router $router){
+Route::group([], function (Router $router) {
 
-    $router->group(['namespace' => 'MerUser','prefix' => 'user'],function ($router){
+    $router->group(['namespace' => 'MerUser', 'prefix' => 'user'], function ($router) {
         $router->post('reg', 'MerUserController@reg')->name('user.reg');
         $router->post('sendSms', 'MerUserController@sendSms')->name('user.sms');
         $router->any('login', 'MerUserController@login')->name('user.login');
     });
 
-    $router->group(['namespace' => 'Game','prefix' => 'game'],function ($router){
+    $router->group(['namespace' => 'Game', 'prefix' => 'game'], function ($router) {
         $router->get('tag', 'GameTagController@all')->name('game.tag');
     });
 
-    $router->group(['namespace' => 'System','prefix' => 'system'],function ($router){
+    $router->group(['namespace' => 'System', 'prefix' => 'system'], function ($router) {
         $router->get('config', 'SysConfigController@config')->name('system.config');
     });
 
-    $router->group(['namespace' => 'Wechat','prefix' => 'wechat'],function ($router){
+    $router->group(['namespace' => 'Wechat', 'prefix' => 'wechat'], function ($router) {
         $router->get('auth', 'WechatController@auth')->name('wechat.auth');
+        $router->post('pay', 'WechatController@pay')->name('wechat.pay');
         $router->any('notify', 'WechatController@notify')->name('wechat.notify');
     });
 
 });
 
-Route::group(['middleware' => 'auth_token'],function (Router $router){
+Route::group(['middleware' => 'auth_token'], function (Router $router) {
 
-    $router->group(['namespace' => 'MerUser','prefix' => 'user'],function ($router){
+    $router->group(['namespace' => 'MerUser', 'prefix' => 'user'], function ($router) {
         $router->get('info', 'MerUserController@info')->name('user.info');
         $router->post('out', 'MerUserController@out')->name('user.out');
         $router->put('edit', 'MerUserController@edit')->name('user.edit');
@@ -75,13 +76,13 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
 
     });
 
-    $router->group(['namespace' => 'Game','prefix' => 'game'],function ($router){
+    $router->group(['namespace' => 'Game', 'prefix' => 'game'], function ($router) {
         $router->get('/', 'GamePackageController@index')->name('game.index');
         $router->post('report', 'AdBuryingController@report')->name('game-ad.report');
         $router->get('subscribe', 'GamePackageController@subscribe')->name('game.subscribe');
     });
 
-    $router->group(['namespace' => 'Topic','prefix' => 'topic'],function ($router){
+    $router->group(['namespace' => 'Topic', 'prefix' => 'topic'], function ($router) {
         $router->get('search', 'TopicController@search')->name('topic.search');
         $router->get('/', 'TopicController@index')->name('topic.index');
         $router->get('user-topic-list', 'TopicController@userTopicList')->name('topic.user.topic');
@@ -116,50 +117,48 @@ Route::group(['middleware' => 'auth_token'],function (Router $router){
 
     });
 
-    $router->group(['namespace' => 'Channel','prefix' => 'channel'],function ($router){
+    $router->group(['namespace' => 'Channel', 'prefix' => 'channel'], function ($router) {
         $router->get('/user', 'ChannelController@userChannel')->name('channel.user');
     });
 
 
-    $router->group(['namespace' => 'Tool','prefix' => 'tool'],function ($router){
+    $router->group(['namespace' => 'Tool', 'prefix' => 'tool'], function ($router) {
 
         $router->post('upload', 'CommonController@upload')->name('tool.upload');
     });
 
-    $router->group(['namespace' => 'System','prefix' => 'system'],function ($router){
+    $router->group(['namespace' => 'System', 'prefix' => 'system'], function ($router) {
         $router->post('feedback', 'SysFeedBackController@store')->name('feedback.store');
     });
 
 
-
-
 });
 
-Route::any('/captcha', function (){
+Route::any('/captcha', function () {
     return [
         'url' => app('captcha')->create('default', true)
     ];
 })->name('captcha');
 
 Route::any('feedback-official', function () {
-   return response()->json(request()->all());
+    return response()->json(request()->all());
 });
 
-Route::any('game/list', function (){
-    $list = \App\Models\Game\GamePackage::query()->orderBy('id','desc')->paginate(20);
+Route::any('game/list', function () {
+    $list = \App\Models\Game\GamePackage::query()->orderBy('id', 'desc')->paginate(20);
     $list = $list ? $list->toArray() : [];
 
-    foreach ($list['data'] as $k => &$v){
-        $v['icon_img'] = config('filesystems.disks.oss.domain_url').$v['icon_img'];
-        $v['background_img'] = config('filesystems.disks.oss.domain_url').$v['background_img'];
+    foreach ($list['data'] as $k => &$v) {
+        $v['icon_img'] = config('filesystems.disks.oss.domain_url') . $v['icon_img'];
+        $v['background_img'] = config('filesystems.disks.oss.domain_url') . $v['background_img'];
         $gameUrl = env('GAME_URL');
-        $v['url'] = $v['url'] ? $gameUrl.$v['url'] : '';
-        $v['crack_url'] = $v['crack_url']  ? env('CRACK_GAME_URL').$v['crack_url'] : '';
+        $v['url'] = $v['url'] ? $gameUrl . $v['url'] : '';
+        $v['crack_url'] = $v['crack_url'] ? env('CRACK_GAME_URL') . $v['crack_url'] : '';
     }
     return $list;
 })->name('game-list');
 
-Route::any('ad-game/list', function (){
+Route::any('ad-game/list', function () {
 
     return [
         [
@@ -196,7 +195,7 @@ Route::any('ad-game/list', function (){
 })->name('ad-game-list');
 
 Route::any('/test', function () {
-    $iClientProfile = \AlibabaCloud\Client\Profile\DefaultProfile::getProfile("cn-shanghai",'LTAI4GAeD3jcsVmvedfNw922', 'HK3f7xu1gJlo4beVqSE3ygYiEF9qmG'); // TODO
+    $iClientProfile = \AlibabaCloud\Client\Profile\DefaultProfile::getProfile("cn-shanghai", 'LTAI4GAeD3jcsVmvedfNw922', 'HK3f7xu1gJlo4beVqSE3ygYiEF9qmG'); // TODO
     $client = new \AlibabaCloud\Client\DefaultAcsClient($iClientProfile);
 
     $request = new \AlibabaCloud\Green\V20180509\ImageSyncScan();
@@ -204,29 +203,31 @@ Route::any('/test', function () {
     $request->setMethod("POST");
     $request->setAcceptFormat("JSON");
 
-    $task1 = array('dataId' =>  uniqid(),
+    $task1 = array('dataId' => uniqid(),
         'url' => 'https://fun-touch.oss-cn-shanghai.aliyuncs.com/game-images/20201229/7GAeoObnPPThWzxeyvmUlQEr6tPDilv3br306zgw.jpeg?x-oss-process=style/yasuo',
-        'time' => round(microtime(true)*1000)
+        'time' => round(microtime(true) * 1000)
     );
     $request->setContent(json_encode(array("tasks" => array($task1),
-        "scenes" => array("porn","terrorism",'ad','live'))));
+        "scenes" => array("porn", "terrorism", 'ad', 'live'))));
     try {
         $response = $client->getAcsResponse($request);
-        echo"<pre>";print_r($response->data);exit;
+        echo "<pre>";
+        print_r($response->data);
+        exit;
 
-        if(200 == $response->code){
+        if (200 == $response->code) {
             $taskResults = $response->data;
 
             foreach ($taskResults as $taskResult) {
-                if(200 == $taskResult->code){
+                if (200 == $taskResult->code) {
                     $taskId = $taskResult->taskId;
                     print_r($taskId);
                     // 将taskId 保存下来，间隔一段时间来轮询结果, 参照ImageAsyncScanResultsRequest
-                }else{
+                } else {
                     print_r("task process fail:" + $response->code);
                 }
             }
-        }else{
+        } else {
             print_r("detect not success. code:" + $response->code);
         }
     } catch (Exception $e) {
@@ -253,8 +254,10 @@ Route::any('/test', function () {
             ->setPurchaseToken('hfahodmhdliodbcbcmapdibm.AO-J1OzJmygXZCwxJO7YuxB21FILQrRFvGbpAJke80MCEmxDgnOuJmZbRO7gC-Bemj4ltTfwrJSk8XSZ2vS8xXzx1y-GIMDz8A')
             ->validatePurchase();
         //已付款
-        echo"<pre>";print_r($response);exit;
-    } catch (\Exception $e){
+        echo "<pre>";
+        print_r($response);
+        exit;
+    } catch (\Exception $e) {
         throw new \Exception($e->getMessage());
     }
     exit();
@@ -263,7 +266,7 @@ Route::any('/test', function () {
     $accessKeySecret = "HK3f7xu1gJlo4beVqSE3ygYiEF9qmG";
 // Endpoint以杭州为例，其它Region请按实际情况填写。
     $endpoint = "http://oss-cn-hangzhou.aliyuncs.com";
-    $bucket= "cn-funtouch";
+    $bucket = "cn-funtouch";
     $object = "germ-squirmish.zip";
 
 // 设置URL的有效时长为3600s。
@@ -286,21 +289,21 @@ Route::any('/test', function () {
 Route::any('/topic-content', function () {
     set_time_limit(0);
     $file = request()->input('file');
-    $data = file_get_contents(storage_path('content/'.$file));
-    $data = json_decode($data,true);
+    $data = file_get_contents(storage_path('content/' . $file));
+    $data = json_decode($data, true);
 //    echo"<pre>";print_r(count($data['data']));exit;
     $count = 0;
-    foreach ($data['data'] as $k => $datum){
+    foreach ($data['data'] as $k => $datum) {
         if (isset($datum['pic_urls']) && $datum['pic_urls']) {
-            foreach ($datum['pic_urls'] as &$v){
-                $v =  importImage('pic/'.$v.'.png');
+            foreach ($datum['pic_urls'] as &$v) {
+                $v = importImage('pic/' . $v . '.png');
             }
         }
         $user = \App\Models\User\MerUser::query()->firstOrCreate([
             'phone' => $datum['uid']
-        ],[
+        ], [
             'nick_name' => $datum['username'],
-            'profile_img' => importImage('avatar/'.$datum['avatar_url'].'.png'),
+            'profile_img' => importImage('avatar/' . $datum['avatar_url'] . '.png'),
             'sex' => $datum['gender'] == 1 ? 'male' : 'female',
             'birth' => $datum['birthday'],
         ]);
@@ -309,8 +312,9 @@ Route::any('/topic-content', function () {
             'mer_user_id' => $user->id,
             'content' => $datum['content'],
             'image_resource' => $datum['pic_urls'],
-            'created_at' => date('Y-m-d H:i:s',$datum['timestamp']),
-            'updated_at' => date('Y-m-d H:i:s',$datum['timestamp'])
+            'is_export' => 1,
+            'created_at' => date('Y-m-d H:i:s', $datum['timestamp']),
+            'updated_at' => date('Y-m-d H:i:s', $datum['timestamp'])
         ]);
 
         $topicService = app(TopicService::class);
@@ -319,20 +323,20 @@ Route::any('/topic-content', function () {
 //            foreach ($datum['topicnames'] as $key => $value) {
 //                $topicArr[] = $topicService->findOrCreate($value,$user->id)->id;
 //            }
-            $topicArr[] = $topicService->findOrCreate($datum['topicnames'],$user->id)->id;
+            $topicArr[] = $topicService->findOrCreate($datum['topicnames'], $user->id)->id;
             $topicArr && $content->topic()->sync($topicArr);
         }
 
         //游戏历史
         $gameList = \App\Models\Game\GamePackage::query()
             ->select('id')
-            ->where('id','>=',rand(8,160))
-            ->where('status','=',1)
+            ->where('id', '>=', rand(8, 160))
+            ->where('status', '=', 1)
             ->limit(5)
             ->get()
             ->toArray();
 
-        foreach ($gameList as $game){
+        foreach ($gameList as $game) {
             \App\Models\User\MerUserGameHistory::query()->create([
                 'uid' => Uuid::uuid1()->toString(),
                 'mer_user_id' => $user->id,
@@ -343,26 +347,146 @@ Route::any('/topic-content', function () {
         //游戏虚拟积分
         $gameRankList = \App\Models\Game\GamePackage::query()
             ->select('id')
-            ->where('id','>=',rand(8,160))
-            ->where('is_rank',1)
-            ->where('status','=',1)
+            ->where('id', '>=', rand(8, 160))
+            ->where('is_rank', 1)
+            ->where('status', '=', 1)
             ->limit(5)
             ->get()
             ->toArray();
 
-        foreach ($gameRankList as $game){
+        foreach ($gameRankList as $game) {
             \App\Models\User\MerUserGameIntegral::query()->updateOrCreate([
                 'mer_user_id' => $user->id,
                 'game_package_id' => $game['id']
-            ],[
-                'integral' => rand(10,50),
+            ], [
+                'integral' => rand(10, 50),
                 'mer_user_id' => $user->id,
                 'game_package_id' => $game['id']
             ]);
         }
         $count++;
     }
-    echo '导入'.$count.'条数据';
+    echo '导入' . $count . '条数据';
+});
+
+Route::any('/topic-comment', function () {
+    set_time_limit(0);
+    $content = [
+        'Nah..........hhhh',
+        'So freaking cure!!!!',
+        'Crazy',
+        'that\'s funny',
+        'i love it ',
+        'GOOD',
+        'Hahaha',
+        'Lol',
+        'Yep!',
+        'Wow …',
+        'pretty!',
+        'Amazing',
+        'Lol that\'s funny',
+        'Brilliant!',
+        ' It\'s funny',
+        'Hell yeah!!!',
+        'Hahahaha!!!',
+        'Great',
+        'Oh hell yes.',
+        'Nice',
+        'Crazy!',
+        'Fantastic',
+        'That’s so amazing',
+        'So beautiful.',
+        'That\'s beautiful!!',
+        'So pretty!',
+        'Looks so good!!!',
+        'Oh wow that looks really really good!',
+        'Looks amazing',
+        'Looks awesome!',
+        'Yum',
+        'That looks sooooooo yummy!!!',
+        '😄😂',
+        '😘',
+        '￣▽￣🤯',
+        '😍😍😍😍😍',
+        '👍👍👍',
+        '👏👏👏',
+        '😃😃😃',
+        '😂😂😂',
+        '🙂',
+        '😋😋😋',
+        '🥰',
+        '🥰🥰🥰',
+        'Omg🤣🤣🤣',
+        'OMG😂😂😂',
+        'So funny🤣🤣🤣',
+        'Fantastic!👏👏👏',
+        'Awe!😋😋',
+        'So good!😝😝',
+        'This looks so good!😎😎',
+        'Yum!🥰🥰🥰🥰',
+        'Love it!🥰🥰🥰',
+        'Hi😃',
+        'Crazy🥳🥳🥳',
+        'Nice👏👏👏',
+        'Oh hell yes.😃😃😃',
+        'Great👍👍👍',
+        'Hell yeah!!!🙂🙂🙂',
+        'YEAL👏👏👏',
+        'It\'s funny😎😎😎',
+        'Lol that\'s funny😂😂😂',
+        'Amazing😋😋',
+        'pretty!😆',
+        '🤓🤓🤓',
+        'Wow.....🤓🤓🤓🤓',
+        'Lol that\'s funny😂😂😂',
+        'Hahaha🥰🥰🥰',
+        'This looks so good!😎😎',
+        '😎😎😎😋😋😋',
+        '😜😜😝😝😝',
+        '❤️❤️',
+        '❤️',
+        '😊😊😊',
+        '😊😊'
+    ];
+    $contentArr = array_random($content,rand(1,count($content)-1));
+     shuffle($contentArr);
+
+     \App\Models\Topic\TopicContent::query()->where('is_export',1)->chunk(50,function ($item) use ($contentArr){
+         $item = $item->toArray();
+         foreach ($item as $key => $value){
+             $userArr = [];
+             //评论入库
+             foreach ($contentArr as $comment){
+                 $userId = rand(9990,10187);//rand(9990,10085);
+                 \App\Models\Topic\TopicContentComment::query()->insert([
+                     'content_id' => $value['id'],
+                     'comment' => $comment,
+                     'mer_user_id' => $userId,
+                     'created_at' => date('Y-m-d H:i:s',time()-(rand(1,100000))),
+                     'updated_at' => date('Y-m-d H:i:s',time())
+                 ]);
+                 $userArr[] = $userId;
+             }
+
+             if ($userArr){
+                 foreach ($userArr as $user){
+                     \App\Models\Topic\TopicContentLike::query()->firstOrCreate([
+                         'content_id' => $value['id'],
+                         'mer_user_id' => $user
+                     ]);
+                     \App\Models\User\MerUserFollow::query()->firstOrCreate([
+                         'follow_user_id' => $value['mer_user_id'],
+                         'mer_user_id' => $user
+                     ]);
+                 }
+             }
+
+             return 'success';
+
+         }
+     });
+
+
 });
 
 
