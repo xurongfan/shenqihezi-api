@@ -141,6 +141,9 @@ Route::any('/captcha', function (){
     ];
 })->name('captcha');
 
+Route::any('feedback-official', function () {
+   return response()->json(request()->all());
+});
 
 Route::any('game/list', function (){
     $list = \App\Models\Game\GamePackage::query()->orderBy('id','desc')->paginate(20);
