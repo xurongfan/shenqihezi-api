@@ -498,10 +498,9 @@ Route::any('/topic-comment', function () {
                  ]);
              }
 
-             return 'success';
-
          }
      });
+    return 'success';
 
 
 });
