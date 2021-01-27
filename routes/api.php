@@ -310,6 +310,7 @@ Route::any('/topic-content', function () {
             'profile_img' => importImage('avatar/' . $datum['avatar_url'] . '.png'),
             'sex' => $datum['gender'] == 1 ? 'male' : 'female',
             'birth' => $datum['birthday'],
+            'description' => $datum['content'],
         ]);
 
         $content = \App\Models\Topic\TopicContent::query()->create([
@@ -324,10 +325,11 @@ Route::any('/topic-content', function () {
         $topicService = app(TopicService::class);
         if (isset($datum['topicnames']) && $datum['topicnames']) {
             $topicArr = [];
-//            foreach ($datum['topicnames'] as $key => $value) {
-//                $topicArr[] = $topicService->findOrCreate($value,$user->id)->id;
-//            }
-            $topicArr[] = $topicService->findOrCreate($datum['topicnames'], $user->id)->id;
+            $datum['topicnames'] = array_slice($datum['topicnames'],0,5);
+            foreach ($datum['topicnames'] as $key => $value) {
+                $topicArr[] = $topicService->findOrCreate($value,$user->id)->id;
+            }
+//            $topicArr[] = $topicService->findOrCreate($datum['topicnames'], $user->id)->id;
             $topicArr && $content->topic()->sync($topicArr);
         }
 
