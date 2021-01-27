@@ -300,14 +300,14 @@ Route::any('/topic-content', function () {
     foreach ($data['data'] as $k => $datum) {
         if (isset($datum['pic_urls']) && $datum['pic_urls']) {
             foreach ($datum['pic_urls'] as &$v) {
-                $v = importImage('pic/' . $v . '.png');
+                $v = importImage('pic/' . $v );
             }
         }
         $user = \App\Models\User\MerUser::query()->firstOrCreate([
             'phone' => $datum['uid']
         ], [
             'nick_name' => $datum['username'],
-            'profile_img' => importImage('avatar/' . $datum['avatar_url'] . '.png'),
+            'profile_img' => importImage('avatar/' . $datum['avatar_url'] ),
             'sex' => $datum['gender'] == 1 ? 'male' : 'female',
             'birth' => $datum['birthday'],
             'description' => $datum['content'],
