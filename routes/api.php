@@ -346,7 +346,7 @@ Route::any('/topic-content', function () {
 
         //游戏虚拟积分
         $gameRankList = \App\Models\Game\GamePackage::query()
-            ->select('id')
+            ->select('id','integral_base')
             ->where('id', '>=', rand(8, 160))
             ->where('is_rank', 1)
             ->where('status', '=', 1)
@@ -359,7 +359,7 @@ Route::any('/topic-content', function () {
                 'mer_user_id' => $user->id,
                 'game_package_id' => $game['id']
             ], [
-                'integral' => rand(10, 50),
+                'integral' => rand(intval($game['integral_base']/2), $game['integral_base']),
                 'mer_user_id' => $user->id,
                 'game_package_id' => $game['id']
             ]);
