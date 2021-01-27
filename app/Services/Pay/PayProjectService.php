@@ -8,15 +8,18 @@ class PayProjectService extends BaseService
 {
     /**
      * @param int $isGoogle
+     * @param int $isVip
      * @return array
      */
-    public function index($isGoogle = 0)
+    public function index($isGoogle = 0,$isVip = 0)
     {
         return $this->model->query()->select('id','title','days','amount','google_pay_id')->when($isGoogle,function ($query){
             $query->where('google_pay_id','!=','');
         },function ($query){
             $query->where('google_pay_id','');
-        })->orderBy('days','desc')
+        })
+        ->where('is_vip',$isVip)
+        ->orderBy('days','desc')
         ->get()
         ->toArray();
     }

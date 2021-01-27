@@ -13,6 +13,6 @@ class PayController extends Controller
      */
     public function project(Request $request)
     {
-        return app(PayProjectService::class)->index($request->is_google);
+        return app(PayProjectService::class)->index($request->is_google,$request->is_vip);
     }
 }
