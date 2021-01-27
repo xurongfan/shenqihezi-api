@@ -315,7 +315,7 @@ Route::any('/topic-content', function () {
             'birth' => $datum['birthday'],
             'description' => $datum['content'],
         ]);
-        if ($user['id'] = 10250){
+        if ($user['id'] == 10250){
             continue;
         }
 
