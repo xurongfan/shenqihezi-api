@@ -300,6 +300,7 @@ Route::any('/topic-content', function () {
 //    echo"<pre>";print_r(count($data['data']));exit;
     $count = 0;
     foreach ($data['data'] as $k => $datum) {
+
         if (isset($datum['pic_urls']) && $datum['pic_urls']) {
             foreach ($datum['pic_urls'] as &$v) {
                 $v = importImage('pic/' . $v );
@@ -314,6 +315,9 @@ Route::any('/topic-content', function () {
             'birth' => $datum['birthday'],
             'description' => $datum['content'],
         ]);
+        if ($user['id'] = 10250){
+            continue;
+        }
 
         $content = \App\Models\Topic\TopicContent::query()->create([
             'mer_user_id' => $user->id,
