@@ -127,6 +127,10 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
         $router->post('upload', 'CommonController@upload')->name('tool.upload');
     });
 
+    $router->group(['namespace' => 'Pay', 'prefix' => 'pay'], function ($router) {
+        $router->get('project', 'PayController@project')->name('pay.project');
+    });
+
     $router->group(['namespace' => 'System', 'prefix' => 'system'], function ($router) {
         $router->post('feedback', 'SysFeedBackController@store')->name('feedback.store');
     });

@@ -7,6 +7,7 @@ use App\Models\Game\AdBurying;
 use App\Models\Game\GamePackage;
 use App\Models\Game\GamePackageSubscribe;
 use App\Models\Game\GameTag;
+use App\Models\Pay\PayProject;
 use App\Models\System\SysFeedBack;
 use App\Models\Topic\TopicContentResource;
 use App\Models\Topic\TopicContentUserShield;
@@ -39,6 +40,7 @@ use App\Services\MerUser\MerUserGameIntegralService;
 use App\Services\MerUser\MerUserGameLikeService;
 use App\Services\MerUser\MerUserService;
 use App\Services\Notice\NoticeService;
+use App\Services\Pay\PayProjectService;
 use App\Services\System\SysConfigService;
 use App\Services\System\SysFeedBackService;
 use App\Services\Topic\TopicContentCommentLikeService;
@@ -64,6 +66,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerSystem();
         $this->registerTopic();
         $this->registerChannel();
+        $this->registerPay();
     }
 
     /**
@@ -190,6 +193,16 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(ChannelGoogleService::class, function () {
             return new ChannelGoogleService(new ChannelGoogle());
+        });
+    }
+
+    /**
+     * Pay
+     */
+    public function registerPay()
+    {
+        $this->app->bind(PayProjectService::class, function () {
+            return new PayProjectService(new PayProject());
         });
     }
 }
