@@ -18,7 +18,7 @@ class PayProjectService extends BaseService
         },function ($query){
             $query->where('google_pay_id','');
         })
-        ->where('is_vip',$isVip)
+        ->where('is_vip',$isVip ?? 0)
         ->orderBy('days','desc')
         ->get()
         ->toArray();
