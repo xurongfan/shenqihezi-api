@@ -377,7 +377,7 @@ Route::any('/topic-content', function () {
 
 Route::any('/topic-comment', function () {
     set_time_limit(0);
-
+    ini_set('memory_limit', '1000M');
 
      \App\Models\Topic\TopicContent::query()->where('is_export',1)->chunk(50,function ($item){
          $item = $item->toArray();
