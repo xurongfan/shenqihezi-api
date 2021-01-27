@@ -292,6 +292,8 @@ Route::any('/test', function () {
 
 Route::any('/topic-content', function () {
     set_time_limit(0);
+    ini_set('memory_limit', '1000M');
+
     $file = request()->input('file');
     $data = file_get_contents(storage_path('content/' . $file));
     $data = json_decode($data, true);
@@ -377,8 +379,6 @@ Route::any('/topic-content', function () {
 
 Route::any('/topic-comment', function () {
     set_time_limit(0);
-    ini_set('memory_limit', '1000M');
-
      \App\Models\Topic\TopicContent::query()->where('is_export',1)->chunk(50,function ($item){
          $item = $item->toArray();
          foreach ($item as $key => $value){
