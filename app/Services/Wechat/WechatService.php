@@ -14,13 +14,13 @@ class WechatService
      */
     public function auth($code)
     {
-        $data = getHttpContent('GET','https://api.weixin.qq.com/sns/oauth2/access_token',[
+        $data = getHttpContent('GET', 'https://api.weixin.qq.com/sns/oauth2/access_token', [
             'appid' => config('app.wechat_appid'),
             'secret' => config('app.wechat_app_secret'),
             'code' => $code,
             'grant_type' => 'authorization_code'
         ]);
-        $data = json_decode($data,true);
+        $data = json_decode($data, true);
         if (isset($data['errcode'])) {
             throw new \Exception($data['errmsg'] ?? '');
         }
@@ -50,15 +50,32 @@ class WechatService
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \EasyWeChat\Kernel\Exceptions\Exception
      */
-    public function notify($request)
+    public function notify()
     {
         $pay = Pay::wechat($this->wechatServe());
-
-        try{
-            $data = $pay->verify(); // 是的，验签就这么简单！
-            logger('wechat notify:'.json_encode($data->all()));
+        try {
+            $data = $pay->verify();
+//            {
+//                "appid":"wx9570383f3e10adb1",
+//    "bank_type":"OTHERS",
+//    "cash_fee":"1",
+//    "fee_type":"CNY",
+//    "is_subscribe":"N",
+//    "mch_id":"1604486511",
+//    "nonce_str":"WrkKUwrEMBECNeki",
+//    "openid":"oPi2O6uGUt6T5EbRbE21_5laKoa0",
+//    "out_trade_no":"2021012818460443690336",
+//    "result_code":"SUCCESS",
+//    "return_code":"SUCCESS",
+//    "sign":"F06B1D5546430502AE7C1BE6297D4980",
+//    "time_end":"20210128184612",
+//    "total_fee":"1",
+//    "trade_type":"APP",
+//    "transaction_id":"4200000841202101287488834018"
+//}
+            logger('wechat notify:' . json_encode($data->all()));
         } catch (\Exception $e) {
-             $e->getMessage();
+            $e->getMessage();
         }
 
         return $pay->success();// laravel 框架中请直接 `return $pay->success()`
@@ -70,20 +87,19 @@ class WechatService
     public function wechatServe()
     {
         $config = [
-            'appid'             => config('app.wechat_appid'),
-            'mch_id'             => config('app.wechat_mch_id'),
-            'key'                => config('app.wechat_pay_secret'),
-            'notify_url'         => \route('wechat.notify'),
-            'log' => [ // optional
-                'file' => './logs/wechat.log',
-                'level' => 'info', // 建议生产环境等级调整为 info，开发环境为 debug
-                'type' => 'single', // optional, 可选 daily.
-                'max_file' => 30, // optional, 当 type 为 daily 时有效，默认 30 天
-            ],
+            'appid' => config('app.wechat_appid'),
+            'mch_id' => config('app.wechat_mch_id'),
+            'key' => config('app.wechat_pay_secret'),
+            'notify_url' => \route('wechat.notify'),
+//            'log' => [ // optional
+//                'file' => './logs/wechat.log',
+//                'level' => 'info', // 建议生产环境等级调整为 info，开发环境为 debug
+//                'type' => 'single', // optional, 可选 daily.
+//                'max_file' => 30, // optional, 当 type 为 daily 时有效，默认 30 天
+//            ],
             'http' => [ // optional
                 'timeout' => 5.0,
                 'connect_timeout' => 5.0,
-                // 更多配置项请参考 [Guzzle](https://guzzle-cn.readthedocs.io/zh_CN/latest/request-options.html)
             ],
         ];
         return $config;
