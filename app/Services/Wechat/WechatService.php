@@ -4,6 +4,8 @@
 namespace App\Services\Wechat;
 
 
+use Yansongda\Pay\Pay;
+
 class WechatService
 {
     /**
@@ -34,6 +36,14 @@ class WechatService
      */
     public function pay($order)
     {
+        $result = Pay::wechat($this->wechatServe())->app([
+            'body' => $order['desc'],
+            'out_trade_no' => $order['order_num'],
+            'total_fee' => intval($order['amount'] * 100),
+            'trade_type' => 'APP'
+        ]);
+        return $result->getContent();
+        echo"<pre>";print_r($result);exit;
         return $this->wechatServe()->order->unify([
             'body' => $order['desc'],
             'out_trade_no' => $order['order_num'],
@@ -86,11 +96,23 @@ class WechatService
     public function wechatServe()
     {
         $config = [
-            'app_id'             => config('app.wechat_appid'),
+            'appid'             => config('app.wechat_appid'),
             'mch_id'             => config('app.wechat_mch_id'),
             'key'                => config('app.wechat_pay_secret'),
-            'notify_url'         => \route('wechat.notify')
+            'notify_url'         => \route('wechat.notify'),
+            'log' => [ // optional
+                'file' => './logs/wechat.log',
+                'level' => 'info', // 建议生产环境等级调整为 info，开发环境为 debug
+                'type' => 'single', // optional, 可选 daily.
+                'max_file' => 30, // optional, 当 type 为 daily 时有效，默认 30 天
+            ],
+            'http' => [ // optional
+                'timeout' => 5.0,
+                'connect_timeout' => 5.0,
+                // 更多配置项请参考 [Guzzle](https://guzzle-cn.readthedocs.io/zh_CN/latest/request-options.html)
+            ],
         ];
-        return \EasyWeChat\Factory::payment($config);
+        return $config;
+//        return \EasyWeChat\Factory::payment($config);
     }
 }
