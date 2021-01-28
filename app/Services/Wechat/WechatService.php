@@ -43,13 +43,6 @@ class WechatService
             'trade_type' => 'APP'
         ]);
         return $result->getContent();
-        echo"<pre>";print_r($result);exit;
-        return $this->wechatServe()->order->unify([
-            'body' => $order['desc'],
-            'out_trade_no' => $order['order_num'],
-            'total_fee' => intval($order['amount'] * 100),
-            'trade_type' => 'APP'
-        ]);
     }
 
     /**
@@ -59,35 +52,16 @@ class WechatService
      */
     public function notify($request)
     {
-        logger('wechat notify:'.json_encode($request));
-        $response = $this->wechatServe()->handlePaidNotify(function($message, $fail){
-            // 使用通知里的 "微信支付订单号" 或者 "商户订单号" 去自己的数据库找到订单
-            $order = 查询订单($message['out_trade_no']);
+        $pay = Pay::wechat($this->wechatServe());
 
-            if (!$order || $order->paid_at) { // 如果订单不存在 或者 订单已经支付过了
-                return true; // 告诉微信，我已经处理完了，订单没找到，别再通知我了
-            }
+        try{
+            $data = $pay->verify(); // 是的，验签就这么简单！
+            logger('wechat notify:'.json_encode($data->all()));
+        } catch (\Exception $e) {
+             $e->getMessage();
+        }
 
-            if ($message['return_code'] === 'SUCCESS') { // return_code 表示通信状态，不代表支付状态
-                // 用户是否支付成功
-                if (array_get($message, 'result_code') === 'SUCCESS') {
-                    $order->paid_at = time(); // 更新支付时间为当前时间
-                    $order->status = 'paid';
-
-                    // 用户支付失败
-                } elseif (array_get($message, 'result_code') === 'FAIL') {
-                    $order->status = 'paid_fail';
-                }
-            } else {
-                throw new \Exception('通信失败，请稍后再通知我');
-            }
-
-            $order->save();
-
-            return true;
-        });
-
-        return $response;
+        return $pay->success();// laravel 框架中请直接 `return $pay->success()`
     }
 
     /**
