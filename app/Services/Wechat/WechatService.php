@@ -37,7 +37,7 @@ class WechatService
         return $this->wechatServe()->order->unify([
             'body' => $order['desc'],
             'out_trade_no' => $order['order_num'],
-            'total_fee' => $order['amount'] * 100,
+            'total_fee' => intval($order['amount'] * 100),
             'trade_type' => 'APP'
         ]);
     }
