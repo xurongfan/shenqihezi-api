@@ -40,8 +40,11 @@ Route::group([], function (Router $router) {
 
     $router->group(['namespace' => 'Wechat', 'prefix' => 'wechat'], function ($router) {
         $router->get('auth', 'WechatController@auth')->name('wechat.auth');
-        $router->post('pay', 'WechatController@pay')->name('wechat.pay');
         $router->any('notify', 'WechatController@notify')->name('wechat.notify');
+    });
+
+    $router->group(['namespace' => 'Pay', 'prefix' => 'pay'], function ($router) {
+        $router->any('/', 'PayController@aliPayNotify')->name('alipay.notify');
     });
 
 });
@@ -129,6 +132,7 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
 
     $router->group(['namespace' => 'Pay', 'prefix' => 'pay'], function ($router) {
         $router->get('project', 'PayController@project')->name('pay.project');
+        $router->post('/', 'PayController@pay')->name('pay');
     });
 
     $router->group(['namespace' => 'System', 'prefix' => 'system'], function ($router) {

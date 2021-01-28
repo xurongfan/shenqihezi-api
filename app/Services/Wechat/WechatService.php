@@ -26,28 +26,30 @@ class WechatService
     }
 
     /**
+     * @param $order
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function pay()
+    public function pay($order)
     {
-        $result = $this->wechatServe()->order->unify([
-            'body' => 'test11',
-            'out_trade_no' => makeOrderNumber(),
-            'total_fee' => 88,
+        return $this->wechatServe()->order->unify([
+            'body' => $order['desc'],
+            'out_trade_no' => $order['order_num'],
+            'total_fee' => $order['amount'] * 100,
             'trade_type' => 'APP'
         ]);
-        return $result;
     }
 
     /**
+     * @param $request
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \EasyWeChat\Kernel\Exceptions\Exception
      */
-    public function notify()
+    public function notify($request)
     {
+        logger('wechat notify:'.json_encode($request));
         $response = $this->wechatServe()->handlePaidNotify(function($message, $fail){
             // 使用通知里的 "微信支付订单号" 或者 "商户订单号" 去自己的数据库找到订单
             $order = 查询订单($message['out_trade_no']);

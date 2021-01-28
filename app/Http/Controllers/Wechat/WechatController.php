@@ -23,8 +23,8 @@ class WechatController extends Controller
     /**
      * @return mixed
      */
-    public function pay()
+    public function notify(Request $request)
     {
-        return app(WechatService::class)->pay();
+        return app(WechatService::class)->notify($request->all());
     }
 }
