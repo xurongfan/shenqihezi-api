@@ -5,6 +5,7 @@ namespace App\Services\Wechat;
 
 
 use Yansongda\Pay\Pay;
+use function AlibabaCloud\Client\json;
 
 class WechatService
 {
@@ -42,7 +43,10 @@ class WechatService
             'total_fee' => intval($order['amount'] * 100),
             'trade_type' => 'APP'
         ]);
-        return $result->getContent();
+        $result = $result->getContent();
+        $result = json_decode($result,true);
+        $result['order_num'] = $order['order_num'];
+        return $result;
     }
 
     /**
