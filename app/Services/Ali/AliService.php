@@ -20,6 +20,7 @@ class AliService
 
         $config = config('alipay.pay');
         $config['notify_url'] = \route('alipay.notify');
+        $config['format'] = 'json';
         $data = \Yansongda\Pay\Pay::alipay($config)->app($aliPayOrder);
         return $data->getContent();
     }
