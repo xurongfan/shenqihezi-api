@@ -4,7 +4,7 @@ return [
         // APPID
         'app_id' => '2021002115615034',
         // 支付宝 支付成功后 主动通知商户服务器地址  注意 是post请求
-        'notify_url' => \route('alipay.notify'),
+        'notify_url' => 'http://192.168.0.110:9555/api/home/ali_pay_ntify',
         // 支付宝 支付成功后 回调页面 get
         'return_url' => 'http://192.168.0.110:9528/#/pay_success',
         // 公钥（注意是支付宝的公钥，不是商家应用公钥）

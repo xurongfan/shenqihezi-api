@@ -44,7 +44,7 @@ Route::group([], function (Router $router) {
     });
 
     $router->group(['namespace' => 'Pay', 'prefix' => 'pay'], function ($router) {
-        $router->any('/', 'PayController@aliPayNotify')->name('alipay.notify');
+        $router->any('alipay-notify', 'PayController@aliPayNotify')->name('alipay.notify');
     });
 
 });

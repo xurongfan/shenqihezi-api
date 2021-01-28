@@ -19,7 +19,7 @@ class AliService
         ];
 
         $config = config('alipay.pay');
-//        $config['return_url'] = $config['return_url'].'?id=1';
+        $config['notify_url'] = \route('alipay.notify');
         $data = \Yansongda\Pay\Pay::alipay($config)->app($aliPayOrder);
         return $data->getContent();
     }
