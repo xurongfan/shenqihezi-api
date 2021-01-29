@@ -133,6 +133,7 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
     $router->group(['namespace' => 'Pay', 'prefix' => 'pay'], function ($router) {
         $router->get('project', 'PayController@project')->name('pay.project');
         $router->post('/', 'PayController@pay')->name('pay');
+        $router->get('pay-order', 'PayController@payOrder')->name('pay.order');
     });
 
     $router->group(['namespace' => 'System', 'prefix' => 'system'], function ($router) {

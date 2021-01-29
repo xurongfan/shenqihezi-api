@@ -116,4 +116,13 @@ class PayService
 
         return $order;
     }
+
+    /**
+     * @param $orderNum
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
+     */
+    public function view($orderNum)
+    {
+        return PayOrder::query()->where('order_num',$orderNum)->select('status')->firstOrFail();
+    }
 }

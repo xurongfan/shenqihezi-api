@@ -89,7 +89,7 @@ class WechatService
             $e->getMessage();
         }
 
-        return $pay->success();// laravel 框架中请直接 `return $pay->success()`
+        return $pay->success()->send();
     }
 
     /**

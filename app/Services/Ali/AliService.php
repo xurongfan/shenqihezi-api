@@ -4,6 +4,7 @@
 namespace App\Services\Ali;
 
 
+use App\Services\Pay\PayService;
 use Yansongda\Pay\Pay;
 
 class AliService
@@ -31,23 +32,29 @@ class AliService
         ];
     }
 
+    /**
+     * @param $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
     public function notify($request)
     {
-        logger('alipay notify-1:'.json_encode($request));
+        logger('alipay data-1:'.json_encode($request));
         $config = config('alipay.pay');
         $config['notify_url'] = \route('alipay.notify');
         $config['format'] = 'json';
         $alipay = Pay::alipay($config);
         try{
-            $data = $alipay->verify(); // 是的，验签就这么简单！
+            $data = $alipay->verify($request); // 是的，验签就这么简单！
             $data =  $data->all();
-           logger('alipay notify-2:'.json_encode($data));
-
+            if (isset($data['trade_status']) && $data['trade_status'] == 'TRADE_SUCCESS') {
+                app(PayService::class)->notifyEvent($data['out_trade_no']);
+            }
         } catch (\Exception $e) {
              throw new \Exception($e->getMessage());
         }
 
-        return $alipay->success();
+        return $alipay->success()->send();
     }
 
 }

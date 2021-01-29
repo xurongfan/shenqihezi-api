@@ -46,4 +46,13 @@ class PayController extends Controller
     {
         return app(AliService::class)->notify($request->all());
     }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function payOrder(Request $request)
+    {
+        return app(PayService::class)->view($request->order_num);
+    }
 }
