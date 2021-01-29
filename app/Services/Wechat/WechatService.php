@@ -4,6 +4,9 @@
 namespace App\Services\Wechat;
 
 
+use App\Models\Pay\PayOrder;
+use App\Models\User\MerUser;
+use App\Services\Pay\PayService;
 use Yansongda\Pay\Pay;
 use function AlibabaCloud\Client\json;
 
@@ -59,7 +62,8 @@ class WechatService
         $pay = Pay::wechat($this->wechatServe());
         try {
             $data = $pay->verify();
-//            {
+            $data = $data->all();
+//            $data = json_decode('            {
 //                "appid":"wx9570383f3e10adb1",
 //    "bank_type":"OTHERS",
 //    "cash_fee":"1",
@@ -76,8 +80,11 @@ class WechatService
 //    "total_fee":"1",
 //    "trade_type":"APP",
 //    "transaction_id":"4200000841202101287488834018"
-//}
-            logger('wechat notify:' . json_encode($data->all()));
+//}',true);
+            if (isset($data['result_code']) && $data['result_code'] == 'SUCCESS') {
+               app(PayService::class)->notifyEvent($data['out_trade_no']);
+            }
+
         } catch (\Exception $e) {
             $e->getMessage();
         }

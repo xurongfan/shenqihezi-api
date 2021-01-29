@@ -4,6 +4,8 @@
 namespace App\Services\Ali;
 
 
+use Yansongda\Pay\Pay;
+
 class AliService
 {
     /**
@@ -31,12 +33,21 @@ class AliService
 
     public function notify($request)
     {
-        logger('alipay notify:'.json_encode($request));
-        return true;
+        logger('alipay notify-1:'.json_encode($request));
+        $config = config('alipay.pay');
+        $config['notify_url'] = \route('alipay.notify');
+        $config['format'] = 'json';
+        $alipay = Pay::alipay($config);
+        try{
+            $data = $alipay->verify($request); // 是的，验签就这么简单！
+            $data =  $data->all();
+           logger('alipay notify-2:'.json_encode($data));
 
-        $order = Order::find($request->id);
-        // 更新自己项目 订单状态
-        if(!empty($order))  $orderService->payOrder($order);
+        } catch (\Exception $e) {
+             throw new \Exception($e->getMessage());
+        }
 
+        return $alipay->success();
     }
+
 }

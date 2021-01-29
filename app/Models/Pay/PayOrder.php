@@ -17,4 +17,12 @@ class PayOrder extends BaseModel
     ];
 
     protected $table = 'pay_order';
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function project()
+    {
+        return $this->hasOne(PayProject::class,'id','pay_project_id');
+    }
 }
