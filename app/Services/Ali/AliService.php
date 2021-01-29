@@ -39,7 +39,7 @@ class AliService
         $config['format'] = 'json';
         $alipay = Pay::alipay($config);
         try{
-            $data = $alipay->verify($request); // 是的，验签就这么简单！
+            $data = $alipay->verify(); // 是的，验签就这么简单！
             $data =  $data->all();
            logger('alipay notify-2:'.json_encode($data));
 
