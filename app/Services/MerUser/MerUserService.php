@@ -20,7 +20,7 @@ class MerUserService extends BaseService
     public function sendSmsCode( $phone , $areaCode = '',$type = 'login' )
     {
 
-        $keys = request()->only('facebook_auth_code','google_auth_code');
+        $keys = request()->only('facebook_auth_code','google_auth_code','wechat_auth_code');
         if ($type == 'login' && $keys) {
             if (self::finOneUser($keys)){
                 throw new \Exception(transL('mer-user.user_exist_from_third','用户已存在'));
@@ -104,9 +104,15 @@ class MerUserService extends BaseService
             }
             //检查第三方key是否已被注册
             $keys = array_filter(Arr::only($request, ['facebook_auth_code', 'google_auth_code','wechat_auth_code']));
+            foreach ($keys as $k => $key){
+                if (isset($user[$k]) && $user[$k]){
+                    throw new \Exception(transL('mer-user.user_exist_from_third','用户已存在'));
+                }
+            }
             if ($keys && self::finOneUser($keys)){
                 throw new \Exception(transL('mer-user.user_exist_from_third','用户已存在'));
             }
+
             $user->update($keys);
         } else if (isset($request['facebook_auth_code']) && $request['facebook_auth_code']) {
             $user = $this->finOneUser(['facebook_auth_code' => $request['facebook_auth_code']]);
