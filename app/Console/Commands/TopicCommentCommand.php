@@ -129,15 +129,24 @@ class TopicCommentCommand extends Command
             '😊😊'
         ];
 
-        \App\Models\Topic\TopicContent::query()->where('is_export',1)->chunk(50,function ($item)use ($content){
+        \App\Models\Topic\TopicContent::query()
+            ->whereIn('id',[
+                '1408',
+'1366','1360','1249','1239','1158','1158','1156','1089',
+'1072','998','921','922','857','843','832','824','674','636',
+'622','603','588','587','585','531','490','482', '441' ,'402',
+'402','376' ,'367','358','334','329','254','241','225','179','122','108'
+,'86','69','36'
+            ])
+            ->where('is_export',1)->chunk(100,function ($item)use ($content){
             $item = $item->toArray();
             foreach ($item as $key => $value){
 
                 $contentArr = array_random($content,rand(1,count($content)-1));
                 shuffle($contentArr);
                 $userArr = [];
-                if ($value['id']%3 == 0 || $value['id']%7 == 0)
-                {
+//                if ($value['id']%3 == 0 || $value['id']%7 == 0)
+//                {
                     //评论入库
                     foreach ($contentArr as $comment){
                         $userId = rand(9990,10187);//rand(9990,10085);
@@ -150,24 +159,27 @@ class TopicCommentCommand extends Command
                         ]);
                         $userArr[] = $userId;
                     }
+//                }
+
+                for ($i = 0;$i<$value['id']%10;$i++){
+                    $userArr[] = rand(9990,10187);
+                }
+                foreach ($userArr as $user){
+                    \App\Models\Topic\TopicContentLike::query()->firstOrCreate([
+                        'content_id' => $value['id'],
+                        'mer_user_id' => $user
+                    ]);
+                    \App\Models\User\MerUserFollow::query()->firstOrCreate([
+                        'follow_user_id' => $value['mer_user_id'],
+                        'mer_user_id' => $user
+                    ]);
                 }
 
-//                for ($i = 0;$i<$value['id']%10;$i++){
-//                    $userArr[] = rand(9990,10187);
-//                }
-//                foreach ($userArr as $user){
-//                    \App\Models\Topic\TopicContentLike::query()->firstOrCreate([
-//                        'content_id' => $value['id'],
-//                        'mer_user_id' => $user
-//                    ]);
-//                    \App\Models\User\MerUserFollow::query()->firstOrCreate([
-//                        'follow_user_id' => $value['mer_user_id'],
-//                        'mer_user_id' => $user
-//                    ]);
-//                }
-
             }
-        });
+
+                return 'success';
+
+            });
         return 'success';
     }
 }
