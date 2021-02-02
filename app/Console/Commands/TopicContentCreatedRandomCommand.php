@@ -41,7 +41,7 @@ class TopicContentCreatedRandomCommand extends Command
         \App\Models\Topic\TopicContent::query()
             ->where('mer_user_id',10271)
             ->where('id','<=',1290)
-            ->where('is_export',1)->chunk(100,function ($item){
+            ->where('is_export',1)->chunkById(100,function ($item){
                 $item = $item->toArray();
                 foreach ($item as $key => $value){
 
