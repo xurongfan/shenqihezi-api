@@ -5,6 +5,7 @@ namespace App\Console;
 use App\Console\Commands\AddFacade;
 use App\Console\Commands\AddServices;
 use App\Console\Commands\TopicCommentCommand;
+use App\Console\Commands\TopicContentCreatedRandomCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -18,7 +19,8 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         AddFacade::class,
         AddServices::class,
-        TopicCommentCommand::class
+        TopicCommentCommand::class,
+        TopicContentCreatedRandomCommand::class
     ];
 
     /**
