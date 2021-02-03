@@ -255,7 +255,7 @@ class MerUserService extends BaseService
             ->select('id','profile_img','nick_name','description','sex','birth','area_code','phone','vip')
             ->where('id',$userId);
         if ($userId == $this->userId()) {
-            $result = $result->addSelect('facebook_auth_code','google_auth_code');
+            $result = $result->addSelect('facebook_auth_code','google_auth_code','wechat_auth_code');
         }
         if ($followData) {
             $result = $result->withCount(['follow','followed'])
