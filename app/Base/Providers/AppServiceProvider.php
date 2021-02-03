@@ -22,6 +22,7 @@ use App\Models\Topic\TopicContentLike;
 use App\Models\Topic\TopicContentReport;
 use App\Models\Topic\TopicUser;
 use App\Models\User\MerUser;
+use App\Models\User\MerUserCoinsLog;
 use App\Models\User\MerUserFollow;
 use App\Models\User\MerUserGameCollection;
 use App\Models\User\MerUserGameHistory;
@@ -33,6 +34,7 @@ use App\Services\Game\GamePackageService;
 use App\Services\Game\GamePackageSubscribeService;
 use App\Services\Game\GameTagService;
 use App\Services\MerUser\MerRetainLogService;
+use App\Services\MerUser\MerUserCoinsLogService;
 use App\Services\MerUser\MerUserFollowService;
 use App\Services\MerUser\MerUserGameCollectionService;
 use App\Services\MerUser\MerUserGameHistoryService;
@@ -100,6 +102,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(MerRetainLogService::class, function () {
             return new MerRetainLogService(new MerRetainLog());
+        });
+
+        $this->app->bind(MerUserCoinsLogService::class, function () {
+            return new MerUserCoinsLogService(new MerUserCoinsLog());
         });
     }
 

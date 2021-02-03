@@ -76,6 +76,8 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
         $router->get('fans', 'MerUserFollowController@index')->name('user.fans');
         $router->get('my-follow', 'MerUserFollowController@myFollow')->name('user.my-follow');
 
+        $router->get('coins', 'MerUserCoinsController@index')->name('user.coins');
+
 
     });
 
@@ -84,6 +86,7 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
         $router->post('report', 'AdBuryingController@report')->name('game-ad.report');
         $router->get('subscribe', 'GamePackageController@subscribe')->name('game.subscribe');
     });
+
 
     $router->group(['namespace' => 'Topic', 'prefix' => 'topic'], function ($router) {
         $router->get('search', 'TopicController@search')->name('topic.search');

@@ -7,6 +7,7 @@ namespace App\Services\Wechat;
 use App\Models\Pay\PayOrder;
 use App\Models\User\MerUser;
 use App\Services\Pay\PayService;
+use EasyWeChat\Factory;
 use Yansongda\Pay\Pay;
 use function AlibabaCloud\Client\json;
 
@@ -115,5 +116,30 @@ class WechatService
         ];
         return $config;
 //        return \EasyWeChat\Factory::payment($config);
+    }
+
+    public function withdraw()
+    {
+        $config = [
+            // 必要配置
+            'app_id'             => config('app.wechat_appid'),
+            'mch_id'             => config('app.wechat_mch_id'),
+            'key'                => config('app.wechat_pay_secret'),   // API 密钥
+
+            // 如需使用敏感接口（如退款、发送红包等）需要配置 API 证书路径(登录商户平台下载 API 证书)
+            'cert_path'          => storage_path('cert/apiclient_cert.pem'), // XXX: 绝对路径！！！！
+            'key_path'           => storage_path('cert/apiclient_key.pem'),      // XXX: 绝对路径！！！！
+        ];
+
+        $app = Factory::payment($config);
+
+        $res = $app->transfer->toBalance([
+            'partner_trade_no' => config('app.wechat_mch_id'), // 商户订单号，需保持唯一性(只能是字母或者数字，不能包含有符号)
+            'openid' => 'oPi2O6uGUt6T5EbRbE21_5laKoa0',
+            'check_name' => 'NO_CHECK', // NO_CHECK：不校验真实姓名, FORCE_CHECK：强校验真实姓名
+            'amount' => 1, // 企业付款金额，单位为分
+            'desc' => '理赔', // 企业付款操作说明信息。必填
+        ]);
+        echo"<pre>";print_r($res);exit;
     }
 }

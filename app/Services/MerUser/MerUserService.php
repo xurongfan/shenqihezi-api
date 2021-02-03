@@ -254,9 +254,6 @@ class MerUserService extends BaseService
         $result = $this->model->query()
             ->select('id','profile_img','nick_name','description','sex','birth','area_code','phone','vip')
             ->where('id',$userId);
-        if ($userId == $this->userId()) {
-            $result = $result->addSelect('facebook_auth_code','google_auth_code','wechat_auth_code');
-        }
         if ($followData) {
             $result = $result->withCount(['follow','followed'])
                 ->when($userId != $this->userId(),function ($query){
@@ -264,6 +261,12 @@ class MerUserService extends BaseService
                         $query1->where('mer_user_id',$this->userId());
                     }]);
                 });
+        }
+        if ($userId == $this->userId()) {
+            $result = $result->addSelect('facebook_auth_code','google_auth_code','wechat_auth_code')
+                        ->with(['userInfo' => function($query){
+                            $query->select('mer_user_id','coins','first_wechat_bind','first_play_game');
+                        }]);
         }
         return $result->firstOrFail();
     }
