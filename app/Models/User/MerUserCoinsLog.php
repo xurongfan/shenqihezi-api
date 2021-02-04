@@ -11,7 +11,7 @@ class MerUserCoinsLog extends BaseModel
     const TYPE_3 = 3;//抽奖
     const TYPE_4 = 4;//视频
 
-    const TYPE_5 = 5;//提现
+    const TYPE_5 = 11;//提现
 
     const TYPE_COINS = [
         self::TYPE_1 => 60,//绑定微信奖励
