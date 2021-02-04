@@ -77,6 +77,7 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
         $router->get('my-follow', 'MerUserFollowController@myFollow')->name('user.my-follow');
 
         $router->get('coins', 'MerUserCoinsController@index')->name('user.coins');
+        $router->post('obtain', 'MerUserCoinsController@obtain')->name('user.obtain');
 
 
     });

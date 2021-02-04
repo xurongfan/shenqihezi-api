@@ -6,6 +6,7 @@ namespace App\Services\Wechat;
 
 use App\Models\Pay\PayOrder;
 use App\Models\User\MerUser;
+use App\Services\MerUser\MerUserCoinsLogService;
 use App\Services\Pay\PayService;
 use EasyWeChat\Factory;
 use Yansongda\Pay\Pay;
@@ -28,6 +29,10 @@ class WechatService
         $data = json_decode($data, true);
         if (isset($data['errcode'])) {
             throw new \Exception($data['errmsg'] ?? '');
+        }
+        if ($user = auth()->user()){
+            $user->wechat_auth_code = $data['openid'];
+            $user->save();
         }
         return $data;
     }

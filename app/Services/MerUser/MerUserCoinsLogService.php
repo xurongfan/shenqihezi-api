@@ -18,6 +18,7 @@ class MerUserCoinsLogService extends BaseService
         return $this->model->query()
             ->select('amount','created_at','type')
             ->where('mer_user_id',$this->userId())
+            ->orderBy('created_at','desc')
             ->paginate(config('app.app_rows'))->each(function ($item, $key) {
 
                 $item['symbol'] = in_array($item['type'],[
@@ -29,6 +30,38 @@ class MerUserCoinsLogService extends BaseService
 
             });
     }
+
+    /**
+     * @param $type
+     * @return \Illuminate\Database\Eloquent\Model
+     * @throws \Exception
+     */
+    public function obtain($type)
+    {
+        $userId = $this->userId();
+
+        if (in_array($type,[MerUserCoinsLog::TYPE_1,MerUserCoinsLog::TYPE_2])){
+
+            $info = MerUserInfo::query()->firstOrCreate([
+                'mer_user_id' => $userId
+            ]);
+            if ($type == MerUserCoinsLog::TYPE_1){
+                if ($info->first_wechat_bind == 0){
+                    throw new \Exception(transL('common.coins_get_over'));
+                }
+                $info->first_wechat_bind = 0;
+            }
+            if ($type == MerUserCoinsLog::TYPE_2){
+                if ($info->first_play_game == 0){
+                    throw new \Exception(transL('common.coins_get_over'));
+                }
+                $info->first_play_game = 0;
+            }
+
+            $info->save();
+        }
+        return $this->coins($userId,$type);
+    }
     /**
      * @param $merUserId
      * @param $amount
@@ -36,7 +69,7 @@ class MerUserCoinsLogService extends BaseService
      * @return \Illuminate\Database\Eloquent\Model
      * @throws \Exception
      */
-    public function coins($merUserId,$amount,$type)
+    public function coins($merUserId,$type,$amount = 0)
     {
         $key = 'coins_log:' . $merUserId;
         if (!Cache::add($key, 1, 10)) {
@@ -53,6 +86,7 @@ class MerUserCoinsLogService extends BaseService
                 MerUserCoinsLog::TYPE_3,
                 MerUserCoinsLog::TYPE_4
             ])) {
+                $amount = MerUserCoinsLog::TYPE_COINS[$type];
                 $user->coins += $amount;
             }else{
                 if ($amount > $user->coins){
@@ -60,7 +94,14 @@ class MerUserCoinsLogService extends BaseService
                 }
                 $user->coins -= $amount;
             }
-            $user->save();
+            $this->save([
+                'mer_user_id' => $merUserId,
+                'type' => $type,
+                'before_operate_amount' => $user->getOriginal('coins'),
+                'amount' => $amount,
+                'after_operate_amount' => $user->coins,
+            ]) && $user->save();
+
             DB::commit();
         } catch (\Exception $exception) {
             DB::rollBack();

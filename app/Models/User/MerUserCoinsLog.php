@@ -13,5 +13,12 @@ class MerUserCoinsLog extends BaseModel
 
     const TYPE_5 = 5;//提现
 
+    const TYPE_COINS = [
+        self::TYPE_1 => 60,//绑定微信奖励
+        self::TYPE_2 => 40,
+        self::TYPE_3 => 30,
+        self::TYPE_4 => 100,
+    ];
+
     protected $table = 'mer_user_coins_log';
 }
