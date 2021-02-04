@@ -46,16 +46,16 @@ class MerUserCoinsLogService extends BaseService
                 'mer_user_id' => $userId
             ]);
             if ($type == MerUserCoinsLog::TYPE_1){
-                if ($info->first_wechat_bind == 0){
+                if ($info->first_wechat_bind == 1){
                     throw new \Exception(transL('common.coins_get_over'));
                 }
-                $info->first_wechat_bind = 0;
+                $info->first_wechat_bind = 1;
             }
             if ($type == MerUserCoinsLog::TYPE_2){
-                if ($info->first_play_game == 0){
+                if ($info->first_play_game == 1){
                     throw new \Exception(transL('common.coins_get_over'));
                 }
-                $info->first_play_game = 0;
+                $info->first_play_game = 1;
             }
 
             $info->save();

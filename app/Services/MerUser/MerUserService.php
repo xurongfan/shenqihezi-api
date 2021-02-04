@@ -3,6 +3,7 @@
 namespace App\Services\MerUser;
 
 use App\Base\Services\BaseService;
+use App\Models\User\MerUserGameHistory;
 use App\Models\User\MerUserInfo;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
@@ -265,10 +266,25 @@ class MerUserService extends BaseService
         if ($userId == $this->userId()) {
             $result = $result->addSelect('facebook_auth_code','google_auth_code','wechat_auth_code')
                         ->with(['userInfo' => function($query){
-                            $query->select('mer_user_id','coins','first_wechat_bind','first_play_game');
+                            $query->select('mer_user_id','coins','first_wechat_bind','first_play_game','total_game_time');
                         }]);
         }
-        return $result->firstOrFail();
+        $result = $result->firstOrFail();
+
+//        if ($userId == $this->userId()) {
+//            if (isset($result['userInfo']['first_play_game']) && $result['userInfo']['first_play_game']==0) {
+//                //统计总游戏时长
+//                $result['userInfo']['game_duration'] = MerUserGameHistory::query()->where('mer_user_id',$userId)->count('duration');
+//                if ($result['userInfo']['game_duration'] > 60 * 40) {
+//                    $result['userInfo']['first_play_game'] = 2;
+//                    MerUserInfo::query()->where('mer_user_id',$userId)->update([
+//                        'first_play_game' => 2
+//                    ]);
+//                }
+//            }
+//        }
+
+        return $result;
     }
 
     /**

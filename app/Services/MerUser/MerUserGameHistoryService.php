@@ -3,6 +3,7 @@
 namespace App\Services\MerUser;
 
 use App\Base\Services\BaseService;
+use App\Models\User\MerUserInfo;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
@@ -79,7 +80,8 @@ class MerUserGameHistoryService extends BaseService
     public function report($gamePackageId,$uid,$duration=0)
     {
         if ($report = $this->findOneBy(['uid' => $uid])){
-            $report['created_at'] = Carbon::parse($report['created_at']);
+//            $report['created_at'] = Carbon::parse($report['created_at']);
+            $time = $duration + $report['duration'];
             $this->updateBy(
                 [
                     'mer_user_id' => $this->userId(),
@@ -87,9 +89,13 @@ class MerUserGameHistoryService extends BaseService
                     'uid' => $uid
                 ],
                 [
-                    'duration' => $duration ? $duration : (new Carbon())->diffInSeconds($report['created_at'])
+                    'duration' => $time//$duration$duration ? $duration : (new Carbon())->diffInSeconds($report['created_at'])
                 ]
             );
+            //更新用户总游戏时长
+            MerUserInfo::query()->where('mer_user_id',$report['mer_user_id'])
+                ->increment('total_game_time',$time);
+
             return $report;
         }
         throw new \Exception(transL('common.system_error'));
