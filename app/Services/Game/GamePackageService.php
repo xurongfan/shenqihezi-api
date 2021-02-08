@@ -71,6 +71,7 @@ class GamePackageService extends BaseService
        foreach ($result as $key => &$item) {
            $item['icon_img'] = ossDomain($item['icon_img']);
            $item['background_img'] = ossDomain($item['background_img']);
+           $item['video_url'] = ossDomain($item['video_url']);
            $item['url'] = gameUrl($item['url']);
 
            $item['crack_url'] = gameUrl($item['crack_url'],$item['is_crack']);
