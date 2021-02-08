@@ -22,13 +22,15 @@ class MerUserCoinsLogService extends BaseService
             ->paginate(config('app.app_rows'))
             ->toArray();
         if ($data['data']) {
-            foreach ($data['data'] as $key => $item){
+            foreach ($data['data'] as $key => &$item){
                 $item['symbol'] = in_array($item['type'],[
                     MerUserCoinsLog::TYPE_1,
                     MerUserCoinsLog::TYPE_2,
                     MerUserCoinsLog::TYPE_3,
                     MerUserCoinsLog::TYPE_4
                 ]) ? '+' : '-';
+
+                $item['title'] = MerUserCoinsLog::TYPE_COINS_TITLE[$item['type']];
             }
         }
         return $data;
