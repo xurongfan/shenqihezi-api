@@ -31,6 +31,13 @@ class MerUserCoinsLogService extends BaseService
                 ]) ? '+' : '-';
 
                 $item['title'] = MerUserCoinsLog::TYPE_COINS_TITLE[$item['type']];
+
+                $item['icon'] = in_array($item['type'],[
+                    MerUserCoinsLog::TYPE_1,
+                    MerUserCoinsLog::TYPE_2,
+                    MerUserCoinsLog::TYPE_3,
+                    MerUserCoinsLog::TYPE_4
+                ]) ? ossDomain('app_icon/ic_bill_coin.png') : ossDomain('app_icon/ic_bill_withdraw.png');
             }
         }
         return $data;
