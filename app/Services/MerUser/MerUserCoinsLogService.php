@@ -15,20 +15,23 @@ class MerUserCoinsLogService extends BaseService
      */
     public function index()
     {
-        return $this->model->query()
+        $data = $this->model->query()
             ->select('amount','created_at','type')
             ->where('mer_user_id',$this->userId())
             ->orderBy('created_at','desc')
-            ->paginate(config('app.app_rows'))->each(function ($item, $key) {
-
+            ->paginate(config('app.app_rows'))
+            ->toArray();
+        if ($data['data']) {
+            foreach ($data['data'] as $key => $item){
                 $item['symbol'] = in_array($item['type'],[
                     MerUserCoinsLog::TYPE_1,
                     MerUserCoinsLog::TYPE_2,
                     MerUserCoinsLog::TYPE_3,
                     MerUserCoinsLog::TYPE_4
                 ]) ? '+' : '-';
-
-            });
+            }
+        }
+        return $data;
     }
 
     /**
