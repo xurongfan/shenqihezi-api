@@ -291,9 +291,22 @@ function getLangField(string $field)
 function ossDomain($path)
 {
     if ($path && !\Illuminate\Support\Str::startsWith($path, 'http://') && !\Illuminate\Support\Str::startsWith($path, 'https://')) {
-        return config('filesystems.disks.oss.domain_url') . $path.'?x-oss-process=style/yasuo';
+        return config('filesystems.disks.oss.domain_url') . $path.(isImage($path) ? '?x-oss-process=style/yasuo' : '');
     }
     return $path;
+}
+
+/**
+ * @param $filename
+ * @return false|int
+ */
+function isImage($filename)
+{
+    $types = '.gif|.jpeg|.png|.bmp|.webp|.jpg'; //定义检查的图片类型
+    if (!$info = pathinfo($filename)){
+        return 0;
+    }
+    return stripos($types,$info['extension']);
 }
 
 /**
