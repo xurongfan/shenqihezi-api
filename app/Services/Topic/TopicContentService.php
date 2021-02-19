@@ -61,9 +61,10 @@ class TopicContentService extends BaseService
      * @param int $topicId 话题
      * @param int $isHot 热门
      * @param int $userId 用户
+     * @param int $gameId 游戏id
      * @return mixed
      */
-    public function index($isFollow = 0,$topicId = 0,$isHot = 0,$userId = 0)
+    public function index($isFollow = 0,$topicId = 0,$isHot = 0,$userId = 0,$gameId = 0)
     {
         //已屏蔽用户
         if (($topicId || $isHot) || (!$isFollow && !$topicId && !$isHot && !$userId)) {
@@ -72,7 +73,7 @@ class TopicContentService extends BaseService
         $shiedlUser = $shiedlUser ?? [];
 
        $res = $this->model->query()
-           ->select('id','mer_user_id','content','image_resource','is_anonymous','position_info','created_at')
+           ->select('id','mer_user_id','content','image_resource','is_anonymous','position_info','created_at','game_package_id')
            ->with(['user' => function($query){
                $query->select('id','profile_img','nick_name','vip');
            },'topic'=>function($query){
@@ -81,7 +82,12 @@ class TopicContentService extends BaseService
                $query->select('id','content_id')->where('mer_user_id',$this->userId());
            },'IsUserFollow' => function($query){
                $query->where('mer_user_id',$this->userId());
+           },'game' => function($query){
+               $query->select('id','title','icon_img','background_img','url','is_crack','crack_url','crack_des','status','des','video_url');
            }])
+           ->when($gameId,function ($query){
+               $query->where('game_package_id','!=',0);
+           })
            //指定话题
            ->when($topicId,function ($query)use($topicId){
                $query->whereHasIn('topic',function ($query) use($topicId){

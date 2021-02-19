@@ -43,14 +43,14 @@ class MerUserGameHistoryService extends BaseService
         ->orderBy('id', 'desc')
         ->groupBy('game_package_id')
         ->paginate($limit ?? 50,['id', 'game_package_id', 'created_at'],'page',1)->toArray();
-        if ($result) {
-            foreach ($result['data'] as $key => &$item) {
-                $item['game_package']['icon_img'] = ossDomain($item['game_package']['icon_img']);
-                $item['game_package']['background_img'] = ossDomain($item['game_package']['background_img']);
-                $item['game_package']['url'] = gameUrl($item['game_package']['url']);
-                $item['game_package']['crack_url'] = gameUrl( $item['game_package']['crack_url'],$item['game_package']['is_crack']);
-            }
-        }
+//        if ($result) {
+//            foreach ($result['data'] as $key => &$item) {
+//                $item['game_package']['icon_img'] = ossDomain($item['game_package']['icon_img']);
+//                $item['game_package']['background_img'] = ossDomain($item['game_package']['background_img']);
+//                $item['game_package']['url'] = gameUrl($item['game_package']['url']);
+//                $item['game_package']['crack_url'] = gameUrl( $item['game_package']['crack_url'],$item['game_package']['is_crack']);
+//            }
+//        }
 
         $result['isVip'] = $isVip;
         return $result;
@@ -112,7 +112,7 @@ class MerUserGameHistoryService extends BaseService
                 ->select('game_package_id',DB::raw('sum(`duration`) as score') )
 //            ->where('duration','>',30)
                 ->with(['gamePackage'=>function($query){
-                    $query->select('id','title','des','icon_img','background_img','url','is_crack','crack_url','is_landscape','is_rank','crack_des','video_url');
+                    $query->select('id','title','des','icon_img','background_img','url','is_crack','crack_url','is_landscape','is_rank','crack_des','video_url','status');
                 }])
                 ->whereHasIn('gamePackage',function($query){
                     $query->where('is_rank',1)->where('status',1);
@@ -121,15 +121,15 @@ class MerUserGameHistoryService extends BaseService
                 ->orderBy(DB::raw('score'),'desc')
                 ->get()->toArray();
 
-            if ($result) {
-                foreach ($result as $key => &$item) {
-                    $item['game_package']['icon_img'] = ossDomain($item['game_package']['icon_img']);
-                    $item['game_package']['background_img'] = ossDomain($item['game_package']['background_img']);
-                    $item['game_package']['url'] = gameUrl($item['game_package']['url']);
-                    $item['game_package']['crack_url'] = gameUrl($item['game_package']['crack_url'],$item['game_package']['is_crack']);
-                    $item['game_package']['video_url'] = gameUrl($item['game_package']['video_url']);
-                }
-            }
+//            if ($result) {
+//                foreach ($result as $key => &$item) {
+//                    $item['game_package']['icon_img'] = ossDomain($item['game_package']['icon_img']);
+//                    $item['game_package']['background_img'] = ossDomain($item['game_package']['background_img']);
+//                    $item['game_package']['url'] = gameUrl($item['game_package']['url']);
+//                    $item['game_package']['crack_url'] = gameUrl($item['game_package']['crack_url'],$item['game_package']['is_crack']);
+//                    $item['game_package']['video_url'] = gameUrl($item['game_package']['video_url']);
+//                }
+//            }
             return $result;
         });
     }

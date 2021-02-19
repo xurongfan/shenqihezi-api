@@ -31,6 +31,7 @@ class GamePackageService extends BaseService
         game_package.like_base, 
         game_package.video_url, 
         game_package.des, 
+        game_package.status, 
         ( rand( ) * TIMESTAMP ( now( ) ) ) AS rid '))
 //            ->leftJoin('game_package_tag','game_package_tag.package_id','=','game_package.id')
 //            ->whereIn('game_package_tag.tag_id',$this->gameTagRandom())
@@ -70,12 +71,12 @@ class GamePackageService extends BaseService
                ->toArray();
        }
        foreach ($result as $key => &$item) {
-           $item['icon_img'] = ossDomain($item['icon_img']);
-           $item['background_img'] = ossDomain($item['background_img']);
-           $item['video_url'] = ossDomain($item['video_url']);
-           $item['url'] = gameUrl($item['url']);
-
-           $item['crack_url'] = gameUrl($item['crack_url'],$item['is_crack']);
+//           $item['icon_img'] = ossDomain($item['icon_img']);
+//           $item['background_img'] = ossDomain($item['background_img']);
+//           $item['video_url'] = ossDomain($item['video_url']);
+//           $item['url'] = gameUrl($item['url']);
+//
+//           $item['crack_url'] = gameUrl($item['crack_url'],$item['is_crack']);
            $item['is_like'] = isset($likeArr[$item['id']]) ? true : false;
            $item['is_collect'] = isset($collectArr[$item['id']]) ? true : false;
            $item['is_subscribe'] = isset($subscribeArr[$item['id']]) ? true : false;

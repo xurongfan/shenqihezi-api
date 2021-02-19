@@ -53,7 +53,11 @@ function getHttpContent($method = 'GET', $url, $params = null, $headers = null, 
     $client = new GuzzleHttp\Client();
     $guzzleParams = [];
     if ($params !== null) {
-        $guzzleParams[strtoupper($method) === 'GET' ? 'query' : 'json'] = $params;
+        if (in_array('application/x-www-form-urlencoded',array_values($headers))) {
+            $guzzleParams['form_params'] = $params;
+        }else{
+            $guzzleParams[strtoupper($method) === 'GET' ? 'query' : 'json'] = $params;
+        }
     }
 
     if ($headers !== null) {
@@ -229,49 +233,64 @@ function howOld($birth)
  */
 function sendSms($phoneNumber, $areaCode, $varifyCode)
 {
-    \AlibabaCloud\Client\AlibabaCloud::accessKeyClient(config('app.ali_access_keyid'), config('app.ali_access_secret'))
-        ->regionId('cn-hangzhou')
-        ->asDefaultClient();
-    $TemplateCode = $areaCode == 86 ? 'SMS_205123396' : 'SMS_208440010';
+    //2021-02-19 更换国外短信第三方
+//    if ($areaCode != '86') {
+//        $data = getHttpContent('post','http://api2.nxcloud.com/api/sms/mtsend',[
+//            'appkey' => 'nAAeFl7X',
+//            'secretkey' => '9KuEK988',
+//            'phone' => $areaCode.$phoneNumber,
+//            'content' => 'Dear FunTouch User,Welcome to register our service,your verify code is '.$varifyCode
+//        ],[
+//            'Content-Type' => 'application/x-www-form-urlencoded'
+//        ]);
+//        $data = json_decode($data,true);
+//        if (isset($data['code']) && $data['code'] == 0) {
+//            return true;
+//        }
+//    }else{
+        \AlibabaCloud\Client\AlibabaCloud::accessKeyClient(config('app.ali_access_keyid'), config('app.ali_access_secret'))
+            ->regionId('cn-hangzhou')
+            ->asDefaultClient();
+        $TemplateCode = $areaCode == 86 ? 'SMS_205123396' : 'SMS_208440010';
 
-    $phoneNumber = $areaCode == '86' ? $phoneNumber : $areaCode . $phoneNumber;
+        $phoneNumber = $areaCode == '86' ? $phoneNumber : $areaCode . $phoneNumber;
 
-    $params = [
-        'code' => $varifyCode
-    ];
+        $params = [
+            'code' => $varifyCode
+        ];
 
-    if ($areaCode != '86') {
-        $params['name'] = 'FunTouch User';
-    }
+        if ($areaCode != '86') {
+            $params['name'] = 'FunTouch User';
+        }
+        try {
+            $result = \AlibabaCloud\Client\AlibabaCloud::rpc()
+                ->product('Dysmsapi')
+                // ->scheme('https') // https | http
+                ->version('2017-05-25')
+                ->action('SendSms')
+                ->method('POST')
+                ->host('dysmsapi.aliyuncs.com')
+                ->options([
+                    'query' => [
+                        'RegionId' => "cn-hangzhou",
+                        'PhoneNumbers' => $phoneNumber,
+                        'SignName' => "FunTouch",
+                        'TemplateCode' => $TemplateCode,
+                        'TemplateParam' => json_encode($params),
+                    ],
+                ])
+                ->request();
+        } catch (\AlibabaCloud\Client\Exception\ClientException $e) {
+            throw new Exception($e->getErrorMessage());
+        } catch (\AlibabaCloud\Client\Exception\ServerException $e) {
+            throw new Exception($e->getErrorMessage());
+        }
+        $result = $result->toArray();
+        if (isset($result['Message']) && $result['Message'] == 'OK') {
+            return true;
+        }
+//    }
 
-    try {
-        $result = \AlibabaCloud\Client\AlibabaCloud::rpc()
-            ->product('Dysmsapi')
-            // ->scheme('https') // https | http
-            ->version('2017-05-25')
-            ->action('SendSms')
-            ->method('POST')
-            ->host('dysmsapi.aliyuncs.com')
-            ->options([
-                'query' => [
-                    'RegionId' => "cn-hangzhou",
-                    'PhoneNumbers' => $phoneNumber,
-                    'SignName' => "FunTouch",
-                    'TemplateCode' => $TemplateCode,
-                    'TemplateParam' => json_encode($params),
-                ],
-            ])
-            ->request();
-    } catch (\AlibabaCloud\Client\Exception\ClientException $e) {
-        throw new Exception($e->getErrorMessage());
-    } catch (\AlibabaCloud\Client\Exception\ServerException $e) {
-        throw new Exception($e->getErrorMessage());
-    }
-    $result = $result->toArray();
-    if (isset($result['Message']) && $result['Message'] == 'OK') {
-        return true;
-    }
-    logger('sms-response:' . json_encode($result));
     throw new Exception($result['Message'] ?? transL('sms.send_error', '发送失败'));
 }
 

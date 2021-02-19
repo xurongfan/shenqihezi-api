@@ -26,11 +26,14 @@ class TopicContentController extends Controller
      */
     public function publish(Request $request)
     {
-//        $this->validate($request,[
+        $this->validate($request,[
 //            'topic' => 'required|array' ,
-//        ],[
+            'game_package_id' => [
+                Rule::exists('game_package','id')
+            ],
+        ],[
 //            'topic.required' => transL('topic.topic_empty_error'),
-//        ]);
+        ]);
         return app(TopicContentService::class)->publish(\request()->all());
     }
 

@@ -4,6 +4,7 @@ namespace App\Models\Topic;
 
 
 use App\Base\Models\BaseModel;
+use App\Models\Game\GamePackage;
 use App\Models\User\MerUser;
 use App\Models\User\MerUserFollow;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -73,6 +74,11 @@ class TopicContent extends BaseModel
     public function getCreatedAtAttribute($value)
     {
         return (new \Carbon\Carbon($value))->timezone(config('app.timezone'))->toDateTimeString();
+    }
+
+    public function game()
+    {
+        return $this->hasOne(GamePackage::class,'id','game_package_id');
     }
 
 
