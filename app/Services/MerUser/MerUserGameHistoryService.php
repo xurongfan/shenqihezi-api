@@ -5,6 +5,7 @@ namespace App\Services\MerUser;
 use App\Base\Services\BaseService;
 use App\Models\User\MerUserInfo;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 
@@ -102,32 +103,44 @@ class MerUserGameHistoryService extends BaseService
     }
 
     /**
-     * @return array
+     * @return mixed
      */
     public function hotGame()
     {
-        $result = $this->model->newQuery()
-            ->select('game_package_id',DB::raw('sum(`duration`) as score') )
+        return Cache::remember('hot-game-list', 60*2, function () {
+            $result = $this->model->newQuery()
+                ->select('game_package_id',DB::raw('sum(`duration`) as score') )
 //            ->where('duration','>',30)
-            ->with(['gamePackage'=>function($query){
-                $query->select('id','title','icon_img','background_img','url','is_crack','crack_url','is_landscape','is_rank','crack_des');
-            }])
-            ->whereHasIn('gamePackage',function($query){
-                $query->where('is_rank',1);
-            })
-            ->groupBy('game_package_id')
-            ->orderBy(DB::raw('score'),'desc')
-            ->get()->toArray();
+                ->with(['gamePackage'=>function($query){
+                    $query->select('id','title','des','icon_img','background_img','url','is_crack','crack_url','is_landscape','is_rank','crack_des','video_url');
+                }])
+                ->whereHasIn('gamePackage',function($query){
+                    $query->where('is_rank',1)->where('status',1);
+                })
+                ->groupBy('game_package_id')
+                ->orderBy(DB::raw('score'),'desc')
+                ->get()->toArray();
 
-        if ($result) {
-            foreach ($result as $key => &$item) {
-                $item['game_package']['icon_img'] = ossDomain($item['game_package']['icon_img']);
-                $item['game_package']['background_img'] = ossDomain($item['game_package']['background_img']);
-                $item['game_package']['url'] = gameUrl($item['game_package']['url']);
-                $item['game_package']['crack_url'] = gameUrl($item['game_package']['crack_url'],$item['game_package']['is_crack']);
+            if ($result) {
+                foreach ($result as $key => &$item) {
+                    $item['game_package']['icon_img'] = ossDomain($item['game_package']['icon_img']);
+                    $item['game_package']['background_img'] = ossDomain($item['game_package']['background_img']);
+                    $item['game_package']['url'] = gameUrl($item['game_package']['url']);
+                    $item['game_package']['crack_url'] = gameUrl($item['game_package']['crack_url'],$item['game_package']['is_crack']);
+                    $item['game_package']['video_url'] = gameUrl($item['game_package']['video_url']);
+                }
             }
-        }
-
-        return $result;
+            return $result;
+        });
     }
+
+    /**
+     * @return mixed
+     */
+    public function hotTopGame()
+    {
+        $hotGame = $this->hotGame();
+        return $hotGame[array_rand($hotGame,1)];
+    }
+
 }

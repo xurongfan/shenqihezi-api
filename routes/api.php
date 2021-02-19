@@ -68,6 +68,7 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
         $router->post('game-history', 'MerUserGameHistoryController@store')->name('user.game-history-store');
         $router->put('game-history/{uid}', 'MerUserGameHistoryController@report')->name('user.game-history-report');
         $router->get('game-hot', 'MerUserGameHistoryController@hotGame')->name('user.game-hot');
+        $router->get('game-hot-top', 'MerUserGameHistoryController@hotTopGame')->name('user.game-hot-top');
 
         $router->post('game-integral', 'MerUserGameIntegralController@store')->middleware('LaraRsa')->name('user.game-integral');
         $router->get('game-integral-rank', 'MerUserGameIntegralController@rank')->name('user.game-integral-rank');

@@ -66,4 +66,13 @@ class MerUserGameHistoryController extends Controller
         return $this->service->hotGame();
     }
 
+    /**
+     * 置顶热门游戏
+     * @return array
+     */
+    public function hotTopGame()
+    {
+        return $this->service->hotTopGame();
+    }
+
 }
