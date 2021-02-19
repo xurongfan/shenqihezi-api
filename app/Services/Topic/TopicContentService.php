@@ -4,6 +4,9 @@ namespace App\Services\Topic;
 
 use App\Base\Services\BaseService;
 use App\Jobs\TopicContentResourceJob;
+use App\Models\Game\GamePackage;
+use App\Models\Topic\Topic;
+use Illuminate\Support\Facades\Cache;
 
 class TopicContentService extends BaseService
 {
@@ -61,10 +64,9 @@ class TopicContentService extends BaseService
      * @param int $topicId 话题
      * @param int $isHot 热门
      * @param int $userId 用户
-     * @param int $gameId 游戏id
      * @return mixed
      */
-    public function index($isFollow = 0,$topicId = 0,$isHot = 0,$userId = 0,$gameId = 0)
+    public function index($isFollow = 0,$topicId = 0,$isHot = 0,$userId = 0)
     {
         //已屏蔽用户
         if (($topicId || $isHot) || (!$isFollow && !$topicId && !$isHot && !$userId)) {
@@ -85,9 +87,9 @@ class TopicContentService extends BaseService
            },'game' => function($query){
                $query->select('id','title','icon_img','background_img','url','is_crack','crack_url','crack_des','status','des','video_url');
            }])
-           ->when($gameId,function ($query){
-               $query->where('game_package_id','!=',0);
-           })
+//           ->when($gameId,function ($query){
+//               $query->where('game_package_id','!=',0);
+//           })
            //指定话题
            ->when($topicId,function ($query)use($topicId){
                $query->whereHasIn('topic',function ($query) use($topicId){
@@ -192,6 +194,28 @@ class TopicContentService extends BaseService
             'id' => $id,
             'mer_user_id' => $this->userId()
         ]);
+    }
+
+    public function gameTopic()
+    {
+        $topic = Cache::remember('GameTopic',60*6,function (){
+            return Topic::query()->firstOrCreate([
+                'title' => 'Fun Touch Game'
+            ]);
+        });
+
+        $gameList = Cache::remember('funTouchGame',60*2,function (){
+            $count = GamePackage::query()->count();
+            $gameList = [];
+            while (count($gameList) < 3){
+                if (!in_array($offset = mt_rand(1,$count),array_column($gameList,'id'))){
+                    $gameList[] = GamePackage::query()->select('id','icon_img')->where('id','>=',$offset)->first();
+                }
+            }
+            return $gameList;
+        });
+
+        return compact('topic','gameList');
     }
 
 }

@@ -240,4 +240,12 @@ class TopicContentController extends Controller
         ]);
         return app(TopicContentUserShieldService::class)->store($request->shield_user_id);
     }
+
+    /**
+     * @return mixed
+     */
+    public function gameTopic()
+    {
+        return app(TopicContentService::class)->gameTopic();
+    }
 }

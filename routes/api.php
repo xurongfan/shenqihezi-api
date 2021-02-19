@@ -95,6 +95,7 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
         $router->get('/', 'TopicController@index')->name('topic.index');
         $router->get('user-topic-list', 'TopicController@userTopicList')->name('topic.user.topic');
         $router->post('/', 'TopicController@follow')->name('topic.follow');
+        $router->get('game-topic', 'TopicContentController@gameTopic')->name('topic.game-topic');
 
         $router->post('content', 'TopicContentController@publish')->name('topic.content.publish');
         $router->post('cancel-anonymous', 'TopicContentController@cancelAnonymous')->name('topic.content.anonymous');
