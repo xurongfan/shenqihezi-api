@@ -196,6 +196,9 @@ class TopicContentService extends BaseService
         ]);
     }
 
+    /**
+     * @return array
+     */
     public function gameTopic()
     {
         $topic = Cache::remember('GameTopic',60*6,function (){

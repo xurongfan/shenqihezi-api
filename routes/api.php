@@ -163,13 +163,13 @@ Route::any('game/list', function () {
     $list = \App\Models\Game\GamePackage::query()->orderBy('id', 'desc')->paginate(20);
     $list = $list ? $list->toArray() : [];
 
-    foreach ($list['data'] as $k => &$v) {
-        $v['icon_img'] = config('filesystems.disks.oss.domain_url') . $v['icon_img'];
-        $v['background_img'] = config('filesystems.disks.oss.domain_url') . $v['background_img'];
-        $gameUrl = env('GAME_URL');
-        $v['url'] = $v['url'] ? $gameUrl . $v['url'] : '';
-        $v['crack_url'] = $v['crack_url'] ? env('CRACK_GAME_URL') . $v['crack_url'] : '';
-    }
+//    foreach ($list['data'] as $k => &$v) {
+//        $v['icon_img'] = config('filesystems.disks.oss.domain_url') . $v['icon_img'];
+//        $v['background_img'] = config('filesystems.disks.oss.domain_url') . $v['background_img'];
+//        $gameUrl = env('GAME_URL');
+//        $v['url'] = $v['url'] ? $gameUrl . $v['url'] : '';
+//        $v['crack_url'] = $v['crack_url'] ? env('CRACK_GAME_URL') . $v['crack_url'] : '';
+//    }
     return $list;
 })->name('game-list');
 
