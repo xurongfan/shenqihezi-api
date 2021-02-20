@@ -165,6 +165,8 @@ class TopicContentService extends BaseService
                 $query->select('id','content_id')->where('mer_user_id',$this->userId());
             },'IsUserFollow' => function($query){
                 $query->where('mer_user_id',$this->userId());
+            },'game' => function($query){
+                $query->select('id','title','icon_img','background_img','url','is_crack','crack_url','crack_des','status','des','video_url');
             }])
             ->withCount(['comment','like'])
             ->firstOrFail();
