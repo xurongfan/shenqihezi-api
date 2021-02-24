@@ -49,6 +49,8 @@ class SendMessageFcmJob implements ShouldQueue
                     'body' => $this->content
                 ]);
                 $res = json_decode($res,true);
+                logger('send message result:'.json_encode($res));
+
                 if (isset($res['success']) && $res['success']){
                     MessageFcm::query()->create([
                         'mer_user_id' => $this->merUserId,
