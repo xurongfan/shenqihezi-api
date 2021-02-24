@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Message\MessageFcm;
 use App\Services\Topic\TopicService;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
@@ -210,6 +211,24 @@ Route::any('ad-game/list', function () {
 })->name('ad-game-list');
 
 Route::any('/test', function () {
+    $res = getHttpContent('post','http://47.242.85.154:81/api/message-send',[
+        'to_id' => 'e7jw06BXTDScQQKZPaxDvH:APA91bEUtYW0dkSXGw01ON6I-ghzhJroD0bKU8VSmpRuf6mTjOXqqwUNpAfplT_L35tMNWAdLGUfS2bR3DLU_SHBt2dopvdIubFv9TNQj-vy-wORKbHTLlDIE_l9IWzXxSHBXz6vLBkd',
+
+
+        'title' => 'FunTouch',
+        'body' => 'Someone is spying on you.'
+    ]);
+    $res = json_decode($res,true);
+    if (isset($res['success']) && $res['success']){
+        MessageFcm::query()->create([
+            'mer_user_id' => 5,
+            'title' => 'test',
+            'content' => 'test',
+            'to_id' => '222',
+            'message_id' => $res['results'][0]['message_id']??'',
+        ]);
+    }
+    echo"<pre>";print_r($res);exit;
     $iClientProfile = \AlibabaCloud\Client\Profile\DefaultProfile::getProfile("cn-shanghai", 'LTAI4GAeD3jcsVmvedfNw922', 'HK3f7xu1gJlo4beVqSE3ygYiEF9qmG'); // TODO
     $client = new \AlibabaCloud\Client\DefaultAcsClient($iClientProfile);
 
