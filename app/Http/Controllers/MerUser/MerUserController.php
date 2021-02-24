@@ -63,7 +63,7 @@ class MerUserController extends Controller
 //}
     public function reg(Request $request)
     {
-        logger('Reg Data:'.json_encode($request->all()));
+//        logger('Reg Data:'.json_encode($request->all()));
         $this->validate($request,[
             'phone' => 'required' ,
             'area_code' => 'required',

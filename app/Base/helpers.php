@@ -53,7 +53,7 @@ function getHttpContent($method = 'GET', $url, $params = null, $headers = null, 
     $client = new GuzzleHttp\Client();
     $guzzleParams = [];
     if ($params !== null) {
-        if (in_array('application/x-www-form-urlencoded',array_values($headers))) {
+        if ($headers && in_array('application/x-www-form-urlencoded',array_values($headers))) {
             $guzzleParams['form_params'] = $params;
         }else{
             $guzzleParams[strtoupper($method) === 'GET' ? 'query' : 'json'] = $params;
