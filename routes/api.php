@@ -219,15 +219,6 @@ Route::any('/test', function () {
         'body' => 'Someone is spying on you.'
     ]);
     $res = json_decode($res,true);
-    if (isset($res['success']) && $res['success']){
-        MessageFcm::query()->create([
-            'mer_user_id' => 5,
-            'title' => 'test',
-            'content' => 'test',
-            'to_id' => '222',
-            'message_id' => $res['results'][0]['message_id']??'',
-        ]);
-    }
     echo"<pre>";print_r($res);exit;
     $iClientProfile = \AlibabaCloud\Client\Profile\DefaultProfile::getProfile("cn-shanghai", 'LTAI4GAeD3jcsVmvedfNw922', 'HK3f7xu1gJlo4beVqSE3ygYiEF9qmG'); // TODO
     $client = new \AlibabaCloud\Client\DefaultAcsClient($iClientProfile);
