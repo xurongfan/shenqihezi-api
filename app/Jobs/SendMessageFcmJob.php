@@ -61,7 +61,8 @@ class SendMessageFcmJob implements ShouldQueue
             }
 
         }catch (\Exception $exception){
-            throw new \Exception($exception->getMessage());
+            return false;
+//            throw new \Exception($exception->getMessage());
         }
         return true;
     }
