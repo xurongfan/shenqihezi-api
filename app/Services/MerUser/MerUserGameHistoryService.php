@@ -19,8 +19,8 @@ class MerUserGameHistoryService extends BaseService
     {
         $page = request()->input('page',1);
         if (!$isVip = app(MerUserService::class)->isVip() && !$userId) {
-            $page = 1;
-            $limit = 5;
+//            $page = 1;
+//            $limit = 5;
         }
         //查看他人历史
         if ($userId) {
@@ -43,16 +43,7 @@ class MerUserGameHistoryService extends BaseService
         ->orderBy('id', 'desc')
         ->groupBy('game_package_id')
         ->paginate($limit ?? 50,['id', 'game_package_id', 'created_at'],'page',1)->toArray();
-//        if ($result) {
-//            foreach ($result['data'] as $key => &$item) {
-//                $item['game_package']['icon_img'] = ossDomain($item['game_package']['icon_img']);
-//                $item['game_package']['background_img'] = ossDomain($item['game_package']['background_img']);
-//                $item['game_package']['url'] = gameUrl($item['game_package']['url']);
-//                $item['game_package']['crack_url'] = gameUrl( $item['game_package']['crack_url'],$item['game_package']['is_crack']);
-//            }
-//        }
-
-        $result['isVip'] = $isVip;
+//        $result['isVip'] = $isVip;
         return $result;
     }
 
