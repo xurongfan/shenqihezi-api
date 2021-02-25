@@ -5,6 +5,7 @@ namespace App\Services\MerUser;
 use App\Base\Services\BaseService;
 use App\Models\User\MerUserGameHistory;
 use App\Models\User\MerUserInfo;
+use App\Models\User\MerUserLoginLog;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redis;
@@ -178,6 +179,7 @@ class MerUserService extends BaseService
         }
         //生成token
         $user->token = 'Bearer '.self::loginToken($user);
+        $user['device_uid'] = $request['device_uid'] ?? '';
 
         $this->cacheToken($user);
 
@@ -196,6 +198,7 @@ class MerUserService extends BaseService
             'last_login_date' => Carbon::now()->toDateTimeString()
         ]);
 
+
         return auth()->login($user);
     }
 
@@ -206,6 +209,15 @@ class MerUserService extends BaseService
     {
 //        Redis::setex('auth_token_'.md5($user['token']),config('jwt.refresh_ttl')*60,json_encode($user));
         Redis::setex('auth_user_'.$user->id,config('jwt.refresh_ttl')*60+30,json_encode($user));
+
+        //登录日志
+        MerUserLoginLog::query()->create([
+            'mer_user_id' => $user['id'],
+            'last_login_at' => Carbon::now()->toDateTimeString(),
+            'last_login_ip' => request()->getClientIp(),
+            'register_at' => $user['created_at'],
+            'device_uid' => $user['device_uid'],
+        ]);
 
     }
 
