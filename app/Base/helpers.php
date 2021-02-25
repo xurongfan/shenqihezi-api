@@ -391,3 +391,62 @@ function importImage($path)
 {
     return config('filesystems.disks.oss.domain_url').'import/'.$path.'?x-oss-process=style/yasuo';
 }
+
+/**
+ * @return string
+ */
+function randomUser()
+
+{
+
+    $male_names=array("James","John","Robert","Michael","William","David","Richard","Charles","Joseph","Thomas","Christopher","Daniel","Paul","Mark","Donald","George","Kenneth","Steven","Edward");
+
+    $famale_names = array("Mary","Patricia","Linda","Barbara","Elizabeth","Jennifer","Maria","Susan","Margaret","Dorothy","Lisa","Nancy","Karen","Betty","Helen","Sandra","Donna","Carol","Ruth");
+
+    $surnames =array("Smith","Jones","Taylor","Williams","Brown","Davies","Evans","Wilson","Thomas","Roberts","Johnson","Lewis","Walker","Robinson","Wood","Thompson","White","Watson","Jackson");
+
+    $frist_num = mt_rand(0,19);
+
+    $sur_num = mt_rand(0,19);
+
+    $type = rand(0,1);
+
+    if($type==0){
+
+        $username=$male_names[$frist_num]." ".$surnames[$sur_num];
+
+    } else {
+
+        $username=$famale_names[$frist_num]." ".$surnames[$sur_num];
+
+    }
+
+//    $lchar = 0;
+//
+//    $char = 0;
+//
+//    for($i = 0; $i < 4; $i++)
+//
+//    {
+//
+//        while($char == $lchar)
+//
+//        {
+//
+//            $char = rand(48, 109);
+//
+//            if($char > 57) $char += 7;
+//
+//            if($char > 90) $char += 6;
+//
+//        }
+//
+//        $user .= chr($char);
+//
+//        $lchar = $char;
+//
+//    }
+
+    return $username;
+
+}

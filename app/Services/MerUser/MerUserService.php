@@ -142,6 +142,48 @@ class MerUserService extends BaseService
         return $user;
     }
 
+    /**
+     * @param $request
+     * @return array
+     * @throws \Exception
+     */
+    public function newLogin($request)
+    {
+        $keys = Arr::only($request, ['facebook_auth_code', 'google_auth_code','wechat_auth_code']);
+        if ($keys){
+            $user = self::finOneUser(array_filter($keys));
+            $request = $keys;
+        }
+        if (isset($request['phone']) && $request['phone']) {
+            //验证码校验
+            if (($request['verify_code'] ?? '') != Redis::GET(self::smsKey($request['area_code'].$request['phone'],'login'))) {
+                throw new \Exception(transL('sms.sms_code_error'));
+            }
+            $user = $this->getUserByPhone($request['phone'],$request['area_code']);
+            $request = Arr::except($request, ['facebook_auth_code', 'google_auth_code','wechat_auth_code']);
+        }
+
+        if (empty($user)) {
+            $data = $this->model->filter($request);
+            $data['nick_name'] = randomUser();
+            $this->model->fill($data)->save();
+            if (isset($request['tags']) && $request['tags']) {
+                $this->model->tags()->sync($request['tags']);
+            }
+            $this->model->userInfo()->create([
+                'referrer' => $request['referrer'] ?? '',
+                'device_uid' => $request['device_uid'] ?? '',
+            ]);
+            $user = $this->model;
+        }
+        //生成token
+        $user->token = 'Bearer '.self::loginToken($user);
+
+        $this->cacheToken($user);
+
+        return $user->toArray();
+    }
+
 
     /**
      * 重新登陆获取token
@@ -153,6 +195,7 @@ class MerUserService extends BaseService
             'last_login_ip' => request()->getClientIp(),
             'last_login_date' => Carbon::now()->toDateTimeString()
         ]);
+
         return auth()->login($user);
     }
 
@@ -238,9 +281,10 @@ class MerUserService extends BaseService
      */
     public function editUserInfo($request)
     {
-        return MerUserInfo::query()->updateOrCreate([
+        $merUserInfo = new MerUserInfo();
+        return $merUserInfo::query()->updateOrCreate([
             'mer_user_id'=>$this->userId()
-        ],$request);
+        ],$merUserInfo->filter($request));
     }
 
     /**

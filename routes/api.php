@@ -28,7 +28,8 @@ Route::group([], function (Router $router) {
     $router->group(['namespace' => 'MerUser', 'prefix' => 'user'], function ($router) {
         $router->post('reg', 'MerUserController@reg')->name('user.reg');
         $router->post('sendSms', 'MerUserController@sendSms')->name('user.sms');
-        $router->any('login', 'MerUserController@login')->name('user.login');
+        $router->post('login', 'MerUserController@login')->name('user.login');
+        $router->post('newLogin', 'MerUserController@newLogin')->name('user.newLogin');
     });
 
     $router->group(['namespace' => 'Game', 'prefix' => 'game'], function ($router) {

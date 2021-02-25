@@ -105,6 +105,25 @@ class MerUserController extends Controller
     }
 
     /**
+     * @param Request $request
+     * @return array
+     * @throws \Exception
+     */
+    public function newLogin(Request $request)
+    {
+        $this->validate($request,[
+            'phone' => 'required_with:area_code,verify_code' ,
+            'area_code' => 'required_with:phone,verify_code',
+            'verify_code' => 'required_with:phone,area_code',
+        ],[
+            'phone.required_with' => transL('mer-user.phone_error'),
+            'area_code.required_with' => transL('mer-user.area_code_error'),
+            'verify_code.required_with' => transL('mer-user.verify_code_error'),
+        ]);
+        return $this->service->newLogin($request->all());
+    }
+
+    /**
      * 获取用户信息
      * @return \Illuminate\Contracts\Auth\Authenticatable|null
      */
