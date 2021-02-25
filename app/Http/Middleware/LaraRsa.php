@@ -6,6 +6,9 @@ use Closure;
 
 class LaraRsa
 {
+
+    protected $timeOut = 30;
+
     /**
      * Handle an incoming request.
      *
@@ -15,12 +18,16 @@ class LaraRsa
      */
     public function handle($request, Closure $next)
     {
-        $data = $request->input('data');
-        if (empty($data)) {
+        $data = $request->input('data',null);
+        $result = \LaraRsa\LaraRsa::decrypt($data);
+        if (empty($result)){
             throw new \Exception('params empty.');
         }
-        $result = \LaraRsa\LaraRsa::decrypt($data);
-        $request->replace(json_decode($result,true));
+        $result = json_decode($result,true);
+        if (isset($result['millis']) && time() - $result['millis'] >= $this->timeOut){
+            throw new \Exception('timeout error.');
+        }
+        $request->replace($result);
         return $next($request);
     }
 }
