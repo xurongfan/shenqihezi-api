@@ -152,7 +152,7 @@ class MerUserService extends BaseService
         $keys = Arr::only($request, ['facebook_auth_code', 'google_auth_code','wechat_auth_code']);
         if ($keys){
             $user = self::finOneUser(array_filter($keys));
-            $request = $keys;
+            $request = Arr::add($keys,'device_uid',$request['device_uid'] ?? '');
         }
         if (isset($request['phone']) && $request['phone']) {
             //验证码校验
