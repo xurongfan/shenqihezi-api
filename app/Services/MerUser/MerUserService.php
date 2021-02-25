@@ -153,9 +153,14 @@ class MerUserService extends BaseService
         $keys = Arr::only($request, ['facebook_auth_code', 'google_auth_code','wechat_auth_code']);
         if ($keys){
             $user = self::finOneUser(array_filter($keys));
-            $request = Arr::add($keys,'device_uid',$request['device_uid'] ?? '');
-            $request = Arr::add($keys,'nick_name',$request['nick_name'] ?? '');
-            $request = Arr::add($keys,'profile_img',$request['profile_img'] ?? '');
+            $request = array_merge($keys,[
+                'device_uid' => $request['device_uid'] ?? '',
+                'nick_name' => $request['nick_name'] ?? '',
+                'profile_img' => $request['profile_img'] ?? '',
+            ]);
+//            $request = Arr::add($keys,'device_uid',$request['device_uid'] ?? '');
+//            $request = Arr::add($request,'nick_name',$request['nick_name'] ?? '');
+//            $request = Arr::add($request,'profile_img',$request['profile_img'] ?? '');
         }
         if (isset($request['phone']) && $request['phone']) {
             //验证码校验
@@ -167,8 +172,9 @@ class MerUserService extends BaseService
         }
 
         if (empty($user)) {
+
             $data = $this->model->filter($request);
-            $data['nick_name'] = $data['nick_name'] ? $data['nick_name'] : randomUser();
+            $data['nick_name'] = isset($data['nick_name'])&&$data['nick_name'] ? $data['nick_name'] : randomUser();
             $this->model->fill($data)->save();
             if (isset($request['tags']) && $request['tags']) {
                 $this->model->tags()->sync($request['tags']);
