@@ -291,7 +291,38 @@ class MerUserService extends BaseService
     public function editUser($request)
     {
         $user = self::user();
-        $user->update($this->model->filter($request));
+        $thirdKeys = Arr::only($request, ['facebook_auth_code', 'google_auth_code','wechat_auth_code']);
+        if ($thirdKeys){
+            $user = $this->model->newQuery()->buildQuery(array_filter($thirdKeys))->where('id','!=',$user->id)->first();
+            if ($user) {
+                throw new \Exception(transL('mer-user.user_exist_from_third','用户已存在'));
+            }
+        }
+        if (isset($request['phone']) && $request['phone']) {
+            //验证码校验
+            if (($request['verify_code'] ?? '') != Redis::GET(self::smsKey($request['area_code'].$request['phone'],'bind'))) {
+                throw new \Exception(transL('sms.sms_code_error'));
+            }
+            $user = $this->getUserByPhone($request['phone'],$request['area_code']);
+            if ($user) {
+                throw new \Exception(transL('mer-user.user_exist_from_third','用户已存在'));
+            }
+        }
+        foreach ($request as $k => $value){
+            if (in_array($k,[
+                'last_login_ip',
+                'last_login_date',
+                'status',
+                'vip',
+                'vip_start_at',
+                'vip_end_at',
+                'verify_code'
+            ])){
+                Arr::forget($request, $k);
+            }
+        }
+        $request = $this->model->filter($request);
+        $user->update($request);
         return $user;
     }
 

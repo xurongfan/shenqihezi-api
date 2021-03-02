@@ -14,7 +14,7 @@ return [
 
     'user_exist' => 'The phone number already exists',
 
-    'user_exist_from_third' => 'This phone number is bound to another account ',
+    'user_exist_from_third' => 'This account has been bound to another user ',
 
     'user_not_exist' => 'This phone number is not registered ',
 
