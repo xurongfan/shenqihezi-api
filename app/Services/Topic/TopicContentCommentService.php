@@ -24,7 +24,7 @@ class TopicContentCommentService extends BaseService
             $request['fid'] = $pidInfo['id'] ?? 0;
         }
         $request['ip'] = getClientIp();
-        $this->model->fill($request)->save();
+        $this->model->fill($this->model->filter($request))->save();
 
         $content = app(TopicContentService::class)->findOneBy([
             'id' => $request['content_id'] ?? 0
