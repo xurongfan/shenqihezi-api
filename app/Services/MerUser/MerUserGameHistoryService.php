@@ -112,15 +112,6 @@ class MerUserGameHistoryService extends BaseService
                 ->orderBy(DB::raw('score'),'desc')
                 ->get()->toArray();
 
-//            if ($result) {
-//                foreach ($result as $key => &$item) {
-//                    $item['game_package']['icon_img'] = ossDomain($item['game_package']['icon_img']);
-//                    $item['game_package']['background_img'] = ossDomain($item['game_package']['background_img']);
-//                    $item['game_package']['url'] = gameUrl($item['game_package']['url']);
-//                    $item['game_package']['crack_url'] = gameUrl($item['game_package']['crack_url'],$item['game_package']['is_crack']);
-//                    $item['game_package']['video_url'] = gameUrl($item['game_package']['video_url']);
-//                }
-//            }
             return $result;
         });
     }

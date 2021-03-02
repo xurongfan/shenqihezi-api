@@ -224,7 +224,7 @@ class MerUserService extends BaseService
             'last_login_at' => Carbon::now()->toDateTimeString(),
             'last_login_ip' => request()->getClientIp(),
             'register_at' => $user['created_at'],
-            'device_uid' => $user['device_uid'],
+            'device_uid' => $user['device_uid'] ?? '',
         ]);
 
     }
