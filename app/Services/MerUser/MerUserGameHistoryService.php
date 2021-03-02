@@ -3,6 +3,7 @@
 namespace App\Services\MerUser;
 
 use App\Base\Services\BaseService;
+use App\Models\User\MerUserGameLog;
 use App\Models\User\MerUserInfo;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -29,7 +30,7 @@ class MerUserGameHistoryService extends BaseService
 
         $userId = $userId ? $userId : $this->userId();
 
-        $result = $this->model->newQuery()
+        $result = MerUserGameLog::query()
         ->whereHas('gamePackage')
         ->with(['gamePackage' => function ($query) {
             $query->selectRaw('id,title,icon_img,background_img,url,is_crack,crack_url,is_landscape,crack_des,status')
@@ -40,8 +41,7 @@ class MerUserGameHistoryService extends BaseService
             }]);
         }])
         ->where('mer_user_id', $userId)
-        ->orderBy('id', 'desc')
-        ->groupBy('game_package_id')
+        ->orderBy('updated_at', 'desc')
         ->paginate($limit ?? 50,['id', 'game_package_id', 'created_at'],'page',1)->toArray();
 //        $result['isVip'] = $isVip;
         return $result;
@@ -55,11 +55,21 @@ class MerUserGameHistoryService extends BaseService
      */
     public function store($gamePackageId)
     {
-        return $this->save([
+         $res = $this->save([
             'mer_user_id' => $this->userId(),
             'game_package_id' => $gamePackageId,
             'uid' => Uuid::uuid1()->toString(),
         ]);
+
+         MerUserGameLog::query()->updateOrCreate([
+             'mer_user_id' => $this->userId(),
+             'game_package_id' => $gamePackageId,
+         ],[
+             'updated_at' => date('Y-m-d H:i:s')
+         ]);
+
+         return $res;
+
     }
 
     /**
