@@ -9,6 +9,11 @@ class LaraRsa
 
     protected $timeOut = 30;
 
+    protected $priKey = null;
+
+    protected $pubKey = null;
+
+
     /**
      * Handle an incoming request.
      *
@@ -18,8 +23,15 @@ class LaraRsa
      */
     public function handle($request, Closure $next)
     {
+        $this->priKey = file_get_contents(config("lararsa.private_key_file", ""));
+        $this->pubKey = file_get_contents(config("lararsa.public_key_file", ""));
+        // 需要开启openssl扩展
+        if (!extension_loaded("openssl")) {
+            throw new \Exception("RSA Error:Please open the openssl extension first",500);
+        }
+
         $data = $request->input('data',null);
-        $result = \LaraRsa\LaraRsa::decrypt($data);
+        $result = self::decrypt($data);
         if (empty($result)){
             throw new \Exception('params empty.');
         }
@@ -29,5 +41,31 @@ class LaraRsa
         }
         $request->replace($result);
         return $next($request);
+    }
+
+    /**
+     * @param $encryptData
+     * @return string
+     */
+    private function decrypt($encryptData){
+        $crypto = '';
+        foreach (str_split(base64_decode($encryptData), 128) as $chunk) {
+            openssl_private_decrypt($chunk, $decryptData, $this->priKey);
+            $crypto .= $decryptData;
+        }
+        return $crypto;
+    }
+
+    /**
+     * @param $originalData
+     * @return string
+     */
+    private function encrypt($originalData){
+        $crypto = '';
+        foreach (str_split($originalData, 117) as $chunk) {
+            openssl_public_encrypt($chunk, $encryptData, $this->pubKey);
+            $crypto .= $encryptData;
+        }
+        return base64_encode($crypto);
     }
 }
