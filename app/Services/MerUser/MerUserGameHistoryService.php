@@ -86,7 +86,7 @@ class MerUserGameHistoryService extends BaseService
             );
             //更新用户总游戏时长
             MerUserInfo::query()->where('mer_user_id',$report['mer_user_id'])
-                ->increment('total_game_time',$time);
+                ->increment('total_game_time',$duration);
 
             return $report;
         }
