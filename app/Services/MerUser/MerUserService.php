@@ -293,7 +293,8 @@ class MerUserService extends BaseService
         $user = self::user();
         $thirdKeys = Arr::only($request, ['facebook_auth_code', 'google_auth_code','wechat_auth_code']);
         if ($thirdKeys){
-            $user = $this->model->newQuery()->buildQuery(array_filter($thirdKeys))->where('id','!=',$user->id)->first();
+            sqlDump();
+            $user = $this->model->newInstance()->buildQuery(array_filter($thirdKeys))->where('id','!=',$user->id)->first();
             if ($user) {
                 throw new \Exception(transL('mer-user.user_exist_from_third','用户已存在'));
             }
