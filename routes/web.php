@@ -16,6 +16,8 @@ Route::get('/', function () {
 });
 
 
-//Route::get('happy-glass-3a', function () {
-//    return file_get_contents('/var/www/public/shenqihezi/happy-glass-3a/index.html');
-//});
+Route::get('config',function (){
+    echo"<pre>";print_r(222);exit;
+});
+
+Route::get('config/{key}', 'System\SysConfigController@viewConfig');

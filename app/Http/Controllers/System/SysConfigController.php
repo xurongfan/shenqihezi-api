@@ -32,4 +32,17 @@ class SysConfigController extends Controller
 
         return $result;
     }
+
+    /**
+     * @param $key
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
+     */
+    public function viewConfig($key)
+    {
+        $result = $this->service->findOneBy([
+            'keyword' => getLangField($key)
+        ],'content');
+
+        return view('paperwork',$result);
+    }
 }
