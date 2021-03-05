@@ -145,6 +145,9 @@ class TopicContentService extends BaseService
                $item['user']['profile_img'] = null;
                $item['user']['nick_name'] = 'AM';
            }
+           if ($isHot){
+               $item['created_at'] = null;
+           }
        }
        return $res;
     }
