@@ -13,7 +13,7 @@ class PayProjectService extends BaseService
      */
     public function index($isGoogle = 0,$isVip = 0)
     {
-        return $this->model->query()->select('id','title','days','amount','google_pay_id')->when($isGoogle,function ($query){
+        $res = $this->model->query()->select('id','title','days','amount','google_pay_id','currency')->when($isGoogle,function ($query){
             $query->where('google_pay_id','!=','');
         },function ($query){
             $query->where('google_pay_id','');
@@ -22,5 +22,10 @@ class PayProjectService extends BaseService
         ->orderBy('days','desc')
         ->get()
         ->toArray();
+
+        foreach ($res as &$item){
+            $item['amount'] = ($item['currency']?$item['currency'].' ':'').$item['amount'];
+        }
+       return $res;
     }
 }
