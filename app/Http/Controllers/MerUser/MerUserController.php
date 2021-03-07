@@ -101,7 +101,8 @@ class MerUserController extends Controller
             'area_code.required_with' => transL('mer-user.area_code_error'),
             'verify_code.required_with' => transL('mer-user.verify_code_error'),
         ]);
-        return  $this->service->login($request->all());
+        return $this->service->newLogin($request->all());
+//        return  $this->service->login($request->all());
     }
 
     /**
