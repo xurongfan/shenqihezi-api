@@ -45,6 +45,7 @@ class Response
                 $response->setStatusCode(200)->setContent($content)->withHeaders(['Content-Type' => 'application/json']);
             }
         }
+        logger('IP:'.json_encode($_SERVER));
         $this->saveAccessLog($request->method(), $request->path(), $request->all(), $response);
         return $response;
     }
