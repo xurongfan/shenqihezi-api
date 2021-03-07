@@ -185,7 +185,7 @@ function ip()
  * @param boolean $adv 是否进行高级模式获取（有可能被伪装）
  * @return mixed
  */
-function getClientIp($type = 0, $adv = false)
+function getClientIp($type = 0, $adv = true)
 {
     $type = $type ? 1 : 0;
     static $ip = NULL;
