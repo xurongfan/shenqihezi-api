@@ -69,10 +69,18 @@ class AuthToken extends BaseMiddleware
 
 //                    //是同一个则删除锁
 //                    if (Redis::get('token_lock_'.$user->id) == $token) {
-//                        Redis::del('token_lock_'.$user->id);
+                        Redis::del('token_lock_'.$user->id);
 //                    }
                     // 在响应头中返回新的 token
                     return $this->setAuthenticationHeader($next($request), $token);
+                }
+                else{
+                    if ($lockToken = Redis::get('token_lock_'.$user->id)){
+                        return $this->setAuthenticationHeader($next($request), $lockToken);
+                    }
+//                    $redisUser = Redis::get('auth_user_'.$user->id);
+
+//                    $redisUser = $redisUser ? json_decode($redisUser,true) : [];
                 }
 
 
