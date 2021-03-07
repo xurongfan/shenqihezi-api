@@ -202,7 +202,7 @@ class MerUserService extends BaseService
     protected function loginToken($user)
     {
         $user->update([
-            'last_login_ip' => request()->getClientIp(),
+            'last_login_ip' => getClientIp(),
             'last_login_date' => Carbon::now()->toDateTimeString()
         ]);
 
@@ -222,7 +222,7 @@ class MerUserService extends BaseService
         MerUserLoginLog::query()->create([
             'mer_user_id' => $user['id'],
             'last_login_at' => Carbon::now()->toDateTimeString(),
-            'last_login_ip' => request()->getClientIp(),
+            'last_login_ip' => getClientIp(),
             'register_at' => $user['created_at'],
             'device_uid' => $user['device_uid'] ?? '',
         ]);

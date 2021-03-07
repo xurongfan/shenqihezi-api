@@ -59,7 +59,7 @@ class AuthToken extends BaseMiddleware
 
                     $user->update(
                         [
-                            'last_login_ip' => request()->getClientIp(),
+                            'last_login_ip' => getClientIp(),
                             'last_login_date' => Carbon::now()->toDateTimeString()
                         ]
                     );
