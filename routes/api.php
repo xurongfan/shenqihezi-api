@@ -162,7 +162,10 @@ Route::any('feedback-official', function () {
 });
 
 Route::any('game/list', function () {
-    $list = \App\Models\Game\GamePackage::query()->orderBy('id', 'desc')->paginate(20);
+    $gamePackage = new \App\Models\Game\GamePackage();
+    $gamePackage::$modify = false;
+
+    $list = $gamePackage->orderBy('id', 'desc')->paginate(20);
     $list = $list ? $list->toArray() : [];
 
 //    foreach ($list['data'] as $k => &$v) {
