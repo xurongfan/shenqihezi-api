@@ -9,6 +9,8 @@ class GamePackage extends BaseModel
 {
     protected $table = 'game_package';
 
+    public static $modify = true;
+
     /**
      * 是否订阅
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
@@ -42,7 +44,7 @@ class GamePackage extends BaseModel
      */
     public function getUrlAttribute($value)
     {
-        return $this->status == 1 ? gameUrl($value) : '';
+        return !self::$modify || $this->status == 1 ? gameUrl($value) : '';
     }
 
     /**
@@ -51,7 +53,7 @@ class GamePackage extends BaseModel
      */
     public function getCrackUrlAttribute($value)
     {
-        return $this->status == 1 ? gameUrl($value,1) : '';
+        return !self::$modify || $this->status == 1 ? gameUrl($value,1) : '';
     }
 
     /**
