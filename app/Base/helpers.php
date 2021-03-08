@@ -467,3 +467,27 @@ function randomUser()
     return $username;
 
 }
+
+/**
+ * 获取ip地理位置
+ * @param $ip
+ * @throws \GeoIp2\Exception\AddressNotFoundException
+ * @throws \MaxMind\Db\Reader\InvalidDatabaseException
+ */
+function getIp2($ip)
+{
+    try {
+        $reader = new \GeoIp2\Database\Reader(storage_path('GeoLite2-City.mmdb'));
+        $record = $reader->city($ip);
+        return [
+            'country_code' => $record->country->isoCode,
+            'country_name' => $record->country->name,
+            'city_name' => $record->city->name,
+            'latitude' => $record->location->latitude,
+            'longitude' => $record->location->longitude,
+        ];
+    }catch (Exception $exception){
+
+    }
+    return [];
+}

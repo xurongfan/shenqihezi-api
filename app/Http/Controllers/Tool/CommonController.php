@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tool;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class CommonController extends Controller
@@ -54,8 +55,23 @@ class CommonController extends Controller
             throw new \Exception($exception->getMessage());
         }
 
-
-
         return $path;
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     * @throws \GeoIp2\Exception\AddressNotFoundException
+     * @throws \MaxMind\Db\Reader\InvalidDatabaseException
+     */
+    public function getIpAddress(Request $request)
+    {
+        $this->validate($request,[
+            'ip' => [
+                'required',
+                'ip'
+            ] ,
+        ]);
+        return getIp2($request->ip);
     }
 }

@@ -218,11 +218,21 @@ class MerUserService extends BaseService
 //        Redis::setex('auth_token_'.md5($user['token']),config('jwt.refresh_ttl')*60,json_encode($user));
         Redis::setex('auth_user_'.$user->id,config('jwt.refresh_ttl')*60+30,json_encode($user));
 
+       //ip地理获取
+       $ip = getClientIp();
+       $info =  MerUserInfo::query()->where('mer_user_id',$user['id'])->first();
+       if (empty($info['country_code'])){
+           if ($ipInfo = getIp2($ip)){
+               MerUserInfo::query()->where('mer_user_id',$user['id'])->update($ipInfo);
+           }
+       }
+
+
         //登录日志
         MerUserLoginLog::query()->create([
             'mer_user_id' => $user['id'],
             'last_login_at' => Carbon::now()->toDateTimeString(),
-            'last_login_ip' => getClientIp(),
+            'last_login_ip' => $ip,
             'register_at' => $user['created_at'],
             'device_uid' => $user['device_uid'] ?? '',
         ]);

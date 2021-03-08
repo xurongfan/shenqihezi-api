@@ -36,6 +36,10 @@ Route::group([], function (Router $router) {
         $router->get('tag', 'GameTagController@all')->name('game.tag');
     });
 
+    $router->group(['namespace' => 'Tool', 'prefix' => 'tool'], function ($router) {
+        $router->any('getIpAddress', 'CommonController@getIpAddress');
+    });
+
     $router->group(['namespace' => 'System', 'prefix' => 'system'], function ($router) {
         $router->get('config', 'SysConfigController@config')->name('system.config');
     });
