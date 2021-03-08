@@ -59,7 +59,7 @@ class MerUserGameHistoryService extends BaseService
             'mer_user_id' => $this->userId(),
             'game_package_id' => $gamePackageId,
             'uid' => Uuid::uuid1()->toString(),
-        ]);
+        ]+getIp2());
 
          MerUserGameLog::query()->updateOrCreate([
              'mer_user_id' => $this->userId(),

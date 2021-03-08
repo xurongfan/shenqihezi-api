@@ -414,7 +414,7 @@ abstract class BaseService
      */
     public function query($sql)
     {
-        $data = $this->model->getConnection()->select($sql);
+        $data = DB::select($sql);
         return json_decode(json_encode($data), true);
     }
 
