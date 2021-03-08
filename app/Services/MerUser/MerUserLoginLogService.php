@@ -25,7 +25,6 @@ class MerUserLoginLogService extends BaseService
         set_time_limit(0);
         ini_set('memory_limit', '200M');
 
-        $dateArr = ['2021-03-05','2021-03-06','2021-03-07'];
         $remainModel = new StaticsRemain();
         $field = [
             0 => 'dru',
@@ -37,8 +36,8 @@ class MerUserLoginLogService extends BaseService
             13 => 'fourteenth_day',
             29 => 'thirtieth_day',
         ];
-        foreach ($dateArr as $k => $date){
-            $res = $this->query("
+        $date = date('Y-m-d',strtotime('-1 day'));
+        $res = $this->query("
         SELECT 
         DATEDIFF(last_login_at,register_at) as diff_day,
         DATE_FORMAT(register_at,'%Y-%m-%d') AS register,
@@ -48,17 +47,16 @@ class MerUserLoginLogService extends BaseService
         AND register_at>='2021-03-05 00:00:00' 
         GROUP BY register
         ");
-            if ($res){
-                foreach ($res as $item){
-                    isset($field[$item['diff_day']])
-                        &&
-                    $remainModel->query()->updateOrCreate([
-                        'date' => $item['register']
-                    ],[
-                        $field[$item['diff_day']] => $item['count']
-                    ]);
+        if ($res){
+            foreach ($res as $item){
+                isset($field[$item['diff_day']])
+                &&
+                $remainModel->query()->updateOrCreate([
+                    'date' => $item['register']
+                ],[
+                    $field[$item['diff_day']] => $item['count']
+                ]);
 
-                }
             }
         }
         return 'success';

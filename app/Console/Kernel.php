@@ -35,6 +35,9 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('command:content-resource')
         ->everyFiveMinutes();//每五分钟执行一次
+
+        $schedule->command('login:remain')
+            ->dailyAt('01:00');;//留存计算
     }
 
     /**
