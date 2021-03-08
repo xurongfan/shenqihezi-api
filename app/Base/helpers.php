@@ -474,9 +474,10 @@ function randomUser()
  * @throws \GeoIp2\Exception\AddressNotFoundException
  * @throws \MaxMind\Db\Reader\InvalidDatabaseException
  */
-function getIp2($ip)
+function getIp2($ip = null)
 {
     try {
+        $ip = $ip ? $ip : getClientIp();
         $reader = new \GeoIp2\Database\Reader(storage_path('GeoLite2-City.mmdb'));
         $record = $reader->city($ip);
         return [

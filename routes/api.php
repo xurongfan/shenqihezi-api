@@ -37,7 +37,7 @@ Route::group([], function (Router $router) {
     });
 
     $router->group(['namespace' => 'Tool', 'prefix' => 'tool'], function ($router) {
-        $router->any('getIpAddress', 'CommonController@getIpAddress');
+        $router->post('getIpAddress', 'CommonController@getIpAddress');
     });
 
     $router->group(['namespace' => 'System', 'prefix' => 'system'], function ($router) {

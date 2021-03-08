@@ -66,12 +66,6 @@ class CommonController extends Controller
      */
     public function getIpAddress(Request $request)
     {
-        $this->validate($request,[
-            'ip' => [
-                'required',
-                'ip'
-            ] ,
-        ]);
-        return getIp2($request->ip);
+        return getIp2();
     }
 }
