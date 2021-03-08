@@ -85,7 +85,7 @@ class TopicContentService extends BaseService
            },'IsUserFollow' => function($query){
                $query->where('mer_user_id',$this->userId());
            },'game' => function($query){
-               $query->select('id','title','icon_img','background_img','url','is_crack','crack_url','crack_des','status','des','video_url');
+               $query->select('id','title','icon_img','background_img','url','is_crack','crack_url','crack_des','status','des','video_url','is_rank');
            }])
 //           ->when($gameId,function ($query){
 //               $query->where('game_package_id','!=',0);
