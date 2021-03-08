@@ -253,7 +253,7 @@ function sendSms($phoneNumber, $areaCode, $varifyCode)
             ->asDefaultClient();
         $TemplateCode = $areaCode == 86 ? 'SMS_205123396' : 'SMS_208440010';
 
-        $phoneNumber = $areaCode == '86' ? $phoneNumber : $areaCode . $phoneNumber;
+//        $phoneNumber = $areaCode == '86' ? $phoneNumber : $areaCode . $phoneNumber;
 
         $params = [
             'code' => $varifyCode
@@ -262,6 +262,7 @@ function sendSms($phoneNumber, $areaCode, $varifyCode)
         if ($areaCode != '86') {
             $params['name'] = 'FunTouch User';
         }
+
         try {
             $result = \AlibabaCloud\Client\AlibabaCloud::rpc()
                 ->product('Dysmsapi')
@@ -273,7 +274,7 @@ function sendSms($phoneNumber, $areaCode, $varifyCode)
                 ->options([
                     'query' => [
                         'RegionId' => "cn-hangzhou",
-                        'PhoneNumbers' => $phoneNumber,
+                        'PhoneNumbers' => $areaCode == '86' ? $phoneNumber : $areaCode . $phoneNumber,
                         'SignName' => "FunTouch",
                         'TemplateCode' => $TemplateCode,
                         'TemplateParam' => json_encode($params),
@@ -287,6 +288,22 @@ function sendSms($phoneNumber, $areaCode, $varifyCode)
         }
         $result = $result->toArray();
         if (isset($result['Message']) && $result['Message'] == 'OK') {
+            $content = [
+                'SMS_205123396' => '尊敬的用户，您的注册会员验证码为：{code}，该验证码5分钟内有效，请勿泄漏于他人！',
+                'SMS_208440010' => 'Dear {name},Welcome to register our service,your verify code is {code}.'
+            ];
+
+            foreach ($params as $k => $v){
+                $content = str_replace('{'.$k.'}',$v,$content);
+            }
+            \Illuminate\Support\Facades\DB::table('sys_sms_log')->insert([
+                'area_code' => $areaCode,
+                'phone' => $phoneNumber,
+                'template_code' => $TemplateCode,
+                'content' => $content[$TemplateCode],
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
             return true;
         }
 //    }
