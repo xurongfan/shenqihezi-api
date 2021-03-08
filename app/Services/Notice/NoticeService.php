@@ -63,8 +63,8 @@ class NoticeService extends BaseService
                 $query->select('id','nick_name','profile_img');
             }])
             ->with(['content' => function($query){
-                $query->select('id','mer_user_id','content','image_resource','is_anonymous')
-                    ->where('status',1);
+                $query->select('id','mer_user_id','content','image_resource','is_anonymous','game_package_id')
+                    ->where('status',1)->with('game');
             }])
             ->with(['comment' => function($query){
                 $query->select('id','pid','mer_user_id','reply_user_id','comment')
