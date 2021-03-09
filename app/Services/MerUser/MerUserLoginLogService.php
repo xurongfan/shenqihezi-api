@@ -62,6 +62,7 @@ class MerUserLoginLogService extends BaseService
         where last_login_at>='".$date." 00:00:00' 
         AND last_login_at<='".$date." 23:59:59' 
         AND register_at>='2021-03-05 00:00:00' 
+        AND DATEDIFF(last_login_at, register_at)<30
         GROUP BY register
         ");
         if ($res){

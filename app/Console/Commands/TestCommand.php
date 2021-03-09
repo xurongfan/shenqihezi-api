@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Statics\StaticsRemain;
 use App\Models\User\MerUser;
+use App\Services\Statics\StaticsCountryService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -40,9 +41,17 @@ class TestCommand extends Command
      */
     public function handle()
     {
-        $this->remainSource();
+        try {
+            $this->runCountryHistory();
+        }catch (\Exception $exception){
+            logger('error_debug:'.$exception->getMessage());
+        }
     }
 
+    /**
+     * 清洗用户注册来源
+     * @return string
+     */
     public function userSource()
     {
         MerUser::query()->select('id','phone','facebook_auth_code','google_auth_code','wechat_auth_code')->chunkById(100,function ($item){
@@ -68,6 +77,7 @@ class TestCommand extends Command
     }
 
     /**
+     * 清洗用户注册方式统计
      * @return string
      */
     public function remainSource()
@@ -91,5 +101,14 @@ class TestCommand extends Command
             ]);
         }
         return 'success';
+    }
+
+    /**
+     * 清洗用户国家
+     * @return mixed
+     */
+    public function runCountryHistory()
+    {
+        return app(StaticsCountryService::class)->runHistory();
     }
 }
