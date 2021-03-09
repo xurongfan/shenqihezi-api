@@ -151,16 +151,20 @@ class MerUserService extends BaseService
     public function newLogin($request)
     {
         $keys = Arr::only($request, ['facebook_auth_code', 'google_auth_code','wechat_auth_code']);
-        if ($keys){
-            $user = self::finOneUser(array_filter($keys));
+        if ($keys = array_filter($keys)){
+            $user = self::finOneUser($keys);
             $request = array_merge($keys,[
                 'device_uid' => $request['device_uid'] ?? '',
                 'nick_name' => $request['nick_name'] ?? '',
                 'profile_img' => $request['profile_img'] ?? '',
             ]);
-//            $request = Arr::add($keys,'device_uid',$request['device_uid'] ?? '');
-//            $request = Arr::add($request,'nick_name',$request['nick_name'] ?? '');
-//            $request = Arr::add($request,'profile_img',$request['profile_img'] ?? '');
+            if (isset($request['facebook_auth_code']) && $request['facebook_auth_code']){
+                $request['reg_source'] = $this->model::REG_SOURCE_FB;
+            }elseif (isset($request['google_auth_code']) && $request['google_auth_code']){
+                $request['reg_source'] = $this->model::REG_SOURCE_GOOGLE;
+            }elseif (isset($request['wechat_auth_code']) && $request['wechat_auth_code']){
+                $request['reg_source'] = $this->model::REG_SOURCE_WECHAT;
+            }
         }
         if (isset($request['phone']) && $request['phone']) {
             //验证码校验
@@ -169,10 +173,10 @@ class MerUserService extends BaseService
             }
             $user = $this->getUserByPhone($request['phone'],$request['area_code']);
             $request = Arr::except($request, ['facebook_auth_code', 'google_auth_code','wechat_auth_code']);
+            $request['reg_source'] = $this->model::REG_SOURCE_PHONE;
         }
 
         if (empty($user)) {
-
             $data = $this->model->filter($request);
             $data['nick_name'] = isset($data['nick_name'])&&$data['nick_name'] ? $data['nick_name'] : randomUser();
             $this->model->fill($data)->save();

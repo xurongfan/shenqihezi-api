@@ -27,6 +27,11 @@ class MerUser extends BaseModel implements
     const STATUS_ENABLE = 1;
     const STATUS_DISABLE = 0;
 
+    const REG_SOURCE_PHONE = 1;
+    const REG_SOURCE_FB = 2;
+    const REG_SOURCE_GOOGLE = 3;
+    const REG_SOURCE_WECHAT = 4;
+
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
