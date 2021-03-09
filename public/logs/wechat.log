@@ -1,0 +1,12 @@
+2021-01-28 18:34:14 > yansongda.pay.INFO > Wechat PreOrder Method Has Called ["",{"appid":null,"mch_id":"1604486511","nonce_str":"ANIO6Ax2AC4L89er","notify_url":"http://local-test-one.com/api/wechat/notify","trade_type":"APP","spbill_create_ip":"172.18.0.1","body":"一年","out_trade_no":"2021012818341435316045","total_fee":1,"sign":"4AC607F8EA29DBEC3B5E917DC043E95A"}] 
+
+2021-01-28 18:34:53 > yansongda.pay.INFO > Wechat PreOrder Method Has Called ["",{"appid":null,"mch_id":"1604486511","nonce_str":"QN6gYCsbyUV9KMQ3","notify_url":"http://local-test-one.com/api/wechat/notify","trade_type":"APP","spbill_create_ip":"172.18.0.1","body":"一年","out_trade_no":"2021012818345286552134","total_fee":1,"sign":"A3EE3E8DADE29C39743D2E5F7CF7EADB"}] 
+
+2021-01-28 18:35:20 > yansongda.pay.INFO > Wechat PreOrder Method Has Called ["",{"mch_id":"1604486511","nonce_str":"3TcLglN9lL9bUcJ1","notify_url":"http://local-test-one.com/api/wechat/notify","trade_type":"APP","spbill_create_ip":"172.18.0.1","body":"一年","out_trade_no":"2021012818352083033345","total_fee":1,"appid":"wx9570383f3e10adb1","sign":"17E89445B6E0F5E502F95F86FE4BB678"}] 
+
+2021-01-28 18:35:21 > yansongda.pay.INFO > Wechat App Has Started ["https://api.mch.weixin.qq.com/",{"appid":"wx9570383f3e10adb1","partnerid":"1604486511","prepayid":"wx28183521047986272ac13fa50809ae0000","timestamp":"1611830121","noncestr":"B5Dn6A9Jlts2xfJa","package":"Sign=WXPay","sign":"7ED8F8F9964EFC5E15C35CC040B0302C"}] 
+
+2021-01-28 18:35:53 > yansongda.pay.INFO > Wechat PreOrder Method Has Called ["",{"mch_id":"1604486511","nonce_str":"x6GlLCAcXJgnVl4A","notify_url":"http://local-test-one.com/api/wechat/notify","trade_type":"APP","spbill_create_ip":"172.18.0.1","body":"一年","out_trade_no":"2021012818355284325137","total_fee":1,"appid":"wx9570383f3e10adb1","sign":"B39392926D315EBB983CA6F34E9C819A"}] 
+
+2021-01-28 18:35:53 > yansongda.pay.INFO > Wechat App Has Started ["https://api.mch.weixin.qq.com/",{"appid":"wx9570383f3e10adb1","partnerid":"1604486511","prepayid":"wx28183553628291d212b37fcfe2a4b60000","timestamp":"1611830153","noncestr":"Fy9PLO0BCIRIsq1Z","package":"Sign=WXPay","sign":"E17A9B5CDCD3ED468FEEA57123C3F9DE"}] 
+

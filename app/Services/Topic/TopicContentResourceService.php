@@ -27,7 +27,7 @@ class TopicContentResourceService extends BaseService
         }
         if (isset($arr) && $arr) {
             $this->model->query()->insert($arr);
-//            TopicContentResourceJob::dispatch($contentId);
+            TopicContentResourceJob::dispatch($contentId);
         }
         return ;
     }
@@ -41,7 +41,7 @@ class TopicContentResourceService extends BaseService
     {
         $iClientProfile = \AlibabaCloud\Client\Profile\DefaultProfile::getProfile("cn-shanghai",env('ALI_ACCESS_KEYID'), env('ALI_ACCESS_SECRET')); // TODO
         $client = new \AlibabaCloud\Client\DefaultAcsClient($iClientProfile);
-
+//        ImageSyncScan
         $request = new \AlibabaCloud\Green\V20180509\ImageSyncScan();
 
         $request->setMethod("POST");
