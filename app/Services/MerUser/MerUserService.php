@@ -176,6 +176,12 @@ class MerUserService extends BaseService
             $request['reg_source'] = $this->model::REG_SOURCE_PHONE;
         }
 
+        if (isset($user) && $user){
+            if ($user['status'] == $this->model::STATUS_DISABLE){
+                throw new \Exception(transL('mer-user.account_disable'));
+            }
+        }
+
         if (empty($user)) {
             $data = $this->model->filter($request);
             $data['nick_name'] = isset($data['nick_name'])&&$data['nick_name'] ? $data['nick_name'] : randomUser();
