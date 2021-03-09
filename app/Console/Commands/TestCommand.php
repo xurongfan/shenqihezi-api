@@ -2,8 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Statics\StaticsRemain;
 use App\Models\User\MerUser;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class TestCommand extends Command
 {
@@ -38,7 +40,7 @@ class TestCommand extends Command
      */
     public function handle()
     {
-        $this->userSource();
+        $this->remainSource();
     }
 
     public function userSource()
@@ -62,6 +64,32 @@ class TestCommand extends Command
             usleep(3000);
         });
 
+        return 'success';
+    }
+
+    /**
+     * @return string
+     */
+    public function remainSource()
+    {
+        $dateArr = ['2021-03-05','2021-03-06','2021-03-07'];
+        $remainModel = new StaticsRemain();
+
+        foreach ($dateArr as $date){
+            //注册方式
+            $sourceCount = MerUser::query()
+                ->select(DB::raw('count(*) as count'),'reg_source')
+                ->where('created_at','>=',$date.' 00:00:00')
+                ->where('created_at','<=',$date.' 23:59:59')
+                ->groupBy('reg_source')
+                ->get()
+                ->toArray();
+            $remainModel->query()->updateOrCreate([
+                'date' => $date
+            ],[
+                'reg_source' => $sourceCount
+            ]);
+        }
         return 'success';
     }
 }

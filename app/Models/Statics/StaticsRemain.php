@@ -10,4 +10,8 @@ class StaticsRemain extends BaseModel
 
     public $timestamps = false;
 
+    protected $casts = [
+        'reg_source' => 'array'
+    ];
+
 }

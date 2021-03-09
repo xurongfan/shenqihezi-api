@@ -4,7 +4,9 @@ namespace App\Services\MerUser;
 
 use App\Base\Services\BaseService;
 use App\Models\Statics\StaticsRemain;
+use App\Models\User\MerUser;
 use App\Models\User\MerUserLoginLog;
+use Illuminate\Support\Facades\DB;
 
 class MerUserLoginLogService extends BaseService
 {
@@ -37,6 +39,21 @@ class MerUserLoginLogService extends BaseService
             29 => 'thirtieth_day',
         ];
         $date = date('Y-m-d',strtotime('-1 day'));
+        //注册方式
+        $sourceCount = MerUser::query()
+            ->select(DB::raw('count(*) as count'),'reg_source')
+            ->where('created_at','>=',$date.' 00:00:00')
+            ->where('created_at','<=',$date.' 23:59:59')
+            ->groupBy('reg_source')
+            ->get()
+            ->toArray();
+
+        $remainModel->query()->updateOrCreate([
+            'date' => $date
+        ],[
+            'reg_source' => $sourceCount
+        ]);
+
         $res = $this->query("
         SELECT 
         DATEDIFF(last_login_at,register_at) as diff_day,
