@@ -221,6 +221,8 @@ Route::any('ad-game/list', function () {
 })->name('ad-game-list');
 
 Route::any('/test', function () {
+    $request = new ImageSyncScan();
+echo"<pre>";print_r($request);exit;
     $res = getHttpContent('post','http://47.242.85.154:81/api/message-send',[
         'to_id' => 'e7jw06BXTDScQQKZPaxDvH:APA91bEUtYW0dkSXGw01ON6I-ghzhJroD0bKU8VSmpRuf6mTjOXqqwUNpAfplT_L35tMNWAdLGUfS2bR3DLU_SHBt2dopvdIubFv9TNQj-vy-wORKbHTLlDIE_l9IWzXxSHBXz6vLBkd',
 

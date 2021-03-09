@@ -150,16 +150,16 @@
         },
         {
             "name": "alibabacloud/sdk",
-            "version": "1.8.584",
+            "version": "1.8.895",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aliyun/openapi-sdk-php.git",
-                "reference": "82d7666c8ae40e25c40cdf4191b839c484d8c57f"
+                "reference": "abffa44b21c68123e73728b90c6203901bb5cf27"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aliyun/openapi-sdk-php/zipball/82d7666c8ae40e25c40cdf4191b839c484d8c57f",
-                "reference": "82d7666c8ae40e25c40cdf4191b839c484d8c57f",
+                "url": "https://api.github.com/repos/aliyun/openapi-sdk-php/zipball/abffa44b21c68123e73728b90c6203901bb5cf27",
+                "reference": "abffa44b21c68123e73728b90c6203901bb5cf27",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -386,7 +386,7 @@
                 "library",
                 "sdk"
             ],
-            "time": "2020-11-05T05:54:56+00:00"
+            "time": "2021-03-09T02:56:27+00:00"
         },
         {
             "name": "aliyuncs/oss-sdk-php",
@@ -9071,12 +9071,12 @@
             "version": "1.9.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/webmozart/assert.git",
+                "url": "https://github.com/webmozarts/assert.git",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "shasum": "",
                 "mirrors": [

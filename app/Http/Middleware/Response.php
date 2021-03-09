@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Model\System\SysOperateLog;
 use Closure;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -88,7 +87,7 @@ class Response
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             ];
-            SysOperateLog::query()->insert($data);
+            \App\Models\System\SysOperateLog::query()->insert($data);
         }
     }
 }
