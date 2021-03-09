@@ -22,28 +22,32 @@ class TopicContentService extends BaseService
 //        if (!isset($request['topic']) || empty($request['topic'])) {
 //            throw new \Exception(transL('topic.topic_empty_error'));
 //        }
-        $request['mer_user_id'] = $this->userId();
-        $key = 'topic_content_lock_'.$request['mer_user_id'];
-        if (Redis::set($key,1,'nx','ex',5)){
-            $request['ip'] = getClientIp();
-            $this->model->fill($this->model->filter($request))->save();
-            $topicService = app(TopicService::class);
+        try {
+            $request['mer_user_id'] = $this->userId();
+            $key = 'topic_content_lock_'.$request['mer_user_id'];
+            if (Redis::set($key,1,'nx','ex',5)){
+                $request['ip'] = getClientIp();
+                $this->model->fill($this->model->filter($request))->save();
+                $topicService = app(TopicService::class);
 
-            if (isset($request['topic']) && $request['topic']) {
-                $topicArr = [];
-                foreach ($request['topic'] as $key => $value) {
-                    $topicArr[] = $topicService->findOrCreate($value)->id;
+                if (isset($request['topic']) && $request['topic']) {
+                    $topicArr = [];
+                    foreach ($request['topic'] as $key => $value) {
+                        $topicArr[] = $topicService->findOrCreate($value)->id;
+                    }
+                    $topicArr && $this->model->topic()->sync($topicArr);
+                    //自动关注此话题
+                    app(TopicService::class)->follow($topicArr);
                 }
-                $topicArr && $this->model->topic()->sync($topicArr);
-                //自动关注此话题
-                app(TopicService::class)->follow($topicArr);
+                //资源入驻
+                app(TopicContentResourceService::class)->resource($this->model->id,$request['image_resource']??[]);
+                Redis::del($key);
+                return $this->show($this->model->id);
             }
-            //资源入驻
-            app(TopicContentResourceService::class)->resource($this->model->id,$request['image_resource']??[]);
-            Redis::del($key);
-            return $this->show($this->model->id);
+            throw new \Exception(transL('common.system_busy'));
+        }catch (\Exception $exception){
+            throw new \Exception($exception->getMessage());
         }
-        throw new \Exception(transL('common.system_busy'));
     }
 
     /**
