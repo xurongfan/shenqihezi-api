@@ -26,4 +26,13 @@ class GamePackageController extends Controller
     {
         return app(GamePackageSubscribeService::class)->index();
     }
+
+    /**
+     * 查询游戏
+     * @return mixed
+     */
+    public function show()
+    {
+        return app(GamePackageService::class)->show(\request()->input('game_package_id'));
+    }
 }

@@ -69,6 +69,7 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
 
         $router->post('game-collect', 'MerUserGameCollectionController@collect')->name('user.game-collect');
         $router->get('game-collect', 'MerUserGameCollectionController@index')->name('user.game-collect-index');
+        $router->get('game-is-collect', 'MerUserGameCollectionController@gameCollect')->name('user.game-collect-is');
 
         $router->get('game-history', 'MerUserGameHistoryController@index')->name('user.game-history-index');
         $router->post('game-history', 'MerUserGameHistoryController@store')->name('user.game-history-store');
@@ -91,6 +92,7 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
 
     $router->group(['namespace' => 'Game', 'prefix' => 'game'], function ($router) {
         $router->get('/', 'GamePackageController@index')->name('game.index');
+        $router->get('show', 'GamePackageController@show')->name('game.show');
         $router->post('report', 'AdBuryingController@report')->name('game-ad.report');
         $router->get('subscribe', 'GamePackageController@subscribe')->name('game.subscribe');
     });

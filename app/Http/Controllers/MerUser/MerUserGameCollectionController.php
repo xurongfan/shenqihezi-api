@@ -41,4 +41,22 @@ class MerUserGameCollectionController extends Controller
     {
         return $this->service->index();
     }
+
+    /**
+     * @param Request $request
+     * @return \App\Base\Services\BaseModel
+     */
+    public function gameCollect(Request $request)
+    {
+        $this->validate($request,[
+            'game_package_id' => [
+                'required' ,
+                Rule::exists('game_package','id')
+            ],
+        ],[
+            'game_package_id.required' => transL('game-package.game_package_id_empty_error'),
+        ]);
+
+        return $this->service->gameCollect(\request('game_package_id',0));
+    }
 }

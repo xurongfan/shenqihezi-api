@@ -67,4 +67,16 @@ class MerUserGameCollectionService extends BaseService
         $result['isVip'] = $isVip;
         return $result;
     }
+
+    /**
+     * @param $gamePackageId
+     * @return \App\Base\Services\BaseModel
+     */
+    public function gameCollect($gamePackageId)
+    {
+        return $this->findOneBy( [
+            'mer_user_id' => $this->userId(),
+            'game_package_id' => $gamePackageId
+        ],'id');
+    }
 }
