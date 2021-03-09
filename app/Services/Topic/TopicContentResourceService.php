@@ -25,12 +25,10 @@ class TopicContentResourceService extends BaseService
                 'updated_at' => Carbon::now()->toDateTimeString(),
             ];
         }
-        logger(11);
         if (isset($arr) && $arr) {
             $this->model->query()->insert($arr);
             TopicContentResourceJob::dispatch($contentId);
         }
-        logger(222);
 
         return ;
     }
