@@ -5,6 +5,7 @@ namespace App\Console;
 use App\Console\Commands\AddFacade;
 use App\Console\Commands\AddServices;
 use App\Console\Commands\MerUserLoginRemainCommand;
+use App\Console\Commands\TestCommand;
 use App\Console\Commands\TopicCommentCommand;
 use App\Console\Commands\TopicContentCreatedRandomCommand;
 use Illuminate\Console\Scheduling\Schedule;
@@ -22,7 +23,8 @@ class Kernel extends ConsoleKernel
         AddServices::class,
         TopicCommentCommand::class,
         TopicContentCreatedRandomCommand::class,
-        MerUserLoginRemainCommand::class
+        MerUserLoginRemainCommand::class,
+        TestCommand::class
     ];
 
     /**
