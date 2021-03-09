@@ -27,7 +27,7 @@ class TopicContentResourceService extends BaseService
         }
         if (isset($arr) && $arr) {
             $this->model->query()->insert($arr);
-            TopicContentResourceJob::dispatch($contentId);
+//            TopicContentResourceJob::dispatch($contentId);
         }
         return ;
     }
