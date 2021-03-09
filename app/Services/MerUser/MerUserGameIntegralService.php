@@ -28,7 +28,7 @@ class MerUserGameIntegralService extends BaseService
                 'integral' => intval($integral)
             ]);
         }
-        return $integralInfo;
+        return $this->gameUserRank($gamePackageId);
     }
 
     /**
@@ -48,22 +48,39 @@ class MerUserGameIntegralService extends BaseService
             ->where('game_package_id',$gamePackageId)
             ->orderBy('integral','desc')->limit(50)->get();
 
+//        $myIntegral = $this->userPackageIntegral($gamePackageId);
+//        if ($myIntegral) {
+//            $rank = $this->model->newQuery()
+//                ->where('game_package_id',$gamePackageId)
+//                ->where('integral','>',$myIntegral)
+//                ->count();
+//        }
+        $userRank = $this->gameUserRank($gamePackageId);
+        return [
+            'rankList' => $rankList,
+            'myRank' => [
+                'integral' => $userRank['myIntegral'],
+                'rank' => $userRank['rank'] ,
+            ]
+        ];
+    }
+
+    /**
+     * @param $gamePackageId
+     * @return array
+     */
+    public function gameUserRank($gamePackageId)
+    {
         $myIntegral = $this->userPackageIntegral($gamePackageId);
+        $rank = null;
         if ($myIntegral) {
             $rank = $this->model->newQuery()
                 ->where('game_package_id',$gamePackageId)
                 ->where('integral','>',$myIntegral)
                 ->count();
         }
-
-        return [
-            'rankList' => $rankList,
-            'myRank' => [
-                'integral' => $myIntegral,
-                'rank' => ($rank ?? 0) + 1,
-            ]
-        ];
-
+        $rank = !is_null($rank) ? ($rank+1) : 0;
+        return compact('myIntegral','rank');
     }
 
     /**
