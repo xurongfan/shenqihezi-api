@@ -36,6 +36,9 @@ class TopicContentResourceJob implements ShouldQueue
     public function handle()
     {
         set_time_limit(0);
+        if ($this->contentId){
+            logger('TopicContentResourceJob:'.$this->contentId);
+        }
         return app(TopicContentResourceService::class)->resourceCheck($this->contentId);
     }
 }
