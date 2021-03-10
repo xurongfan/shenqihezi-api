@@ -43,7 +43,7 @@ class TestCommand extends Command
     public function handle()
     {
         try {
-            $this->userIpCountry();
+            $this->runCountryHistory();
         }catch (\Exception $exception){
             logger('error_debug:'.$exception->getMessage());
         }
