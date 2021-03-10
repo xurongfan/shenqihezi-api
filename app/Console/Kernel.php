@@ -40,6 +40,9 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('login:remain')
             ->dailyAt('01:00');;//留存计算
+
+        $schedule->command('statics:country')
+            ->dailyAt('02:00');;//用户注册国家分布
     }
 
     /**
