@@ -40,4 +40,26 @@ class StaticsCountryService extends BaseService
 
         return 'success';
     }
+
+    /**
+     * 每日统计用户国家
+     * @return string
+     */
+    public function runCountry()
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '200M');
+        $date = date('Y-m-d',strtotime('-1 day'));
+        $res = $this->query('SELECT COUNT(*) as total,city_name,country_name,country_code FROM `mer_user_info` WHERE created_at>="'.$date.' 00:00:00" AND created_at <="'.$date.' 23:59:59" GROUP by country_code,city_name');
+        if ($res){
+            foreach ($res as $item){
+                $item['city_name'] = $item['city_name']?$item['city_name']:'other';
+                $item['country_name'] = $item['country_name']?$item['country_name']:'other';
+                $item['country_code'] = $item['country_code']?$item['country_code']:'other';
+                $item['date'] = $date;
+                $this->model->query()->insert($item);
+            }
+        }
+        return 'success';
+    }
 }

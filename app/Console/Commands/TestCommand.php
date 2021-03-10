@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Statics\StaticsRemain;
 use App\Models\User\MerUser;
+use App\Models\User\MerUserInfo;
 use App\Services\Statics\StaticsCountryService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -42,7 +43,7 @@ class TestCommand extends Command
     public function handle()
     {
         try {
-            $this->runCountryHistory();
+            $this->userIpCountry();
         }catch (\Exception $exception){
             logger('error_debug:'.$exception->getMessage());
         }
@@ -110,5 +111,33 @@ class TestCommand extends Command
     public function runCountryHistory()
     {
         return app(StaticsCountryService::class)->runHistory();
+    }
+
+
+    public function userIpCountry(){
+        $i = 1;
+        while (true){
+            $res = MerUser::query()->select('last_login_ip','id' )->with(['userInfo' => function($query){
+                        $query->select('country_code','mer_user_id','id');
+                    }])
+                ->forPage($i,50)
+                ->get()->toArray();
+            foreach ($res as $item){
+                if ($item['last_login_ip']){
+                    if (isset($item['user_info']['country_code']) && empty($item['user_info']['country_code'])){
+                        $ip = getIp2($item['last_login_ip']);
+                        $ip && MerUserInfo::query()->where('mer_user_id',$item['id'])->update($ip);
+                    }
+                }
+            }
+            if ($res){
+                $i++;
+
+            }else{
+                break;
+            }
+        };
+
+        return 'success';
     }
 }
