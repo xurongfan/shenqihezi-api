@@ -6,6 +6,7 @@ use App\Console\Commands\AddFacade;
 use App\Console\Commands\AddServices;
 use App\Console\Commands\MerUserLoginRemainCommand;
 use App\Console\Commands\StaticsCountryCommand;
+use App\Console\Commands\StaticsGameCommand;
 use App\Console\Commands\TestCommand;
 use App\Console\Commands\TopicCommentCommand;
 use App\Console\Commands\TopicContentCreatedRandomCommand;
@@ -26,6 +27,7 @@ class Kernel extends ConsoleKernel
         TopicContentCreatedRandomCommand::class,
         MerUserLoginRemainCommand::class,
         StaticsCountryCommand::class,
+        StaticsGameCommand::class,
         TestCommand::class
     ];
 
@@ -45,6 +47,9 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('statics:country')
             ->dailyAt('02:00');;//用户注册国家分布
+
+        $schedule->command('game:log')
+            ->dailyAt('02:30');;//用户注册国家分布
     }
 
     /**
