@@ -6,6 +6,7 @@ use App\Models\Statics\StaticsRemain;
 use App\Models\User\MerUser;
 use App\Models\User\MerUserInfo;
 use App\Services\Statics\StaticsCountryService;
+use App\Services\Statics\StaticsGameService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -43,10 +44,18 @@ class TestCommand extends Command
     public function handle()
     {
         try {
-            $this->runCountryHistory();
+            $this->runGameHistory();
         }catch (\Exception $exception){
             logger('error_debug:'.$exception->getMessage());
         }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function runGameHistory()
+    {
+        return app(StaticsGameService::class)->runHistory();
     }
 
     /**
