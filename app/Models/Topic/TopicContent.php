@@ -20,6 +20,7 @@ class TopicContent extends BaseModel
     protected $casts = [
         'image_resource' => 'array',
         'position_info' => 'array',
+        'extra_info' => 'array'
     ];
 
     /**
