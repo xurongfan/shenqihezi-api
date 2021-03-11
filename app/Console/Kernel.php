@@ -8,6 +8,7 @@ use App\Console\Commands\MerUserLoginRemainCommand;
 use App\Console\Commands\TestCommand;
 use App\Console\Commands\TopicCommentCommand;
 use App\Console\Commands\TopicContentCreatedRandomCommand;
+use App\Services\Statics\StaticsCountryService;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -24,6 +25,7 @@ class Kernel extends ConsoleKernel
         TopicCommentCommand::class,
         TopicContentCreatedRandomCommand::class,
         MerUserLoginRemainCommand::class,
+        StaticsCountryService::class,
         TestCommand::class
     ];
 
