@@ -38,9 +38,10 @@ class MerUserGameHistoryController extends Controller
     public function store(Request $request)
     {
         $this->validate($request,[
-            'game_package_id' => ['required', Rule::exists('game_package','id')]
+            'game_package_id' => ['required', Rule::exists('game_package','id')],
+            'duration' => 'integer',
         ]);
-        return $this->service->store($request->game_package_id);
+        return $this->service->store($request->game_package_id,$request->duration);
     }
 
     /**
