@@ -86,9 +86,10 @@ class GamePackageService extends BaseService
      * 根据标签/推荐筛选游戏
      * @param int $gameTagId
      * @param int $isRec
+     * @param $title
      * @return mixed
      */
-    public function gameIndexByTagRec($gameTagId = 0,$isRec = 0)
+    public function gameIndexByTagRec($gameTagId = 0,$isRec = 0,$title = null)
     {
         $gameTagId = $gameTagId ?? 0;
         $result = $this->model->query()->selectRaw(DB::raw('
@@ -107,12 +108,15 @@ class GamePackageService extends BaseService
         game_package.des, 
         game_package.status, 
         ( rand( ) * TIMESTAMP ( now( ) ) ) AS rid '))
+            ->when($title,function ($query)use ($title){
+                $query->where('game_package.title','like','%'.$title.'%');
+            })
             ->when($gameTagId,function ($query) use($gameTagId){
                 $query->leftJoin('game_package_tag','game_package_tag.package_id','=','game_package.id')
                     ->where('game_package_tag.tag_id',$gameTagId);
             })
             ->when($isRec,function ($query){
-                $query->where('is_rec',1);
+                $query->where('game_package.is_rec',1);
             })
             ->where('game_package.status',1)
             ->orderBy(DB::raw('rid'),'desc')
