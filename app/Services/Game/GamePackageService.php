@@ -83,13 +83,12 @@ class GamePackageService extends BaseService
     }
 
     /**
-     * 根据标签/推荐筛选游戏
+     * 根据标签/名称筛选游戏
      * @param int $gameTagId
-     * @param int $isRec
      * @param $title
      * @return mixed
      */
-    public function gameIndexByTagRec($gameTagId = 0,$isRec = 0,$title = null)
+    public function gameIndexByTagRec($gameTagId = 0,$title = null)
     {
         $gameTagId = $gameTagId ?? 0;
         $result = $this->model->query()->selectRaw(DB::raw('
@@ -115,9 +114,6 @@ class GamePackageService extends BaseService
                 $query->leftJoin('game_package_tag','game_package_tag.package_id','=','game_package.id')
                     ->where('game_package_tag.tag_id',$gameTagId);
             })
-            ->when($isRec,function ($query){
-                $query->where('game_package.is_rec',1);
-            })
             ->where('game_package.status',1)
             ->orderBy(DB::raw('rid'),'desc')
             ->get()->toArray();
@@ -128,6 +124,35 @@ class GamePackageService extends BaseService
         ];
     }
 
+    /**
+     * 游戏推荐
+     * @return mixed
+     */
+    public function gameRec()
+    {
+        $result = $this->model->query()->selectRaw(DB::raw('
+        game_package.id,
+        game_package.title, 
+        game_package.icon_img, 
+        game_package.background_img, 
+        game_package.url, 
+        game_package.is_crack, 
+        game_package.crack_url, 
+        game_package.crack_des, 
+        game_package.is_landscape, 
+        game_package.is_rank, 
+        game_package.like_base, 
+        game_package.video_url, 
+        game_package.des, 
+        game_package.status, 
+        ( rand( ) * TIMESTAMP ( now( ) ) ) AS rid '))
+            ->where('game_package.is_rec',1)
+            ->where('game_package.status',1)
+            ->orderBy(DB::raw('rid'),'desc')
+            ->get()->toArray();
+
+        return $this->gameFormat($result);
+    }
     /**
      * 游戏数据处理
      * @param $result
