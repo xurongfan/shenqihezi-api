@@ -120,8 +120,12 @@ class GamePackageService extends BaseService
             })
             ->where('game_package.status',1)
             ->orderBy(DB::raw('rid'),'desc')
-            ->get();
-        return $this->gameFormat($result);
+            ->get()->toArray();
+        $result = $this->gameFormat($result);
+        return [
+            'data' => $result,
+            'total' => count($result)
+        ];
     }
 
     /**
