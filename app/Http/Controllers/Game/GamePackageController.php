@@ -35,4 +35,13 @@ class GamePackageController extends Controller
     {
         return app(GamePackageService::class)->show(\request()->input('game_package_id'));
     }
+
+    /**
+     * 根据标签/推荐筛选游戏
+     * @param Request $request
+     * @return mixed
+     */
+    public function gameIndexByTagRec(Request $request){
+        return app(GamePackageService::class)->gameIndexByTagRec($request->game_tag_id,$request->is_rec);
+    }
 }
