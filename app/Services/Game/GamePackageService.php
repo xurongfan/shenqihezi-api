@@ -86,10 +86,11 @@ class GamePackageService extends BaseService
     /**
      * 根据标签/名称筛选游戏
      * @param int $gameTagId
-     * @param $title
-     * @return mixed
+     * @param null $title
+     * @param int $gameTypeId
+     * @return array
      */
-    public function gameIndexByTagRec($gameTagId = 0,$title = null)
+    public function gameIndexByTagRec($gameTagId = 0,$title = null,$gameTypeId=0)
     {
         $gameTagId = $gameTagId ?? 0;
         $result = $this->model->query()->selectRaw(DB::raw('
@@ -114,6 +115,10 @@ class GamePackageService extends BaseService
             ->when($gameTagId,function ($query) use($gameTagId){
                 $query->leftJoin('game_package_tag','game_package_tag.package_id','=','game_package.id')
                     ->where('game_package_tag.tag_id',$gameTagId);
+            })
+            ->when($gameTypeId,function ($query) use($gameTypeId){
+                $query->leftJoin('game_package_type','game_package_type.package_id','=','game_package.id')
+                    ->where('game_package_type.type_id',$gameTypeId);
             })
             ->where('game_package.status',1)
             ->orderBy(DB::raw('rid'),'desc')

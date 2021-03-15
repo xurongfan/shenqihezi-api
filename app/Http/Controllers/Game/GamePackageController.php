@@ -42,7 +42,7 @@ class GamePackageController extends Controller
      * @return mixed
      */
     public function gameIndexByTagRec(Request $request){
-        return app(GamePackageService::class)->gameIndexByTagRec($request->game_tag_id,$request->title);
+        return app(GamePackageService::class)->gameIndexByTagRec($request->game_tag_id,$request->title,$request->game_type_id);
     }
 
     /**
