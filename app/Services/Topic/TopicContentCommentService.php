@@ -29,8 +29,10 @@ class TopicContentCommentService extends BaseService
         $content = app(TopicContentService::class)->findOneBy([
             'id' => $request['content_id'] ?? 0
         ]);
-        //更新最后评论时间
-        $content->update([ 'last_comment_at' => Carbon::now()]);
+        if ($content){
+            //更新最后评论时间
+            $content->update([ 'last_comment_at' => Carbon::now()]);
+        }
 
         app(NoticeService::class)->publish(
             //通知用户
