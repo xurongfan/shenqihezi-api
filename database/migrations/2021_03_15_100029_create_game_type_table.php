@@ -18,6 +18,7 @@ class CreateGameTypeTable extends Migration
             $table->string('title',50)->default('');
             $table->string('title_en',50)->default('');
             $table->tinyInteger('status')->default(1);
+            $table->integer('sort')->default(0);
             $table->timestamps();
         });
 

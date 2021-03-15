@@ -82,7 +82,7 @@ class TopicContentService extends BaseService
         $shiedlUser = $shiedlUser ?? [];
 
        $res = $this->model->query()
-           ->select('id','mer_user_id','content','image_resource','is_anonymous','position_info','created_at','game_package_id')
+           ->select('id','mer_user_id','content','image_resource','is_anonymous','position_info','created_at','game_package_id','extra_info')
            ->with(['user' => function($query){
                $query->select('id','profile_img','nick_name','vip');
            },'topic'=>function($query){
