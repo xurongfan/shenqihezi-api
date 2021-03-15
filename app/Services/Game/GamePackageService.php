@@ -32,6 +32,7 @@ class GamePackageService extends BaseService
         game_package.video_url, 
         game_package.des, 
         game_package.status, 
+        game_package.like_base, 
         ( rand( ) * TIMESTAMP ( now( ) ) ) AS rid '))
 //            ->leftJoin('game_package_tag','game_package_tag.package_id','=','game_package.id')
 //            ->whereIn('game_package_tag.tag_id',$this->gameTagRandom())
