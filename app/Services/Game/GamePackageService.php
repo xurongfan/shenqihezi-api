@@ -124,6 +124,10 @@ class GamePackageService extends BaseService
             ->orderBy(DB::raw('rid'),'desc')
             ->get()->toArray();
         $result = $this->gameFormat($result);
+        //游戏类型点击事件
+        if ($gameTypeId) {
+            app(GameTypeClickLogService::class)->store($gameTypeId);
+        }
         return [
             'data' => $result,
             'total' => count($result)
