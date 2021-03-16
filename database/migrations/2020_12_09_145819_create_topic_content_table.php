@@ -26,7 +26,7 @@ class CreateTopicContentTable extends Migration
             $table->string('latitude')->default('')->comment('纬度');
             $table->string('ip')->default('')->comment('ip');
             $table->longText('position_info')->nullable();
-            $table->tinyInteger('status')->default('0');
+//            $table->tinyInteger('status')->default('0');
             $table->timestamps();
             $table->softDeletes();
         });
