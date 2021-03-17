@@ -147,7 +147,7 @@ class TopicContentService extends BaseService
                 $query->whereNotIn('mer_user_id', $shiedlUser);
             })
             ->withCount(['comment', 'like'])
-            ->paginate(20)
+            ->paginate(20,'[*]','page',$isHot?1:null)
             ->toArray();
 
         if ($topicId) {
