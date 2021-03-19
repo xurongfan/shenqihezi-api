@@ -29,14 +29,17 @@ class AuthToken extends BaseMiddleware
         $role = 'api';
         // 判断token是否在有效期内
         try {
-            if (auth($role)->payload())  {
+            if (auth($role)->payload()) {
+                if (!auth($role)->user()) {
+                    throw new \Exception(transL('mer-user.login_expired', '登录失效,请重新登录.'), 401);
+                }
                 //单点登录
-                $this->CheckSsoToken(auth('api')->getToken(),auth($role)->user()->id);
+                $this->CheckSsoToken(auth('api')->getToken(), auth($role)->user()->id);
                 app('auth')->shouldUse($role);
                 return $next($request);
             }
         } catch (JWTException $exception) {
-            try{
+            try {
                 $oldToken = auth('api')->getToken();
 
                 $token = auth($role)->refresh();
@@ -48,13 +51,13 @@ class AuthToken extends BaseMiddleware
                 $user['device_uid'] = $request->input('device_uid');
 
                 //并发token过期处理
-                $res = Redis::set('token_lock_'.$user->id,$token,'nx','ex',5);
-                if ($res){
-                    $this->CheckSsoToken($oldToken,auth($role)->user()->id);
+                $res = Redis::set('token_lock_' . $user->id, $token, 'nx', 'ex', 5);
+                if ($res) {
+                    $this->CheckSsoToken($oldToken, auth($role)->user()->id);
 
                     //更新请求中的token
-                    $newToken = 'Bearer '.$token;
-                    $request->headers->set('Authorization',$newToken);
+                    $newToken = 'Bearer ' . $token;
+                    $request->headers->set('Authorization', $newToken);
                     //更新登录时间
 
                     $user->update(
@@ -63,19 +66,18 @@ class AuthToken extends BaseMiddleware
                             'last_login_date' => Carbon::now()->toDateTimeString()
                         ]
                     );
-                    $user->token =$newToken;
+                    $user->token = $newToken;
 
                     app(MerUserService::class)->cacheToken($user);
 
 //                    //是同一个则删除锁
 //                    if (Redis::get('token_lock_'.$user->id) == $token) {
-                        Redis::del('token_lock_'.$user->id);
+                    Redis::del('token_lock_' . $user->id);
 //                    }
                     // 在响应头中返回新的 token
                     return $this->setAuthenticationHeader($next($request), $token);
-                }
-                else{
-                    if ($lockToken = Redis::get('token_lock_'.$user->id)){
+                } else {
+                    if ($lockToken = Redis::get('token_lock_' . $user->id)) {
                         return $this->setAuthenticationHeader($next($request), $lockToken);
                     }
 //                    $redisUser = Redis::get('auth_user_'.$user->id);
@@ -84,9 +86,9 @@ class AuthToken extends BaseMiddleware
                 }
 
 
-            } catch(JWTException $exception) {
+            } catch (JWTException $exception) {
                 // 如果捕获到此异常，即代表 refresh 也过期了，用户无法刷新令牌，需要重新登录。
-                throw new \Exception(transL('mer-user.login_expired','登录失效,请重新登录.'),401);
+                throw new \Exception(transL('mer-user.login_expired', '登录失效,请重新登录.'), 401);
 //                throw new UnauthorizedHttpException('jwt-auth', $exception->getMessage());
             }
         }
@@ -97,10 +99,10 @@ class AuthToken extends BaseMiddleware
      * 单点登录
      * @throws \Exception
      */
-    private function CheckSsoToken($token,$userId=0)
+    private function CheckSsoToken($token, $userId = 0)
     {
-        if (app(MerUserService::class)->compareToken($token,$userId) == false) {
-            throw new \Exception(transL('mer-user.need_relogin','Your account is logged in elsewhere.'),401);
+        if (app(MerUserService::class)->compareToken($token, $userId) == false) {
+            throw new \Exception(transL('mer-user.need_relogin', 'Your account is logged in elsewhere.'), 401);
         }
     }
 
