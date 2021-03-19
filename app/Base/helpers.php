@@ -430,11 +430,11 @@ function randomUser()
 
     if($type==0){
 
-        $username=$male_names[$frist_num]." ".$surnames[$sur_num];
+        $username=($male_names[$frist_num]??$male_names[0])." ".($surnames[$sur_num]??$surnames[0]);
 
     } else {
 
-        $username=($famale_names[$frist_num]??'')." ".($surnames[$sur_num]??'');
+        $username=($famale_names[$frist_num]??$famale_names[0])." ".($surnames[$sur_num]??$surnames[0]);
 
     }
 
