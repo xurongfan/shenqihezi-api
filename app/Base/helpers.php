@@ -434,7 +434,7 @@ function randomUser()
 
     } else {
 
-        $username=$famale_names[$frist_num]." ".$surnames[$sur_num];
+        $username=($famale_names[$frist_num]??'')." ".($surnames[$sur_num]??'');
 
     }
 
