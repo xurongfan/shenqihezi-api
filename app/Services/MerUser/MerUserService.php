@@ -8,6 +8,7 @@ use App\Models\User\MerUserInfo;
 use App\Models\User\MerUserLoginLog;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 
 class MerUserService extends BaseService
@@ -211,10 +212,10 @@ class MerUserService extends BaseService
      */
     protected function loginToken($user)
     {
-        $user->update([
-            'last_login_ip' => getClientIp(),
-            'last_login_date' => Carbon::now()->toDateTimeString()
-        ]);
+//        $user->update([
+//            'last_login_ip' => getClientIp(),
+//            'last_login_date' => Carbon::now()->toDateTimeString()
+//        ]);
 
 
         return auth()->login($user);
@@ -236,17 +237,7 @@ class MerUserService extends BaseService
                MerUserInfo::query()->where('mer_user_id',$user['id'])->update($ipInfo);
            }
        }
-
-
-        //登录日志
-        MerUserLoginLog::query()->create([
-            'mer_user_id' => $user['id'],
-            'last_login_at' => Carbon::now()->toDateTimeString(),
-            'last_login_ip' => $ip,
-            'register_at' => $user['created_at'],
-            'device_uid' => $user['device_uid'] ?? '',
-        ]);
-
+       return app(MerUserLoginLogService::class)->addLog($user,true);
     }
 
     /**
@@ -265,9 +256,6 @@ class MerUserService extends BaseService
             $user = Redis::get('auth_user_'.$userId);
 
             $user = $user ? json_decode($user,true) : [];
-
-            logger('compare token:'.$token);
-            logger('compare token old:'.$user['token']??'');
 
             return $user['token'] == $token ? true : false;
 //        }
