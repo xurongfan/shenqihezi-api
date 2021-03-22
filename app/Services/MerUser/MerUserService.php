@@ -266,6 +266,9 @@ class MerUserService extends BaseService
 
             $user = $user ? json_decode($user,true) : [];
 
+            logger('compare token:'.$token);
+            logger('compare token old:'.$user['token']??'');
+
             return $user['token'] == $token ? true : false;
 //        }
         return false;
