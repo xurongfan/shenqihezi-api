@@ -91,8 +91,11 @@ class TopicContentService extends BaseService
                     ->orderBy(DB::raw('rid'), 'desc')
                     ->pluck('id')
                     ->toArray();
-                Redis::SADD($redisKey,$hotId);
-                Redis::EXPIRE($redisKey,60*60);
+                if ($hotId){
+                    Redis::SADD($redisKey,$hotId);
+                    Redis::EXPIRE($redisKey,60*60);
+                }
+
             }
             $hotId = Redis::SPOP($redisKey,20);
         }
