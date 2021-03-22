@@ -37,7 +37,7 @@ class AuthToken extends BaseMiddleware
                     throw new \Exception(transL('mer-user.login_expired', '登录失效,请重新登录.'), 401);
                 }
                 //单点登录
-                $this->CheckSsoToken(auth('api')->getToken(), auth($role)->user()->id);
+//                $this->CheckSsoToken(auth('api')->getToken(), auth($role)->user()->id);
                 $user = auth($role)->user();
                 $user['device_uid'] = $request->input('device_uid');
                 app(MerUserLoginLogService::class)->addLog($user);
