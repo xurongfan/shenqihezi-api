@@ -7,6 +7,7 @@ use App\Jobs\TopicContentResourceJob;
 use App\Models\Game\GamePackage;
 use App\Models\Topic\Topic;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 
 class TopicContentService extends BaseService
@@ -24,8 +25,8 @@ class TopicContentService extends BaseService
 //        }
         try {
             $request['mer_user_id'] = $this->userId();
-            $key = 'topic_content_lock_'.$request['mer_user_id'];
-            if (Redis::set($key,1,'nx','ex',5)){
+            $key = 'topic_content_lock_' . $request['mer_user_id'];
+            if (Redis::set($key, 1, 'nx', 'ex', 5)) {
                 $request['ip'] = getClientIp();
                 $this->model->fill($this->model->filter($request))->save();
                 $topicService = app(TopicService::class);
@@ -40,12 +41,12 @@ class TopicContentService extends BaseService
                     app(TopicService::class)->follow($topicArr);
                 }
                 //资源入驻
-                app(TopicContentResourceService::class)->resource($this->model->id,$request['image_resource']??[]);
+                app(TopicContentResourceService::class)->resource($this->model->id, $request['image_resource'] ?? []);
                 Redis::del($key);
                 return $this->show($this->model->id);
             }
             throw new \Exception(transL('common.system_busy'));
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             throw new \Exception($exception->getMessage());
         }
     }
@@ -60,7 +61,7 @@ class TopicContentService extends BaseService
         return $this->updateBy([
             'id' => $contentId,
             'mer_user_id' => $this->userId()
-        ],[
+        ], [
             'is_anonymous' => 0
         ]);
     }
@@ -73,7 +74,7 @@ class TopicContentService extends BaseService
      * @param int $userId 用户
      * @return mixed
      */
-    public function index($isFollow = 0,$topicId = 0,$isHot = 0,$userId = 0)
+    public function index($isFollow = 0, $topicId = 0, $isHot = 0, $userId = 0)
     {
         //已屏蔽用户
         if (($topicId || $isHot) || (!$isFollow && !$topicId && !$isHot && !$userId)) {
@@ -81,82 +82,109 @@ class TopicContentService extends BaseService
         }
         $shiedlUser = $shiedlUser ?? [];
 
-       $res = $this->model->query()
-           ->select('id','mer_user_id','content','image_resource','is_anonymous','position_info','created_at','game_package_id','extra_info')
-           ->with(['user' => function($query){
-               $query->select('id','profile_img','nick_name','vip');
-           },'topic'=>function($query){
-               $query->select('topic.id','topic.title')->where('topic.status',1);
-           },'like'=>function($query){
-               $query->select('id','content_id')->where('mer_user_id',$this->userId());
-           },'IsUserFollow' => function($query){
-               $query->where('mer_user_id',$this->userId());
-           },'game' => function($query){
-               $query->select('id','title','icon_img','background_img','url','is_crack','crack_url','crack_des','status','des','video_url','is_rank','is_landscape');
-           }])
+        $loginUserId = $this->userId();
+        if ($isHot) {
+            $redisKey = 'content_push_'.$loginUserId;
+            if (Redis::SCARD($redisKey) == 0){
+                $hotId = $this->model->query()->select('id', DB::raw('( rand( ) * TIMESTAMP ( now( ) ) ) AS rid '))
+                    ->limit(100)
+                    ->orderBy(DB::raw('rid'), 'desc')
+                    ->pluck('id')
+                    ->toArray();
+                Redis::SADD($redisKey,$hotId);
+                Redis::EXPIRE($redisKey,60*60);
+            }
+            $hotId = Redis::SPOP($redisKey,20);
+        }
+        $hotId = $hotId ?? [];
+
+        $res = $this->model->query()
+            ->select('id', 'mer_user_id', 'content', 'image_resource', 'is_anonymous', 'position_info', 'created_at', 'game_package_id', 'extra_info')
+            ->with(['user' => function ($query) {
+                $query->select('id', 'profile_img', 'nick_name', 'vip');
+            }, 'topic' => function ($query) {
+                $query->select('topic.id', 'topic.title')->where('topic.status', 1);
+            }, 'like' => function ($query) use($loginUserId) {
+                $query->select('id', 'content_id')->where('mer_user_id',$loginUserId);
+            }, 'IsUserFollow' => function ($query) use($loginUserId){
+                $query->where('mer_user_id', $loginUserId);
+            }, 'game' => function ($query) {
+                $query->select('id', 'title', 'icon_img', 'background_img', 'url', 'is_crack', 'crack_url', 'crack_des', 'status', 'des', 'video_url', 'is_rank', 'is_landscape');
+            }])
 //           ->when($gameId,function ($query){
 //               $query->where('game_package_id','!=',0);
 //           })
-           //指定话题
-           ->when($topicId,function ($query)use($topicId){
-               $query->whereHasIn('topic',function ($query) use($topicId){
-                   $query->where('topic.id',$topicId)->where('topic.status',1);
-               });
-           })
-           //关注人
-           ->when($isFollow,function ($query){
-               $query->where('is_anonymous',$this->model::ISANONYMOUS_NO)
-                   ->whereHasIn('userFollow',function ($query1){
-                       $query1->where('mer_user_id',$this->userId());
-                   });
-           })
+            //指定话题
+            ->when($topicId, function ($query) use ($topicId) {
+                $query->whereHasIn('topic', function ($query) use ($topicId) {
+                    $query->where('topic.id', $topicId)->where('topic.status', 1);
+                });
+            })
+            //关注人
+            ->when($isFollow, function ($query) use($loginUserId){
+                $query->where('is_anonymous', $this->model::ISANONYMOUS_NO)
+                    ->whereHasIn('userFollow', function ($query1) use($loginUserId){
+                        $query1->where('mer_user_id', $loginUserId);
+                    });
+            })
            //热门
-           ->when($isHot,function ($query){
-               //近一周
-               $lately = date('Y-m-d H:i:s',strtotime('-7days'));
-               $query->where('created_at','>',$lately)->withCount('comment')->orderBy('comment_count','desc');
+           ->when($isHot,function ($query) use ($hotId){
+               $query->whereIn('id',$hotId);
+//               //近一周
+//               $lately = date('Y-m-d H:i:s',strtotime('-7days'));
+//               $query->where('created_at','>',$lately)->withCount('comment')->orderBy('comment_count','desc');
            },function ($query){
                $query->orderBy('created_at','desc');
            })
-           //指定人
-           ->when($userId,function ($query)use ($userId){
-               $query->where('mer_user_id',$userId == -1 ? $this->userId() : $userId);
-               if($userId > 0){
-                   $query->where('is_anonymous',$this->model::ISANONYMOUS_NO);
-               }
-           })
-           ->when(isset($shiedlUser) && $shiedlUser ,function ($query) use ($shiedlUser){
-               $query->whereNotIn('mer_user_id',$shiedlUser);
-           })
-           ->withCount(['comment','like'])
-           ->paginate(20)
-           ->toArray();
+            //指定人
+            ->when($userId, function ($query) use ($userId,$loginUserId) {
+                $query->where('mer_user_id', $userId == -1 ? $loginUserId : $userId);
+                if ($userId > 0) {
+                    $query->where('is_anonymous', $this->model::ISANONYMOUS_NO);
+                }
+            })
+            ->when(isset($shiedlUser) && $shiedlUser, function ($query) use ($shiedlUser) {
+                $query->whereNotIn('mer_user_id', $shiedlUser);
+            })
+            ->withCount(['comment', 'like'])
+            ->paginate(20,'[*]','page',$isHot?1:null)
+            ->toArray();
 
-       if ($topicId) {
-           $topicFollow = app(TopicUserService::class)->findOneBy([
-               'topic_id' => $topicId,
-               'mer_user_id' => $this->userId(),
-           ]);
-           $res['topic_follow'] = $topicFollow ? true : false;
-       }
+        if ($topicId) {
+            $topicFollow = app(TopicUserService::class)->findOneBy([
+                'topic_id' => $topicId,
+                'mer_user_id' => $loginUserId,
+            ]);
+            $res['topic_follow'] = $topicFollow ? true : false;
+        }
 
-       foreach ($res['data'] as $key => &$item){
-           //匿名处理
-           if (
-               $item['is_anonymous'] == $this->model::ISANONYMOUS_YES
-               &&
-               $this->userId() != $item['mer_user_id']
-           ) {
-               $item['mer_user_id'] = null;
-               $item['user']['id'] = null;
-               $item['user']['profile_img'] = null;
-               $item['user']['nick_name'] = 'AM';
-           }
-           if ($isHot){
-               $item['created_at'] = null;
-           }
-       }
-       return $res;
+        foreach ($res['data'] as $key => &$item) {
+            //匿名处理
+            if (
+                $item['is_anonymous'] == $this->model::ISANONYMOUS_YES
+                &&
+                $loginUserId != $item['mer_user_id']
+            ) {
+                $item['mer_user_id'] = null;
+                $item['user']['id'] = null;
+                $item['user']['profile_img'] = null;
+                $item['user']['nick_name'] = 'AM';
+            }
+            if ($isHot) {
+                $item['created_at'] = null;
+            }
+        }
+
+        if ($isHot && $hotId){
+//            $res['data'] = array_column($res['data'],null,'id');
+            $hotId = array_flip($hotId);
+            foreach ($res['data'] as $key => &$datum){
+                $datum['index'] = $hotId[$datum['id']];
+            }
+            $res['data'] = my_array_multisort($res['data'],'index');
+            $res['last_page'] = 100;
+        }
+        return $res;
     }
 
     /**
@@ -166,19 +194,19 @@ class TopicContentService extends BaseService
      */
     public function show($contentId)
     {
-        $content = $this->model->newQuery()->where('id',$contentId)
-            ->with(['user' => function($query){
-                $query->select('id','profile_img','nick_name');
-            },'topic'=>function($query){
-                $query->select('topic.id','topic.title')->where('topic.status',1);
-            },'like'=>function($query){
-                $query->select('id','content_id')->where('mer_user_id',$this->userId());
-            },'IsUserFollow' => function($query){
-                $query->where('mer_user_id',$this->userId());
-            },'game' => function($query){
-                $query->select('id','title','icon_img','background_img','url','is_crack','crack_url','crack_des','status','des','video_url','is_rank','is_landscape');
+        $content = $this->model->newQuery()->where('id', $contentId)
+            ->with(['user' => function ($query) {
+                $query->select('id', 'profile_img', 'nick_name');
+            }, 'topic' => function ($query) {
+                $query->select('topic.id', 'topic.title')->where('topic.status', 1);
+            }, 'like' => function ($query) {
+                $query->select('id', 'content_id')->where('mer_user_id', $this->userId());
+            }, 'IsUserFollow' => function ($query) {
+                $query->where('mer_user_id', $this->userId());
+            }, 'game' => function ($query) {
+                $query->select('id', 'title', 'icon_img', 'background_img', 'url', 'is_crack', 'crack_url', 'crack_des', 'status', 'des', 'video_url', 'is_rank', 'is_landscape');
             }])
-            ->withCount(['comment','like'])
+            ->withCount(['comment', 'like'])
             ->firstOrFail();
         //匿名处理
         if (
@@ -213,24 +241,24 @@ class TopicContentService extends BaseService
      */
     public function gameTopic()
     {
-        $topic = Cache::remember('GameTopic',60*6,function (){
+        $topic = Cache::remember('GameTopic', 60 * 6, function () {
             return Topic::query()->firstOrCreate([
                 'title' => 'Fun Touch Game'
             ]);
         });
 
-        $gameList = Cache::remember('funTouchGame',60*2,function (){
+        $gameList = Cache::remember('funTouchGame', 60 * 2, function () {
             $count = GamePackage::query()->count();
             $gameList = [];
-            while (count($gameList) < 3){
-                if (!in_array($offset = mt_rand(1,$count),array_column($gameList,'id'))){
-                    $gameList[] = GamePackage::query()->select('id','icon_img')->where('id','>=',$offset)->first();
+            while (count($gameList) < 3) {
+                if (!in_array($offset = mt_rand(1, $count), array_column($gameList, 'id'))) {
+                    $gameList[] = GamePackage::query()->select('id', 'icon_img')->where('id', '>=', $offset)->first();
                 }
             }
             return $gameList;
         });
 
-        return compact('topic','gameList');
+        return compact('topic', 'gameList');
     }
 
 }

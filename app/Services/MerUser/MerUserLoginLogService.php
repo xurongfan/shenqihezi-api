@@ -6,6 +6,8 @@ use App\Base\Services\BaseService;
 use App\Models\Statics\StaticsRemain;
 use App\Models\User\MerUser;
 use App\Models\User\MerUserLoginLog;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class MerUserLoginLogService extends BaseService
@@ -17,6 +19,36 @@ class MerUserLoginLogService extends BaseService
     public function __construct(MerUserLoginLog $model)
     {
         parent::__construct($model);
+    }
+
+    /**
+     * @param $user
+     * @param false $login
+     * @return bool
+     */
+    public function addLog($user,$login=false)
+    {
+        $key = 'login_log:' . $user['id'];
+        if (Cache::add($key, 1, 60*6) || $login) {
+            $ip = getClientIp();
+            //更新登录时间
+           MerUser::query()->where('id',$user['id'])->update(
+               [
+                   'last_login_ip' => $ip,
+                   'last_login_date' => Carbon::now()->toDateTimeString()
+               ]
+           );
+            //登录日志
+            MerUserLoginLog::query()->create([
+                'mer_user_id' => $user['id'],
+                'last_login_at' => Carbon::now()->toDateTimeString(),
+                'last_login_ip' => $ip,
+                'register_at' => $user['created_at'],
+                'device_uid' => $user['device_uid'] ?? '',
+            ]);
+        }
+
+        return true;
     }
 
     /**

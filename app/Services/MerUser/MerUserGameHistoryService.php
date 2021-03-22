@@ -133,7 +133,7 @@ class MerUserGameHistoryService extends BaseService
     public function hotTopGame()
     {
         $hotGame = $this->hotGame();
-        return $hotGame[array_rand($hotGame, 1)];
+        return $hotGame ? $hotGame[array_rand($hotGame, 1)] : [];
     }
 
 }
