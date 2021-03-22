@@ -257,9 +257,14 @@ class MerUserService extends BaseService
 
             $user = $user ? json_decode($user,true) : [];
 
-            return md5($user['token']) == md5($token) ? true : false;
+            $result = md5($user['token']) == md5($token) ? true : false;
+            if (!$result){
+                logger('token_compare_'.$userId.'_1:'.$user['token']);
+                logger('token_compare_'.$userId.'_2:'.$token);
+            }
+            return $result;
 //        }
-        return false;
+//        return false;
     }
 
     /**
