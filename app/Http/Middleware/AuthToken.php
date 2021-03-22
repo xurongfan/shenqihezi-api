@@ -53,7 +53,7 @@ class AuthToken extends BaseMiddleware
                 //并发token过期处理
                 $res = Redis::set('token_lock_' . $user->id, $token, 'nx', 'ex', 5);
                 if ($res) {
-                    $this->CheckSsoToken($oldToken, auth($role)->user()->id);
+//                    $this->CheckSsoToken($oldToken, auth($role)->user()->id);
 
                     //更新请求中的token
                     $newToken = 'Bearer ' . $token;
