@@ -109,7 +109,7 @@ class MerUserGameHistoryService extends BaseService
      */
     public function hotGame()
     {
-        return Cache::remember('hot-game-list', 60 * 2, function () {
+//        return Cache::remember('hot-game-list', 60 * 2, function () {
             $result = $this->model->newQuery()
                 ->select('game_package_id', DB::raw('sum(`duration`) as score'))
 //            ->where('duration','>',30)
@@ -124,7 +124,7 @@ class MerUserGameHistoryService extends BaseService
                 ->get()->toArray();
 
             return $result;
-        });
+//        });
     }
 
     /**
