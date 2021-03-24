@@ -125,7 +125,7 @@ class GamePackageService extends BaseService
             ->get()->toArray();
         $result = $this->gameFormat($result);
         //游戏类型点击事件
-        if ($gameTypeId) {
+        if ($gameTypeId && $this->userId()) {
             app(GameTypeClickLogService::class)->store($gameTypeId);
         }
         return [

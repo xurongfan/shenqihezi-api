@@ -30,10 +30,20 @@ Route::group([], function (Router $router) {
         $router->post('sendSms', 'MerUserController@sendSms')->name('user.sms');
         $router->post('login', 'MerUserController@login')->name('user.login');
         $router->post('newLogin', 'MerUserController@newLogin')->name('user.newLogin');
+
+        $router->get('game-history', 'MerUserGameHistoryController@index')->name('user.game-history-index');
+        $router->post('game-history', 'MerUserGameHistoryController@store')->name('user.game-history-store');
+        $router->put('game-history/{uid}', 'MerUserGameHistoryController@report')->name('user.game-history-report');
+        $router->get('game-hot', 'MerUserGameHistoryController@hotGame')->name('user.game-hot');
+        $router->get('game-hot-top', 'MerUserGameHistoryController@hotTopGame')->name('user.game-hot-top');
+
     });
 
     $router->group(['namespace' => 'Game', 'prefix' => 'game'], function ($router) {
         $router->get('tag', 'GameTagController@all')->name('game.tag');
+        $router->get('type', 'GameTypeController@all')->name('game.type');
+        $router->get('gameIndexByTagRec', 'GamePackageController@gameIndexByTagRec')->name('game.gameIndexByTagRec');
+        $router->get('gameRec', 'GamePackageController@gameRec')->name('game.gameRec');
     });
 
     $router->group(['namespace' => 'Tool', 'prefix' => 'tool'], function ($router) {
@@ -71,12 +81,6 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
         $router->get('game-collect', 'MerUserGameCollectionController@index')->name('user.game-collect-index');
         $router->get('game-is-collect', 'MerUserGameCollectionController@gameCollect')->name('user.game-collect-is');
 
-        $router->get('game-history', 'MerUserGameHistoryController@index')->name('user.game-history-index');
-        $router->post('game-history', 'MerUserGameHistoryController@store')->name('user.game-history-store');
-        $router->put('game-history/{uid}', 'MerUserGameHistoryController@report')->name('user.game-history-report');
-        $router->get('game-hot', 'MerUserGameHistoryController@hotGame')->name('user.game-hot');
-        $router->get('game-hot-top', 'MerUserGameHistoryController@hotTopGame')->name('user.game-hot-top');
-
         $router->post('game-integral', 'MerUserGameIntegralController@store')->middleware('LaraRsa')->name('user.game-integral');
         $router->get('game-integral-rank', 'MerUserGameIntegralController@rank')->name('user.game-integral-rank');
 
@@ -93,12 +97,8 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
     $router->group(['namespace' => 'Game', 'prefix' => 'game'], function ($router) {
         $router->get('/', 'GamePackageController@index')->name('game.index');
         $router->get('show', 'GamePackageController@show')->name('game.show');
-        $router->get('gameIndexByTagRec', 'GamePackageController@gameIndexByTagRec')->name('game.gameIndexByTagRec');
-        $router->get('gameRec', 'GamePackageController@gameRec')->name('game.gameRec');
         $router->post('report', 'AdBuryingController@report')->name('game-ad.report');
         $router->get('subscribe', 'GamePackageController@subscribe')->name('game.subscribe');
-
-        $router->get('type', 'GameTypeController@all')->name('game.type');
 
     });
 
