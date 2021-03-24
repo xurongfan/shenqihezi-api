@@ -19,7 +19,9 @@ class MerUserGameHistoryService extends BaseService
     public function index($userId = 0)
     {
         if (!$this->userId()){
-            return [];
+            return [
+                'data' => []
+            ];
         }
         $page = request()->input('page', 1);
         if (!$isVip = app(MerUserService::class)->isVip() && !$userId) {
