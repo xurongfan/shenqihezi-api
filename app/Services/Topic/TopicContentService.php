@@ -128,7 +128,7 @@ class TopicContentService extends BaseService
                 });
             })
             //关注人
-            ->when($isFollow && $loginUserId, function ($query) use($loginUserId){
+            ->when($isFollow, function ($query) use($loginUserId){
                 $query->where('is_anonymous', $this->model::ISANONYMOUS_NO)
                     ->whereHasIn('userFollow', function ($query1) use($loginUserId){
                         $query1->where('mer_user_id', $loginUserId);

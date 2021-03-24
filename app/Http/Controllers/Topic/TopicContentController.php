@@ -144,6 +144,9 @@ class TopicContentController extends Controller
      */
     public function index(Request $request)
     {
+//        if ($request->is_follow){
+//            $this->middleware = ['auth_token'];
+//        }
         return app(TopicContentService::class)->index($request->is_follow,$request->topic_id,$request->is_hot,$request->mer_user_id);
     }
 

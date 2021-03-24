@@ -112,8 +112,6 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
 
     $router->group(['namespace' => 'Topic', 'prefix' => 'topic'], function ($router) {
         $router->get('search', 'TopicController@search')->name('topic.search');
-        $router->get('/', 'TopicController@index')->name('topic.index');
-        $router->get('game-topic', 'TopicContentController@gameTopic')->name('topic.game-topic');
 
         $router->get('user-topic-list', 'TopicController@userTopicList')->name('topic.user.topic');
         $router->post('/', 'TopicController@follow')->name('topic.follow');
