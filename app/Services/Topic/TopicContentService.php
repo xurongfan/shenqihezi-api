@@ -77,8 +77,10 @@ class TopicContentService extends BaseService
     public function index($isFollow = 0, $topicId = 0, $isHot = 0, $userId = 0)
     {
         //已屏蔽用户
-        if (($topicId || $isHot) || (!$isFollow && !$topicId && !$isHot && !$userId)) {
-            $shiedlUser = app(TopicContentUserShieldService::class)->index($this->userId());
+        if ($this->userId()){
+            if (($topicId || $isHot) || (!$isFollow && !$topicId && !$isHot && !$userId)) {
+                $shiedlUser = app(TopicContentUserShieldService::class)->index($this->userId());
+            }
         }
         $shiedlUser = $shiedlUser ?? [];
 
@@ -107,16 +109,18 @@ class TopicContentService extends BaseService
                 $query->select('id', 'profile_img', 'nick_name', 'vip');
             }, 'topic' => function ($query) {
                 $query->select('topic.id', 'topic.title')->where('topic.status', 1);
-            }, 'like' => function ($query) use($loginUserId) {
-                $query->select('id', 'content_id')->where('mer_user_id',$loginUserId);
-            }, 'IsUserFollow' => function ($query) use($loginUserId){
-                $query->where('mer_user_id', $loginUserId);
             }, 'game' => function ($query) {
                 $query->select('id', 'title', 'icon_img', 'background_img', 'url', 'is_crack', 'crack_url', 'crack_des', 'status', 'des', 'video_url', 'is_rank', 'is_landscape');
             }])
-//           ->when($gameId,function ($query){
-//               $query->where('game_package_id','!=',0);
-//           })
+           ->when($loginUserId,function ($query) use ($loginUserId){
+               $query->with([
+                   'like' => function ($query) use($loginUserId) {
+                       $query->select('id', 'content_id')->where('mer_user_id',$loginUserId);
+                   }, 'IsUserFollow' => function ($query) use($loginUserId){
+                       $query->where('mer_user_id', $loginUserId);
+                   }
+               ]);
+           })
             //指定话题
             ->when($topicId, function ($query) use ($topicId) {
                 $query->whereHasIn('topic', function ($query) use ($topicId) {
@@ -124,7 +128,7 @@ class TopicContentService extends BaseService
                 });
             })
             //关注人
-            ->when($isFollow, function ($query) use($loginUserId){
+            ->when($isFollow && $loginUserId, function ($query) use($loginUserId){
                 $query->where('is_anonymous', $this->model::ISANONYMOUS_NO)
                     ->whereHasIn('userFollow', function ($query1) use($loginUserId){
                         $query1->where('mer_user_id', $loginUserId);
@@ -153,7 +157,7 @@ class TopicContentService extends BaseService
             ->paginate(20,'[*]','page',$isHot?1:null)
             ->toArray();
 
-        if ($topicId) {
+        if ($topicId && $loginUserId) {
             $topicFollow = app(TopicUserService::class)->findOneBy([
                 'topic_id' => $topicId,
                 'mer_user_id' => $loginUserId,

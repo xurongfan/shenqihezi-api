@@ -37,6 +37,11 @@ Route::group([], function (Router $router) {
         $router->get('game-hot', 'MerUserGameHistoryController@hotGame')->name('user.game-hot');
         $router->get('game-hot-top', 'MerUserGameHistoryController@hotTopGame')->name('user.game-hot-top');
 
+        $router->get('game-integral-rank', 'MerUserGameIntegralController@rank')->name('user.game-integral-rank');
+
+        $router->get('content', 'TopicContentController@index')->name('topic.content.list');
+
+
     });
 
     $router->group(['namespace' => 'Game', 'prefix' => 'game'], function ($router) {
@@ -44,6 +49,11 @@ Route::group([], function (Router $router) {
         $router->get('type', 'GameTypeController@all')->name('game.type');
         $router->get('gameIndexByTagRec', 'GamePackageController@gameIndexByTagRec')->name('game.gameIndexByTagRec');
         $router->get('gameRec', 'GamePackageController@gameRec')->name('game.gameRec');
+    });
+
+    $router->group(['namespace' => 'Topic', 'prefix' => 'topic'], function ($router) {
+        $router->get('/', 'TopicController@index')->name('topic.index');
+        $router->get('game-topic', 'TopicContentController@gameTopic')->name('topic.game-topic');
     });
 
     $router->group(['namespace' => 'Tool', 'prefix' => 'tool'], function ($router) {
@@ -82,7 +92,6 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
         $router->get('game-is-collect', 'MerUserGameCollectionController@gameCollect')->name('user.game-collect-is');
 
         $router->post('game-integral', 'MerUserGameIntegralController@store')->middleware('LaraRsa')->name('user.game-integral');
-        $router->get('game-integral-rank', 'MerUserGameIntegralController@rank')->name('user.game-integral-rank');
 
         $router->post('follow', 'MerUserFollowController@follow')->name('user.follow');
         $router->get('fans', 'MerUserFollowController@index')->name('user.fans');
@@ -105,9 +114,10 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
     $router->group(['namespace' => 'Topic', 'prefix' => 'topic'], function ($router) {
         $router->get('search', 'TopicController@search')->name('topic.search');
         $router->get('/', 'TopicController@index')->name('topic.index');
+        $router->get('game-topic', 'TopicContentController@gameTopic')->name('topic.game-topic');
+
         $router->get('user-topic-list', 'TopicController@userTopicList')->name('topic.user.topic');
         $router->post('/', 'TopicController@follow')->name('topic.follow');
-        $router->get('game-topic', 'TopicContentController@gameTopic')->name('topic.game-topic');
 
         $router->post('content', 'TopicContentController@publish')->name('topic.content.publish');
         $router->post('cancel-anonymous', 'TopicContentController@cancelAnonymous')->name('topic.content.anonymous');
@@ -123,7 +133,6 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
         $router->post('comment-like', 'TopicContentController@commentLike')->name('topic.comment.like');
         $router->post('content-like', 'TopicContentController@like')->name('topic.content.like');
 
-        $router->get('content', 'TopicContentController@index')->name('topic.content.list');
         $router->get('content/{contentId}', 'TopicContentController@show')->name('topic.content.show');
 
 
