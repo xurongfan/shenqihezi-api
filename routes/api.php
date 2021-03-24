@@ -54,6 +54,9 @@ Route::group([], function (Router $router) {
         $router->get('/', 'TopicController@index')->name('topic.index');
         $router->get('game-topic', 'TopicContentController@gameTopic')->name('topic.game-topic');
         $router->get('content', 'TopicContentController@index')->name('topic.content.list');
+        $router->get('comment', 'TopicContentController@commentList')->name('topic.comment.list');
+        $router->get('content/{contentId}', 'TopicContentController@show')->name('topic.content.show');
+
     });
 
     $router->group(['namespace' => 'Tool', 'prefix' => 'tool'], function ($router) {
@@ -123,14 +126,10 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
         $router->delete('content', 'TopicContentController@delete')->name('topic.content.delete');
 
         $router->post('comment', 'TopicContentController@comment')->name('topic.comment.publish');
-        $router->get('comment', 'TopicContentController@commentList')->name('topic.comment.list');
         $router->delete('comment', 'TopicContentController@deleteComment')->name('topic.comment.delete');
 
         $router->post('comment-like', 'TopicContentController@commentLike')->name('topic.comment.like');
         $router->post('content-like', 'TopicContentController@like')->name('topic.content.like');
-
-        $router->get('content/{contentId}', 'TopicContentController@show')->name('topic.content.show');
-
 
         $router->get('notice', 'NoticeController@index')->name('topic.notice.list');
         $router->get('notice-count', 'NoticeController@noticeCount')->name('topic.notice.count');

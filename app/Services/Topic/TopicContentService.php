@@ -114,17 +114,17 @@ class TopicContentService extends BaseService
             }])
            ->when($loginUserId,function ($query) use ($loginUserId){
                $query->with([
-                   'like' => function ($query) use($loginUserId) {
-                       $query->select('id', 'content_id')->where('mer_user_id',$loginUserId);
-                   }, 'IsUserFollow' => function ($query) use($loginUserId){
-                       $query->where('mer_user_id', $loginUserId);
+                   'like' => function ($query1) use($loginUserId) {
+                       $query1->select('id', 'content_id')->where('mer_user_id',$loginUserId);
+                   }, 'IsUserFollow' => function ($query1) use($loginUserId){
+                       $query1->where('mer_user_id', $loginUserId);
                    }
                ]);
            })
             //指定话题
             ->when($topicId, function ($query) use ($topicId) {
-                $query->whereHasIn('topic', function ($query) use ($topicId) {
-                    $query->where('topic.id', $topicId)->where('topic.status', 1);
+                $query->whereHasIn('topic', function ($query1) use ($topicId) {
+                    $query1->where('topic.id', $topicId)->where('topic.status', 1);
                 });
             })
             //关注人
@@ -201,25 +201,29 @@ class TopicContentService extends BaseService
      */
     public function show($contentId)
     {
+        $loginUserId = $this->userId();
         $content = $this->model->newQuery()->where('id', $contentId)
             ->with(['user' => function ($query) {
                 $query->select('id', 'profile_img', 'nick_name');
             }, 'topic' => function ($query) {
                 $query->select('topic.id', 'topic.title')->where('topic.status', 1);
-            }, 'like' => function ($query) {
-                $query->select('id', 'content_id')->where('mer_user_id', $this->userId());
             }, 'IsUserFollow' => function ($query) {
                 $query->where('mer_user_id', $this->userId());
             }, 'game' => function ($query) {
                 $query->select('id', 'title', 'icon_img', 'background_img', 'url', 'is_crack', 'crack_url', 'crack_des', 'status', 'des', 'video_url', 'is_rank', 'is_landscape');
             }])
+            ->when($loginUserId,function ($query) use ($loginUserId){
+                $query->with(['like' => function ($query1) use($loginUserId){
+                    $query1->select('id', 'content_id')->where('mer_user_id', $loginUserId);
+                }]);
+            })
             ->withCount(['comment', 'like'])
             ->firstOrFail();
         //匿名处理
         if (
             $content['is_anonymous'] == $this->model::ISANONYMOUS_YES
             &&
-            $this->userId() != $content['mer_user_id']
+            $loginUserId != $content['mer_user_id']
         ) {
             $item['mer_user_id'] = null;
             $item['user']['id'] = null;
