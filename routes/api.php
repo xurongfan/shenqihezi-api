@@ -69,6 +69,10 @@ Route::group([], function (Router $router) {
     });
 
     $router->group(['namespace' => 'System', 'prefix' => 'system'], function ($router) {
+        $router->post('feedback', 'SysFeedBackController@store')->name('feedback.store');
+    });
+
+    $router->group(['namespace' => 'System', 'prefix' => 'system'], function ($router) {
         $router->get('config', 'SysConfigController@config')->name('system.config');
     });
 
@@ -156,10 +160,6 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
         $router->get('project', 'PayController@project')->name('pay.project');
         $router->post('/', 'PayController@pay')->name('pay');
         $router->get('pay-order', 'PayController@payOrder')->name('pay.order');
-    });
-
-    $router->group(['namespace' => 'System', 'prefix' => 'system'], function ($router) {
-        $router->post('feedback', 'SysFeedBackController@store')->name('feedback.store');
     });
 
 
