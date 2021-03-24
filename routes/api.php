@@ -30,6 +30,7 @@ Route::group([], function (Router $router) {
         $router->post('sendSms', 'MerUserController@sendSms')->name('user.sms');
         $router->post('login', 'MerUserController@login')->name('user.login');
         $router->post('newLogin', 'MerUserController@newLogin')->name('user.newLogin');
+        $router->get('/info/{id}', 'MerUserController@user')->name('user.show');
 
         $router->get('game-history', 'MerUserGameHistoryController@index')->name('user.game-history-index');
         $router->post('game-history', 'MerUserGameHistoryController@store')->name('user.game-history-store');
@@ -81,7 +82,6 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
         $router->post('out', 'MerUserController@out')->name('user.out');
         $router->put('edit', 'MerUserController@edit')->name('user.edit');
         $router->put('info', 'MerUserController@editInfo')->name('user.edit-info');
-        $router->get('/info/{id}', 'MerUserController@user')->name('user.show');
         $router->post('game-like', 'MerUserGameLikeController@like')->name('user.game-like');
 
         $router->post('pay', 'MerUserController@pay')->name('user.pay');
