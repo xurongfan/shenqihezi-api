@@ -19,6 +19,12 @@ use Illuminate\Validation\Rule;
 class TopicContentController extends Controller
 {
 
+    public function __construct(){
+        if (\request()->input('is_follow',null)){
+            $this->middleware('auth_token')->only('index');
+        }
+    }
+
     /**
      * 发表话题内容
      * @param Request $request
@@ -144,9 +150,6 @@ class TopicContentController extends Controller
      */
     public function index(Request $request)
     {
-//        if ($request->is_follow){
-//            $this->middleware = ['auth_token'];
-//        }
         return app(TopicContentService::class)->index($request->is_follow,$request->topic_id,$request->is_hot,$request->mer_user_id);
     }
 
