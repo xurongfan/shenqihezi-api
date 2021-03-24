@@ -59,6 +59,10 @@ Route::group([], function (Router $router) {
 
     });
 
+    $router->group(['namespace' => 'Channel', 'prefix' => 'channel'], function ($router) {
+        $router->get('/user', 'ChannelController@userChannel')->name('channel.user');
+    });
+
     $router->group(['namespace' => 'Tool', 'prefix' => 'tool'], function ($router) {
         $router->post('getIpAddress', 'CommonController@getIpAddress');
     });
@@ -140,10 +144,6 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
 
         $router->post('shield', 'TopicContentController@shield')->name('topic.content.shield');
 
-    });
-
-    $router->group(['namespace' => 'Channel', 'prefix' => 'channel'], function ($router) {
-        $router->get('/user', 'ChannelController@userChannel')->name('channel.user');
     });
 
 
