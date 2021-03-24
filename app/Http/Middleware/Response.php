@@ -64,7 +64,7 @@ class Response
      */
     private function saveAccessLog($method, $route, $params, $response)
     {
-        if ($response->exception) {
+        if ($response->exception && $response->exception->getCode() != 401) {
             $user = auth()->guard('api')->user();
             $request = app()->make(Request::class);
             $routeUrl = $request->root() . '/' . trim($route, '/');

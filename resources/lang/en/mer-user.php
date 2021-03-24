@@ -26,6 +26,9 @@ return [
 
     'login_expired' => 'Login expired, please login again.',
 
+    'login_need' => 'Please Login.',
+
+
     'follow_self' => 'You can\'t follow yourself .',
 
     'account_disable' => 'This Account has been disabled, please contact the official staff.'

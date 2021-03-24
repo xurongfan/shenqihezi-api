@@ -28,7 +28,10 @@ class AuthToken extends BaseMiddleware
     public function handle($request, Closure $next)
     {
         // 检查此次请求中是否带有 token，如果没有则抛出异常。
-        $this->checkForToken($request);
+//        $this->checkForToken($request);
+        if (! $this->auth->parser()->setRequest($request)->hasToken()) {
+            throw new \Exception(transL('mer-user.login_need', '请登录.'), 401);
+        }
         $role = 'api';
         // 判断token是否在有效期内
         try {
