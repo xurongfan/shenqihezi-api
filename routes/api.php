@@ -39,8 +39,6 @@ Route::group([], function (Router $router) {
 
         $router->get('game-integral-rank', 'MerUserGameIntegralController@rank')->name('user.game-integral-rank');
 
-        $router->get('content', 'TopicContentController@index')->name('topic.content.list');
-
 
     });
 
@@ -54,6 +52,7 @@ Route::group([], function (Router $router) {
     $router->group(['namespace' => 'Topic', 'prefix' => 'topic'], function ($router) {
         $router->get('/', 'TopicController@index')->name('topic.index');
         $router->get('game-topic', 'TopicContentController@gameTopic')->name('topic.game-topic');
+        $router->get('content', 'TopicContentController@index')->name('topic.content.list');
     });
 
     $router->group(['namespace' => 'Tool', 'prefix' => 'tool'], function ($router) {
