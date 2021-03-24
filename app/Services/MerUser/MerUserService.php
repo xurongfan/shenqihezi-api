@@ -363,19 +363,20 @@ class MerUserService extends BaseService
      */
     public function userInfo($userId = 0,$followData = true)
     {
-        $userId = $userId ? $userId : $this->userId();
+        $loginUserId = $this->userId();
+        $userId = $userId ? $userId : $loginUserId;
         $result = $this->model->query()
             ->select('id','profile_img','nick_name','description','sex','birth','area_code','phone','vip')
             ->where('id',$userId);
-        if ($followData) {
+        if ($followData && $loginUserId) {
             $result = $result->withCount(['follow','followed'])
-                ->when($userId != $this->userId(),function ($query){
+                ->when($userId != $loginUserId,function ($query){
                     $query->with(['isUserFollow' => function($query1){
                         $query1->where('mer_user_id',$this->userId());
                     }]);
                 });
         }
-        if ($userId == $this->userId()) {
+        if ($loginUserId && $userId == $this->userId()) {
             $result = $result->addSelect('facebook_auth_code','google_auth_code','wechat_auth_code')
                         ->with(['userInfo' => function($query){
                             $query->select('mer_user_id','coins','first_wechat_bind','first_play_game','total_game_time');
