@@ -49,6 +49,8 @@ Route::group([], function (Router $router) {
         $router->get('gameIndexByTagRec', 'GamePackageController@gameIndexByTagRec')->name('game.gameIndexByTagRec');
         $router->get('gameRec', 'GamePackageController@gameRec')->name('game.gameRec');
         $router->get('show', 'GamePackageController@show')->name('game.show');
+        $router->post('report', 'AdBuryingController@report')->name('game-ad.report');
+
     });
 
     $router->group(['namespace' => 'Topic', 'prefix' => 'topic'], function ($router) {
@@ -117,7 +119,6 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
 
     $router->group(['namespace' => 'Game', 'prefix' => 'game'], function ($router) {
         $router->get('/', 'GamePackageController@index')->name('game.index');
-        $router->post('report', 'AdBuryingController@report')->name('game-ad.report');
         $router->get('subscribe', 'GamePackageController@subscribe')->name('game.subscribe');
     });
 
