@@ -70,6 +70,7 @@ Route::group([], function (Router $router) {
 
     $router->group(['namespace' => 'System', 'prefix' => 'system'], function ($router) {
         $router->post('feedback', 'SysFeedBackController@store')->name('feedback.store');
+        $router->post('client', 'SysClientErrorController@store')->name('client.error.store');
     });
 
     $router->group(['namespace' => 'System', 'prefix' => 'system'], function ($router) {
