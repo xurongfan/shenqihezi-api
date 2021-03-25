@@ -4,6 +4,7 @@ namespace App\Services\MerUser;
 
 use App\Base\Services\BaseService;
 use App\Models\User\MerUserGameHistory;
+use App\Models\User\MerUserGameLog;
 use App\Models\User\MerUserInfo;
 use App\Models\User\MerUserLoginLog;
 use Illuminate\Support\Arr;
@@ -151,6 +152,7 @@ class MerUserService extends BaseService
      */
     public function newLogin($request)
     {
+        $gameHistory = $request['game_history'] ?? [];
         $keys = Arr::only($request, ['facebook_auth_code', 'google_auth_code','wechat_auth_code']);
         if ($keys = array_filter($keys)){
             $user = self::finOneUser($keys);
@@ -196,6 +198,18 @@ class MerUserService extends BaseService
             ]);
             $user = $this->model;
         }
+
+        if ($request['game_history']){
+            foreach ($request['game_history'] as $key => $gamePackageId) {
+                MerUserGameLog::query()->updateOrCreate([
+                    'mer_user_id' => $user->id,
+                    'game_package_id' => $gamePackageId,
+                ], [
+                    'updated_at' => date('Y-m-d H:i:s',time()-60*$key)
+                ]);
+            }
+        }
+
         //生成token
         $user->token = 'Bearer '.self::loginToken($user);
         $user['device_uid'] = $request['device_uid'] ?? '';
