@@ -199,8 +199,8 @@ class MerUserService extends BaseService
             $user = $this->model;
         }
 
-        if ($request['game_history']){
-            foreach ($request['game_history'] as $key => $gamePackageId) {
+        if ($gameHistory){
+            foreach ($gameHistory as $key => $gamePackageId) {
                 MerUserGameLog::query()->updateOrCreate([
                     'mer_user_id' => $user->id,
                     'game_package_id' => $gamePackageId,
