@@ -382,9 +382,9 @@ class MerUserService extends BaseService
         $result = $this->model->query()
             ->select('id','profile_img','nick_name','description','sex','birth','area_code','phone','vip')
             ->where('id',$userId);
-        if ($followData && $loginUserId) {
+        if ($followData ) {
             $result = $result->withCount(['follow','followed'])
-                ->when($userId != $loginUserId,function ($query){
+                ->when($loginUserId && $userId != $loginUserId,function ($query){
                     $query->with(['isUserFollow' => function($query1){
                         $query1->where('mer_user_id',$this->userId());
                     }]);
@@ -397,7 +397,10 @@ class MerUserService extends BaseService
                         }]);
         }
         $result = $result->firstOrFail();
-
+        if ($result['phone'] && empty($result['area_code'])){
+            $result['follow_count'] = rand(1000,2000);
+            $result['followed_count'] = rand(1000,2000);
+        }
 //        if ($userId == $this->userId()) {
 //            if (isset($result['userInfo']['first_play_game']) && $result['userInfo']['first_play_game']==0) {
 //                //统计总游戏时长
