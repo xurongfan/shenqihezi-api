@@ -38,36 +38,36 @@ class TopicContentCreatedRandomCommand extends Command
      */
     public function handle()
     {
-        \App\Models\Topic\TopicContent::query()
-            ->where('mer_user_id',10271)
-            ->where('id','<=',1375)
-            ->where('is_export',1)->chunkById(100,function ($item){
-                $item = $item->toArray();
-                foreach ($item as $key => $value){
-
-                   TopicContent::query()->where('id',$value['id'])->update(
-                       ['mer_user_id' => rand(9990,10100)]
-                   );
-
-                }
-
-
-            });
-
-//        $time = strtotime('-30 days');
 //        \App\Models\Topic\TopicContent::query()
-//            ->where('is_export',1)->chunk(100,function ($item) use ($time){
+//            ->where('mer_user_id',10271)
+//            ->where('id','<=',1375)
+//            ->where('is_export',1)->chunkById(100,function ($item){
 //                $item = $item->toArray();
 //                foreach ($item as $key => $value){
 //
 //                   TopicContent::query()->where('id',$value['id'])->update(
-//                       ['created_at' => date('Y-m-d H:i:s',rand($time,time()+60*60*7))]
+//                       ['mer_user_id' => rand(9990,10100)]
 //                   );
 //
 //                }
 //
 //
 //            });
+
+        $time = strtotime('-30 days');
+        \App\Models\Topic\TopicContent::query()
+            ->where('is_export',1)->chunk(100,function ($item) use ($time){
+                $item = $item->toArray();
+                foreach ($item as $key => $value){
+
+                   TopicContent::query()->where('id',$value['id'])->update(
+                       ['created_at' => date('Y-m-d H:i:s',rand($time,time()+60*60*7))]
+                   );
+
+                }
+
+
+            });
         return 'success';
     }
 }
