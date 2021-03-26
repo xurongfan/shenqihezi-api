@@ -181,7 +181,7 @@ class TopicContentService extends BaseService
                 $item['created_at'] = null;
             }
             if ($item['is_export']){
-                $item['like_count'] = rand(10000,20000);
+                $item['like_count'] = rand(10,1000);
             }
         }
 
