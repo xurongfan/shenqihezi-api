@@ -18,7 +18,7 @@ class MerUserGameHistoryService extends BaseService
      */
     public function index($userId = 0)
     {
-        if (!$this->userId()){
+        if (!$userId && !$this->userId()){
             return [
                 'data' => []
             ];
