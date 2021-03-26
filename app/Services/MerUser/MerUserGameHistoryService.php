@@ -18,16 +18,17 @@ class MerUserGameHistoryService extends BaseService
      */
     public function index($userId = 0)
     {
+
         if (!$userId && !$this->userId()){
             return [
                 'data' => []
             ];
         }
         $page = request()->input('page', 1);
-        if (!$isVip = app(MerUserService::class)->isVip() && !$userId) {
+//        if (!$isVip = app(MerUserService::class)->isVip() && !$userId) {
 //            $page = 1;
 //            $limit = 5;
-        }
+//        }
         //查看他人历史
         if ($userId) {
             $limit = 5;
