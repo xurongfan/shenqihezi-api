@@ -104,7 +104,7 @@ class TopicContentService extends BaseService
         $hotId = $hotId ?? [];
 
         $res = $this->model->query()
-            ->select('id', 'mer_user_id', 'content', 'image_resource', 'is_anonymous', 'position_info', 'created_at', 'game_package_id', 'extra_info')
+            ->select('id', 'mer_user_id', 'content', 'image_resource', 'is_anonymous', 'position_info', 'created_at', 'game_package_id', 'extra_info','is_export')
             ->with(['user' => function ($query) {
                 $query->select('id', 'profile_img', 'nick_name', 'vip');
             }, 'topic' => function ($query) {
@@ -179,6 +179,9 @@ class TopicContentService extends BaseService
             }
             if ($isHot) {
                 $item['created_at'] = null;
+            }
+            if ($item['is_export']){
+                $item['like_count'] = rand(10000,20000);
             }
         }
 
