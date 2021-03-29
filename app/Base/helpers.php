@@ -317,7 +317,12 @@ function sendSms($phoneNumber, $areaCode, $varifyCode)
 function getLangField(string $field)
 {
     $lang = config('app.locale');
-    return $lang == 'zh-CN' ? $field : ($field . '_' . strtolower(config('app.locale')));
+    $lang = in_array($lang,[
+        'zh-CN',
+        'en',
+    ]) ? $lang : 'en';
+
+    return $lang == 'zh-CN' ? $field : ($field . '_' . strtolower($lang));
 }
 
 /**
