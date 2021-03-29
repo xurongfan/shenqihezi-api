@@ -36,9 +36,9 @@ class LaraRsa
             throw new \Exception('params empty.');
         }
         $result = json_decode($result,true);
-        if (isset($result['millis']) && time() - $result['millis'] >= $this->timeOut){
-            throw new \Exception('timeout error.');
-        }
+//        if (isset($result['millis']) && (time() - $result['millis'] >= $this->timeOut)){
+//            throw new \Exception('timeout error.');
+//        }
         $request->replace($result);
         return $next($request);
     }
