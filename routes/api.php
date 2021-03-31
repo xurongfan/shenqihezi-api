@@ -231,6 +231,7 @@ Route::any('ad-game/list', function () {
 })->name('ad-game-list');
 
 Route::any('/test', function () {
+    echo"<pre>";print_r(time());exit;
     $request = new \AlibabaCloud\Green\V20180509\ImageSyncScan();
 echo"<pre>";print_r($request);exit;
     $res = getHttpContent('post','http://47.242.85.154:81/api/message-send',[
