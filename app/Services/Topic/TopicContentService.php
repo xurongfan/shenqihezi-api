@@ -26,6 +26,7 @@ class TopicContentService extends BaseService
 //        }
         try {
             $request['mer_user_id'] = $this->userId();
+            $request['game_package_id'] = $request['game_package_id'] ?? 0;
             $key = 'topic_content_lock_' . $request['mer_user_id'];
             if (Redis::set($key, 1, 'nx', 'ex', 5)) {
                 $request['ip'] = getClientIp();
@@ -42,7 +43,9 @@ class TopicContentService extends BaseService
                     app(TopicService::class)->follow($topicArr);
                 }
                 //资源入表
-                app(TopicContentResourceService::class)->resource($this->model->id, $request['image_resource'] ?? []);
+                if (!$request['game_package_id']){
+                    app(TopicContentResourceService::class)->resource($this->model->id, $request['image_resource'] ?? []);
+                }
                 //虚拟评论数据延迟入库
                 TopicContentDelayedJobJob::dispatch($this->model->id);
 
