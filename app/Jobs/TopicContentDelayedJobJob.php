@@ -13,7 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 class TopicContentDelayedJobJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
+    public $tries = 2;   //添加最大尝试次数
     protected $topicContentId;
 
     /**

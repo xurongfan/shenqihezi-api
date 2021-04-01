@@ -14,6 +14,8 @@ class SendMessageFcmJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $tries = 2;   //添加最大尝试次数
+
     protected $merUserId;
     protected $title;
     protected $content;
