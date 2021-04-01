@@ -7,6 +7,7 @@ use App\Jobs\TopicContentDelayedJobJob;
 use App\Jobs\TopicContentResourceJob;
 use App\Models\Game\GamePackage;
 use App\Models\Topic\Topic;
+use App\Models\Topic\TopicContentDelayedJob;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -251,10 +252,14 @@ class TopicContentService extends BaseService
      */
     public function deleteContent($id)
     {
-        return $this->deleteBy([
+        if ($res = $this->deleteBy([
             'id' => $id,
             'mer_user_id' => $this->userId()
-        ]);
+        ])){
+            TopicContentDelayedJob::query()->where('topic_content_id',$id)->where('status',0)->delete();
+
+        }
+        return $res;
     }
 
     /**
