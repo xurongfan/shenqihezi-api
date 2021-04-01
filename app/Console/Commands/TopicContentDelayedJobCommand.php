@@ -44,7 +44,11 @@ class TopicContentDelayedJobCommand extends Command
     {
         set_time_limit(0);
         $cacheLockKey = 'comment_delayed';
+        Cache::forget($cacheLockKey);
+        exit();
         if (Cache::add($cacheLockKey,1,60)){
+            logger('comment_delayed');
+            try {
             TopicContentDelayedJob::query()
                 ->where('status',0)
                 ->where('delayed_time','<=',date('Y-m-d H:i:s'))
@@ -56,7 +60,7 @@ class TopicContentDelayedJobCommand extends Command
                             if (!$commentUserId){
                                 continue;
                             }
-                            try {
+
                                 switch ($datum['content_type']){
                                     case 1:
                                         $comment = $this->getComment($datum['content_type']);
@@ -93,10 +97,6 @@ class TopicContentDelayedJobCommand extends Command
                                     true
                                 );
 
-
-                            }catch (\Exception $exception){
-                                $error = 'topicContentDelayedJobCommand error:'.$exception->getMessage().'<br>'.$exception->getFile().'<br>'.$exception->getLine();
-                            }
                             TopicContentDelayedJob::query()->where('id',$datum['id'])->update([
                                 'status' => isset($error)?0:1,
                                 'run_time' => date('Y-m-d H:i:s'),
@@ -106,6 +106,11 @@ class TopicContentDelayedJobCommand extends Command
                         }
                     }
                 });
+            }catch (\Exception $exception){
+                $error = 'topicContentDelayedJobCommand error:'.$exception->getMessage().'<br>'.$exception->getFile().'<br>'.$exception->getLine();
+                logger('comment_delayed_end'.$error);
+            }
+            logger('comment_delayed_end');
             Cache::forget($cacheLockKey);
         }
 
