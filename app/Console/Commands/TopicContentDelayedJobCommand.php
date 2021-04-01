@@ -70,7 +70,7 @@ class TopicContentDelayedJobCommand extends Command
                                         break;
                                     case 3:
                                         if (isset($datum['extra_info']['game_score']) && isset($datum['extra_info']['integral_base'])){
-                                            $score = rand($datum['extra_info']['integral_base']/10,$datum['extra_info']['integral_base']);
+                                            $score = rand($datum['extra_info']['integral_base']/2,$datum['extra_info']['integral_base']);
                                             if ($score == $datum['extra_info']['game_score']){
                                                 $comment = "I am good as you! I got ".$score." !";
                                             }else{
