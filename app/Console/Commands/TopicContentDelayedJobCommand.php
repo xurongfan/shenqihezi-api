@@ -44,8 +44,8 @@ class TopicContentDelayedJobCommand extends Command
     {
         set_time_limit(0);
         $cacheLockKey = 'comment_delayed';
-        Cache::forget($cacheLockKey);
-        exit();
+//        Cache::forget($cacheLockKey);
+//        exit();
         if (Cache::add($cacheLockKey,1,60)){
             logger('comment_delayed');
             try {
