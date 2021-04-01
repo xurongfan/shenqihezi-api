@@ -21,6 +21,7 @@ class CreateTopicContentDelayedJobTable extends Migration
             $table->dateTime('delayed_time');
             $table->dateTime('run_time');
             $table->tinyInteger('status')->default(0);
+            $table->text('error');
         });
     }
 
