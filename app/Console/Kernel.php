@@ -52,6 +52,9 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('game:log')
             ->dailyAt('02:30');;//用户注册国家分布
+
+        $schedule->command('comment:delayed')
+            ->everyMinute();//每五分钟执行一次
     }
 
     /**

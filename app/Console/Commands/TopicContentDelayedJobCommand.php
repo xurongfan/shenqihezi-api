@@ -6,6 +6,7 @@ use App\Models\Topic\TopicContentDelayedJob;
 use App\Models\User\MerUser;
 use App\Services\Topic\TopicContentCommentService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 
 class TopicContentDelayedJobCommand extends Command
@@ -42,67 +43,72 @@ class TopicContentDelayedJobCommand extends Command
     public function handle()
     {
         set_time_limit(0);
-        TopicContentDelayedJob::query()
-            ->where('status',0)
-            ->where('delayed_time','<=',date('Y-m-d H:i:s'))
-            ->chunkById(100,function ($data) {
-                $data = $data->toArray();
-                if ($data){
-                    foreach ($data as $key => $datum){
-                        $commentUserId = $this->randExportUser();
-                        if (!$commentUserId){
-                            continue;
-                        }
-                        try {
-                            switch ($datum['content_type']){
-                                case 1:
-                                    $comment = $this->getComment($datum['content_type']);
-                                    break;
-                                case 2:
-                                    $comment = $this->getComment($datum['content_type']);
-                                    break;
-                                case 3:
-                                    if (isset($datum['extra_info']['game_score']) && isset($datum['extra_info']['integral_base'])){
-                                        $score = rand($datum['extra_info']['integral_base']/10,$datum['extra_info']['integral_base']);
-                                        if ($score == $datum['extra_info']['game_score']){
-                                            $comment = "I am good as you! I got ".$score." !";
-                                        }else{
-                                            $comment = $score > $datum['extra_info']['game_score'] ?
-                                                ("<img src=\"success\">&nbsp;&nbsp;I beat you! I got <font color=#FF4E67>".$score."</font> !")
-                                                :
-                                                ("<img src=\"failure\">&nbsp;&nbsp;Wow! You are so good . I got ".$score." .");
-                                        }
-
-                                    }
-                                    break;
-                                default:
-                                    break;
+        $cacheLockKey = 'comment_delayed';
+        if (Cache::add($cacheLockKey,1,60)){
+            TopicContentDelayedJob::query()
+                ->where('status',0)
+                ->where('delayed_time','<=',date('Y-m-d H:i:s'))
+                ->chunkById(100,function ($data) {
+                    $data = $data->toArray();
+                    if ($data){
+                        foreach ($data as $key => $datum){
+                            $commentUserId = $this->randExportUser();
+                            if (!$commentUserId){
+                                continue;
                             }
+                            try {
+                                switch ($datum['content_type']){
+                                    case 1:
+                                        $comment = $this->getComment($datum['content_type']);
+                                        break;
+                                    case 2:
+                                        $comment = $this->getComment($datum['content_type']);
+                                        break;
+                                    case 3:
+                                        if (isset($datum['extra_info']['game_score']) && isset($datum['extra_info']['integral_base'])){
+                                            $score = rand($datum['extra_info']['integral_base']/10,$datum['extra_info']['integral_base']);
+                                            if ($score == $datum['extra_info']['game_score']){
+                                                $comment = "I am good as you! I got ".$score." !";
+                                            }else{
+                                                $comment = $score > $datum['extra_info']['game_score'] ?
+                                                    ("<img src=\"success\">&nbsp;&nbsp;I beat you! I got <font color=#FF4E67>".$score."</font> !")
+                                                    :
+                                                    ("<img src=\"failure\">&nbsp;&nbsp;Wow! You are so good . I got ".$score." .");
+                                            }
 
-                            app(TopicContentCommentService::class)->publish(
-                                [
-                                    'content_id' => $datum['topic_content_id'],
-                                    'pid' => 0,
-                                    'comment' => $comment,
-                                    'created_at' => $datum['delayed_time']
-                                ],
-                                $commentUserId,
-                                true
-                            );
+                                        }
+                                        break;
+                                    default:
+                                        break;
+                                }
+
+                                app(TopicContentCommentService::class)->publish(
+                                    [
+                                        'content_id' => $datum['topic_content_id'],
+                                        'pid' => 0,
+                                        'comment' => $comment,
+                                        'created_at' => $datum['delayed_time']
+                                    ],
+                                    $commentUserId,
+                                    true
+                                );
 
 
-                        }catch (\Exception $exception){
-                            $error = 'topicContentDelayedJobCommand error:'.$exception->getMessage().'<br>'.$exception->getFile().'<br>'.$exception->getLine();
+                            }catch (\Exception $exception){
+                                $error = 'topicContentDelayedJobCommand error:'.$exception->getMessage().'<br>'.$exception->getFile().'<br>'.$exception->getLine();
+                            }
+                            TopicContentDelayedJob::query()->where('id',$datum['id'])->update([
+                                'status' => isset($error)?0:1,
+                                'run_time' => date('Y-m-d H:i:s'),
+                                'error' => $error ?? ''
+                            ]);
+                            usleep(500);
                         }
-                        TopicContentDelayedJob::query()->where('id',$datum['id'])->update([
-                            'status' => isset($error)?0:1,
-                            'run_time' => date('Y-m-d H:i:s'),
-                            'error' => $error ?? ''
-                        ]);
-                        usleep(500);
                     }
-                }
-            });
+                });
+            Cache::forget($cacheLockKey);
+        }
+
     }
 
     /**
