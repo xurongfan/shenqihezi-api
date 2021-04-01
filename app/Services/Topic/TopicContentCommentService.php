@@ -12,18 +12,20 @@ class TopicContentCommentService extends BaseService
     /**
      * 发表评论
      * @param $request
+     * @param $commentUserId
+     * @param $dispatchNow
      * @return \App\Base\Models\BaseModel|\App\Base\Services\BaseModel
      */
-    public function publish($request)
+    public function publish($request,$commentUserId=0,$dispatchNow=false)
     {
-        $request['mer_user_id'] = $this->userId();
+        $request['mer_user_id'] = $commentUserId ? $commentUserId : $this->userId();
         if (isset($request['pid']) && $request['pid']) {
             $pidInfo = $this->model->newQuery()->where('id' , $request['pid'])->firstOrFail();
             $request['reply_user_id'] = $pidInfo['mer_user_id'];
             $request['pid'] = $pidInfo['pid'] ? $pidInfo['pid'] : $request['pid'] ;
             $request['fid'] = $pidInfo['id'] ?? 0;
         }
-        $request['ip'] = getClientIp();
+        $request['ip'] = $commentUserId? getClientIp() : '';
         $this->model->fill($this->model->filter($request))->save();
 
         $content = app(TopicContentService::class)->findOneBy([
@@ -39,7 +41,9 @@ class TopicContentCommentService extends BaseService
             $pidInfo['mer_user_id'] ?? $content['mer_user_id'],
             1,
             $request['content_id'],
-            $this->model->id
+            $this->model->id,
+            $request['mer_user_id'],
+            $dispatchNow
         );
 
         return $this->model;

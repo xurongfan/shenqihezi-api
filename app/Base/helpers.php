@@ -23,11 +23,12 @@ function sqlDump()
  * @param null $id
  * @param string $msg
  * @param array $replace
- * @return string
+ * @param null $locale
+ * @return array|\Illuminate\Contracts\Translation\Translator|\Illuminate\Foundation\Application|mixed|string|string[]|null
  */
-function transL($id = null, $msg = '', $replace = [])
+function transL($id = null, $msg = '', $replace = [],$locale=null)
 {
-    $data = trans($id, $replace);
+    $data = trans($id, $replace,$locale);
     if (is_array($data)) {
         $data = $data[1];
     }

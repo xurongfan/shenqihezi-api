@@ -231,7 +231,13 @@ Route::any('ad-game/list', function () {
 })->name('ad-game-list');
 
 Route::any('/test', function () {
-    echo"<pre>";print_r(time());exit;
+    config(['app.timezone' => request()->header('timezone')]);
+    \App\Models\Game\AdBurying::query()->create([
+        'package_id'=>111
+    ]);
+
+    echo"<pre>";print_r(111);exit;
+//   echo"<pre>";print_r( (new \Carbon\Carbon(date('Y-m-d H:i:s')))->timezone(config('app.timezone'))->toDateTimeString());exit;
     $request = new \AlibabaCloud\Green\V20180509\ImageSyncScan();
 echo"<pre>";print_r($request);exit;
     $res = getHttpContent('post','http://47.242.85.154:81/api/message-send',[

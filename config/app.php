@@ -27,6 +27,8 @@ return [
 
     'wechat_mch_id' => env('WECHAT_MCH_ID','1604486511'),
 
+    'invented_comment' => env('INVENTED_COMMENT',false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

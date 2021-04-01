@@ -3,6 +3,7 @@
 namespace App\Services\Topic;
 
 use App\Base\Services\BaseService;
+use App\Jobs\TopicContentDelayedJobJob;
 use App\Jobs\TopicContentResourceJob;
 use App\Models\Game\GamePackage;
 use App\Models\Topic\Topic;
@@ -40,8 +41,11 @@ class TopicContentService extends BaseService
                     //自动关注此话题
                     app(TopicService::class)->follow($topicArr);
                 }
-                //资源入驻
+                //资源入表
                 app(TopicContentResourceService::class)->resource($this->model->id, $request['image_resource'] ?? []);
+                //虚拟评论数据延迟入库
+                TopicContentDelayedJobJob::dispatch($this->model->id);
+
                 Redis::del($key);
                 return $this->show($this->model->id);
             }

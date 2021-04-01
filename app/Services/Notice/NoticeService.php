@@ -13,11 +13,21 @@ class NoticeService extends BaseService
      * @param $type 1评论2点赞
      * @param $contentId
      * @param $commentId
+     * @param $originateUserId //发起者
+     * @param $dispatchNow //立刻执行队列
      * @return \App\Base\Services\BaseModel|void
      */
-    public function publish($merUserId,$type,$contentId=0,$commentId=0)
+    public function publish(
+        $merUserId,
+        $type,
+        $contentId=0,
+        $commentId=0,
+        $originateUserId=0,
+        $dispatchNow=false
+    )
     {
-        if ($merUserId == $this->userId()) {
+        $originateUserId = $originateUserId ? $originateUserId : $this->userId();
+        if ($merUserId == $originateUserId) {
             return false;
         }
         if (empty($contentId) && $commentId) {
@@ -27,7 +37,7 @@ class NoticeService extends BaseService
             $contentId = $contentInfo['content_id'] ?? 0;
         }
         if ($res = $this->findOneBy( [
-            'originate_user_id' => $this->userId(),
+            'originate_user_id' => $originateUserId,
             'mer_user_id' => $merUserId,
             'type' => $type,
             'content_id' => $contentId,
@@ -35,13 +45,11 @@ class NoticeService extends BaseService
         ])) {
             $res->delete();
         }else{
-
             //推送
-//            Someone commented on your feed.
-            SendMessageFcmJob::dispatch($merUserId,config('app.app_name'),transL('topic.message_'.$type));
+            SendMessageFcmJob::{$dispatchNow?'dispatchNow':'dispatch'}($merUserId,config('app.app_name'),transL('topic.message_'.$type,'',[],'en'));
 
             return $this->save( [
-                'originate_user_id' => $this->userId(),
+                'originate_user_id' => $originateUserId,
                 'mer_user_id' => $merUserId,
                 'type' => $type,
                 'content_id' => $contentId,

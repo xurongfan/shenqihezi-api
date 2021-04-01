@@ -10,6 +10,7 @@ use App\Console\Commands\StaticsGameCommand;
 use App\Console\Commands\TestCommand;
 use App\Console\Commands\TopicCommentCommand;
 use App\Console\Commands\TopicContentCreatedRandomCommand;
+use App\Console\Commands\TopicContentDelayedJobCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -28,6 +29,7 @@ class Kernel extends ConsoleKernel
         MerUserLoginRemainCommand::class,
         StaticsCountryCommand::class,
         StaticsGameCommand::class,
+        TopicContentDelayedJobCommand::class,
         TestCommand::class
     ];
 
