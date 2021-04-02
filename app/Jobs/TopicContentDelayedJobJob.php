@@ -46,7 +46,7 @@ class TopicContentDelayedJobJob implements ShouldQueue
                 $type = 1;
                 $insertData = [];
                 $delayedMaxTime = strtotime("+5 hours");;
-                $delayedMinTime = time()+60*2;
+                $delayedMinTime = time()+60*1;
                 //游戏分享
                 if ($content['game_package_id'] && empty($content['extra_info'])){
                     $type = 2;
@@ -59,7 +59,7 @@ class TopicContentDelayedJobJob implements ShouldQueue
                         $insertData[] = [
                             'topic_content_id' => $this->topicContentId,
                             'content_type' => $type,
-                            'delayed_time' => date('Y-m-d H:i:s',rand($delayedMinTime,$delayedMaxTime)),
+                            'delayed_time' => date('Y-m-d H:i:s',rand($delayedMinTime,$i<=2 ? time()+60*10:$delayedMaxTime)),
                             'extra_info' => json_encode([
                                 'game_score' => $content['extra_info']['game_score'] ?? 0,
                                 'integral_base' => $content['game']['integral_base'] ?? 100,
@@ -73,7 +73,7 @@ class TopicContentDelayedJobJob implements ShouldQueue
                         $insertData[] = [
                             'topic_content_id' => $this->topicContentId,
                             'content_type' => $type,
-                            'delayed_time' => date('Y-m-d H:i:s',rand($delayedMinTime,$delayedMaxTime)),
+                            'delayed_time' => date('Y-m-d H:i:s',rand($delayedMinTime,$i<=2 ? time()+60*10:$delayedMaxTime)),
                         ];
                     }
                 }
