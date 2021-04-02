@@ -402,7 +402,7 @@ class MerUserService extends BaseService
         $loginUserId = $this->userId();
         $userId = $userId ? $userId : $loginUserId;
         $result = $this->model->query()
-            ->select('id', 'profile_img', 'nick_name', 'description', 'sex', 'birth', 'area_code', 'phone', 'vip')
+            ->select('id', 'profile_img', 'background_img','nick_name', 'description', 'sex', 'birth', 'area_code', 'phone', 'vip')
             ->where('id', $userId);
         if ($followData) {
             $result = $result->withCount(['follow', 'followed'])
