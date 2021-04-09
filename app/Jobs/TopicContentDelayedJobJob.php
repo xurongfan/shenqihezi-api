@@ -77,6 +77,18 @@ class TopicContentDelayedJobJob implements ShouldQueue
                         ];
                     }
                 }
+
+                //点赞数
+                for ($i=1;$i<=rand(5,15);$i++){
+                    $insertData[] = [
+                        'topic_content_id' => $this->topicContentId,
+                        'content_type' => 4,
+                        'delayed_time' => date('Y-m-d H:i:s',rand($delayedMinTime,($i<=2 ? time()+60*10:$delayedMaxTime))),
+                        'extra_info' => ''
+                    ];
+                }
+
+
                 TopicContentDelayedJob::query()->insert($insertData);
             }
         }catch (\Exception $exception){

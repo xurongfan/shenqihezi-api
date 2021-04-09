@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Topic\TopicContentDelayedJob;
 use App\Models\User\MerUser;
 use App\Services\Topic\TopicContentCommentService;
+use App\Services\Topic\TopicContentLikeService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
@@ -82,25 +83,32 @@ class TopicContentDelayedJobCommand extends Command
 
                                         }
                                         break;
+                                    case 4:
+
+                                        break;
                                     default:
                                         break;
                                 }
+                                if (in_array($datum['content_type'],[1,2,3])){
+                                    app(TopicContentCommentService::class)->publish(
+                                        [
+                                            'content_id' => $datum['topic_content_id'],
+                                            'pid' => 0,
+                                            'comment' => $comment,
+                                            'created_at' => $datum['delayed_time']
+                                        ],
+                                        $commentUserId,
+                                        true
+                                    );
+                                }else{
+                                    app(TopicContentLikeService::class)->like($datum['topic_content_id'],$commentUserId,true);
+                                }
 
-                                app(TopicContentCommentService::class)->publish(
-                                    [
-                                        'content_id' => $datum['topic_content_id'],
-                                        'pid' => 0,
-                                        'comment' => $comment,
-                                        'created_at' => $datum['delayed_time']
-                                    ],
-                                    $commentUserId,
-                                    true
-                                );
 
                             TopicContentDelayedJob::query()->where('id',$datum['id'])->update([
                                 'status' => isset($error)?0:1,
                                 'run_time' => date('Y-m-d H:i:s'),
-                                'error' => $error ?? ''
+//                                'error' => $error ?? ''
                             ]);
                             usleep(500);
                         }
