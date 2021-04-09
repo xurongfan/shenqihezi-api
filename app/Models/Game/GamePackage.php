@@ -24,6 +24,15 @@ class GamePackage extends BaseModel
      * @param $value
      * @return string
      */
+    public function getTitleAttribute($value)
+    {
+        return config('app.locale') == 'en' ? $value : transL('game-package.title'.'_'.$this->id);
+    }
+
+    /**
+     * @param $value
+     * @return string
+     */
     public function getIconImgAttribute($value)
     {
         return ossDomain($value);

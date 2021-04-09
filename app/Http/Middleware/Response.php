@@ -15,10 +15,10 @@ class Response
      */
     public function handle($request, Closure $next)
     {
-        if ($request->header('lang')) {
-            config(['app.locale' => $request->header('lang')]);
+        if ($lang = $request->header('lang')) {
+            config(['app.locale' => in_array($lang,['en','zh-CN'])?$lang:'en']);
         }
-        if ($request->header('lang')) {
+        if ($request->header('timezone')) {
             config(['app.timezone' => $request->header('timezone')]);
         }
 //      logger($request->header('timezone'));
