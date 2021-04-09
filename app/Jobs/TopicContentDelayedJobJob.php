@@ -74,6 +74,7 @@ class TopicContentDelayedJobJob implements ShouldQueue
                             'topic_content_id' => $this->topicContentId,
                             'content_type' => $type,
                             'delayed_time' => date('Y-m-d H:i:s',rand($delayedMinTime,($i<=2 ? time()+60*10:$delayedMaxTime))),
+                            'extra_info' => json_encode([])
                         ];
                     }
                 }
@@ -84,6 +85,7 @@ class TopicContentDelayedJobJob implements ShouldQueue
                         'topic_content_id' => $this->topicContentId,
                         'content_type' => 4,
                         'delayed_time' => date('Y-m-d H:i:s',rand($delayedMinTime,($i<=2 ? time()+60*10:$delayedMaxTime))),
+                        'extra_info' => json_encode([])
                     ];
                 }
 
