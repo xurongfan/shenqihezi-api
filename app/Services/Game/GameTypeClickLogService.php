@@ -30,6 +30,7 @@ class GameTypeClickLogService extends BaseService
         return $this->save([
             'mer_user_id' => $this->userId(),
             'game_type_id' => $gameTypeId,
+            'ip' => getClientIp(),
             'country_code' => $ipInfo['country_code'] ?? '',
             'country_name' => $ipInfo['country_name'] ?? '',
             'city_name' => $ipInfo['city_name'] ?? '',

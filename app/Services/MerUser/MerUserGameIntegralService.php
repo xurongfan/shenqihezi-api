@@ -55,12 +55,14 @@ class MerUserGameIntegralService extends BaseService
 //                ->where('integral','>',$myIntegral)
 //                ->count();
 //        }
-        $userRank = $this->gameUserRank($gamePackageId);
+        if ($this->userId()){
+            $userRank = $this->gameUserRank($gamePackageId);
+        }
         return [
             'rankList' => $rankList,
             'myRank' => [
-                'integral' => $userRank['myIntegral'],
-                'rank' => $userRank['rank'] ,
+                'integral' => $userRank['myIntegral'] ?? 0,
+                'rank' => $userRank['rank'] ?? 0 ,
             ]
         ];
     }

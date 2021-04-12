@@ -43,7 +43,7 @@ abstract class BaseService
      */
     public function userId()
     {
-        return $this->user()->id;
+        return $this->user()? $this->user()->id : 0;
     }
 
     /**

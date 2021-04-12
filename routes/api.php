@@ -30,14 +30,49 @@ Route::group([], function (Router $router) {
         $router->post('sendSms', 'MerUserController@sendSms')->name('user.sms');
         $router->post('login', 'MerUserController@login')->name('user.login');
         $router->post('newLogin', 'MerUserController@newLogin')->name('user.newLogin');
+        $router->get('/info/{id}', 'MerUserController@user')->name('user.show');
+
+        $router->get('game-history', 'MerUserGameHistoryController@index')->name('user.game-history-index');
+        $router->post('game-history', 'MerUserGameHistoryController@store')->name('user.game-history-store');
+        $router->put('game-history/{uid}', 'MerUserGameHistoryController@report')->name('user.game-history-report');
+        $router->get('game-hot', 'MerUserGameHistoryController@hotGame')->name('user.game-hot');
+        $router->get('game-hot-top', 'MerUserGameHistoryController@hotTopGame')->name('user.game-hot-top');
+
+        $router->get('game-integral-rank', 'MerUserGameIntegralController@rank')->name('user.game-integral-rank');
+
+
     });
 
     $router->group(['namespace' => 'Game', 'prefix' => 'game'], function ($router) {
         $router->get('tag', 'GameTagController@all')->name('game.tag');
+        $router->get('type', 'GameTypeController@all')->name('game.type');
+        $router->get('gameIndexByTagRec', 'GamePackageController@gameIndexByTagRec')->name('game.gameIndexByTagRec');
+        $router->get('gameRec', 'GamePackageController@gameRec')->name('game.gameRec');
+        $router->get('show', 'GamePackageController@show')->name('game.show');
+        $router->post('report', 'AdBuryingController@report')->name('game-ad.report');
+
+    });
+
+    $router->group(['namespace' => 'Topic', 'prefix' => 'topic'], function ($router) {
+        $router->get('/', 'TopicController@index')->name('topic.index');
+        $router->get('game-topic', 'TopicContentController@gameTopic')->name('topic.game-topic');
+        $router->get('content', 'TopicContentController@index')->name('topic.content.list');
+        $router->get('comment', 'TopicContentController@commentList')->name('topic.comment.list');
+        $router->get('content/{contentId}', 'TopicContentController@show')->name('topic.content.show');
+
+    });
+
+    $router->group(['namespace' => 'Channel', 'prefix' => 'channel'], function ($router) {
+        $router->get('/user', 'ChannelController@userChannel')->name('channel.user');
     });
 
     $router->group(['namespace' => 'Tool', 'prefix' => 'tool'], function ($router) {
         $router->post('getIpAddress', 'CommonController@getIpAddress');
+    });
+
+    $router->group(['namespace' => 'System', 'prefix' => 'system'], function ($router) {
+        $router->post('feedback', 'SysFeedBackController@store')->name('feedback.store');
+        $router->post('client', 'SysClientErrorController@store')->name('client.error.store');
     });
 
     $router->group(['namespace' => 'System', 'prefix' => 'system'], function ($router) {
@@ -62,7 +97,6 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
         $router->post('out', 'MerUserController@out')->name('user.out');
         $router->put('edit', 'MerUserController@edit')->name('user.edit');
         $router->put('info', 'MerUserController@editInfo')->name('user.edit-info');
-        $router->get('/info/{id}', 'MerUserController@user')->name('user.show');
         $router->post('game-like', 'MerUserGameLikeController@like')->name('user.game-like');
 
         $router->post('pay', 'MerUserController@pay')->name('user.pay');
@@ -71,14 +105,7 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
         $router->get('game-collect', 'MerUserGameCollectionController@index')->name('user.game-collect-index');
         $router->get('game-is-collect', 'MerUserGameCollectionController@gameCollect')->name('user.game-collect-is');
 
-        $router->get('game-history', 'MerUserGameHistoryController@index')->name('user.game-history-index');
-        $router->post('game-history', 'MerUserGameHistoryController@store')->name('user.game-history-store');
-        $router->put('game-history/{uid}', 'MerUserGameHistoryController@report')->name('user.game-history-report');
-        $router->get('game-hot', 'MerUserGameHistoryController@hotGame')->name('user.game-hot');
-        $router->get('game-hot-top', 'MerUserGameHistoryController@hotTopGame')->name('user.game-hot-top');
-
         $router->post('game-integral', 'MerUserGameIntegralController@store')->middleware('LaraRsa')->name('user.game-integral');
-        $router->get('game-integral-rank', 'MerUserGameIntegralController@rank')->name('user.game-integral-rank');
 
         $router->post('follow', 'MerUserFollowController@follow')->name('user.follow');
         $router->get('fans', 'MerUserFollowController@index')->name('user.fans');
@@ -92,22 +119,14 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
 
     $router->group(['namespace' => 'Game', 'prefix' => 'game'], function ($router) {
         $router->get('/', 'GamePackageController@index')->name('game.index');
-        $router->get('show', 'GamePackageController@show')->name('game.show');
-        $router->get('gameIndexByTagRec', 'GamePackageController@gameIndexByTagRec')->name('game.gameIndexByTagRec');
-        $router->get('gameRec', 'GamePackageController@gameRec')->name('game.gameRec');
-        $router->post('report', 'AdBuryingController@report')->name('game-ad.report');
         $router->get('subscribe', 'GamePackageController@subscribe')->name('game.subscribe');
-
-        $router->get('type', 'GameTypeController@all')->name('game.type');
-
     });
 
     $router->group(['namespace' => 'Topic', 'prefix' => 'topic'], function ($router) {
         $router->get('search', 'TopicController@search')->name('topic.search');
-        $router->get('/', 'TopicController@index')->name('topic.index');
+
         $router->get('user-topic-list', 'TopicController@userTopicList')->name('topic.user.topic');
         $router->post('/', 'TopicController@follow')->name('topic.follow');
-        $router->get('game-topic', 'TopicContentController@gameTopic')->name('topic.game-topic');
 
         $router->post('content', 'TopicContentController@publish')->name('topic.content.publish');
         $router->post('cancel-anonymous', 'TopicContentController@cancelAnonymous')->name('topic.content.anonymous');
@@ -117,15 +136,10 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
         $router->delete('content', 'TopicContentController@delete')->name('topic.content.delete');
 
         $router->post('comment', 'TopicContentController@comment')->name('topic.comment.publish');
-        $router->get('comment', 'TopicContentController@commentList')->name('topic.comment.list');
         $router->delete('comment', 'TopicContentController@deleteComment')->name('topic.comment.delete');
 
         $router->post('comment-like', 'TopicContentController@commentLike')->name('topic.comment.like');
         $router->post('content-like', 'TopicContentController@like')->name('topic.content.like');
-
-        $router->get('content', 'TopicContentController@index')->name('topic.content.list');
-        $router->get('content/{contentId}', 'TopicContentController@show')->name('topic.content.show');
-
 
         $router->get('notice', 'NoticeController@index')->name('topic.notice.list');
         $router->get('notice-count', 'NoticeController@noticeCount')->name('topic.notice.count');
@@ -138,10 +152,6 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
 
     });
 
-    $router->group(['namespace' => 'Channel', 'prefix' => 'channel'], function ($router) {
-        $router->get('/user', 'ChannelController@userChannel')->name('channel.user');
-    });
-
 
     $router->group(['namespace' => 'Tool', 'prefix' => 'tool'], function ($router) {
 
@@ -152,10 +162,6 @@ Route::group(['middleware' => 'auth_token'], function (Router $router) {
         $router->get('project', 'PayController@project')->name('pay.project');
         $router->post('/', 'PayController@pay')->name('pay');
         $router->get('pay-order', 'PayController@payOrder')->name('pay.order');
-    });
-
-    $router->group(['namespace' => 'System', 'prefix' => 'system'], function ($router) {
-        $router->post('feedback', 'SysFeedBackController@store')->name('feedback.store');
     });
 
 
@@ -225,6 +231,13 @@ Route::any('ad-game/list', function () {
 })->name('ad-game-list');
 
 Route::any('/test', function () {
+    config(['app.timezone' => request()->header('timezone')]);
+    \App\Models\Game\AdBurying::query()->create([
+        'package_id'=>111
+    ]);
+
+    echo"<pre>";print_r(111);exit;
+//   echo"<pre>";print_r( (new \Carbon\Carbon(date('Y-m-d H:i:s')))->timezone(config('app.timezone'))->toDateTimeString());exit;
     $request = new \AlibabaCloud\Green\V20180509\ImageSyncScan();
 echo"<pre>";print_r($request);exit;
     $res = getHttpContent('post','http://47.242.85.154:81/api/message-send',[

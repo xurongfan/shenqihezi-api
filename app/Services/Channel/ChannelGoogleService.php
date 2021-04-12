@@ -12,13 +12,15 @@ class ChannelGoogleService extends BaseService
      */
     public function userChannel()
     {
-        $user = $this->user()->userInfo;
-        if (isset($user['referrer']) && $user['referrer']) {
-            $channel = $this->findOneBy([
-                'key' => $user['referrer']
-            ],
-                'google_reward_key,google_interstitial_key,trad_plus_reward_key,trad_plus_interstitial_key'
-            );
+        if ($this->user()){
+            $user = $this->user()->userInfo;
+            if (isset($user['referrer']) && $user['referrer']) {
+                $channel = $this->findOneBy([
+                    'key' => $user['referrer']
+                ],
+                    'google_reward_key,google_interstitial_key,trad_plus_reward_key,trad_plus_interstitial_key'
+                );
+            }
         }
 
         return isset($channel) ? $channel : [

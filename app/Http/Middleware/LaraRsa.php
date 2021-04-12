@@ -36,9 +36,10 @@ class LaraRsa
             throw new \Exception('params empty.');
         }
         $result = json_decode($result,true);
-        if (isset($result['millis']) && time() - $result['millis'] >= $this->timeOut){
-            throw new \Exception('timeout error.');
-        }
+        //客户端获取的是设备当前时间
+//        if (isset($result['millis']) && (time() - $result['millis'] >= $this->timeOut)){
+//            throw new \Exception('timeout error.');
+//        }
         $request->replace($result);
         return $next($request);
     }

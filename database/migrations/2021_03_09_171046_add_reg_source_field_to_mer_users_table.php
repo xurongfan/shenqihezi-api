@@ -15,6 +15,7 @@ class AddRegSourceFieldToMerUsersTable extends Migration
     {
         Schema::table('mer_users', function (Blueprint $table) {
             $table->tinyInteger('reg_source')->default(1)->comment('1手机号2fb3google4wechat');
+            $table->tinyInteger('is_export')->default(0);
         });
     }
 
@@ -27,6 +28,7 @@ class AddRegSourceFieldToMerUsersTable extends Migration
     {
         Schema::table('mer_users', function (Blueprint $table) {
             $table->dropColumn('reg_source');
+            $table->dropColumn('is_export');
         });
     }
 }

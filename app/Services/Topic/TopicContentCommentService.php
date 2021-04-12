@@ -12,18 +12,20 @@ class TopicContentCommentService extends BaseService
     /**
      * 发表评论
      * @param $request
+     * @param $commentUserId
+     * @param $dispatchNow
      * @return \App\Base\Models\BaseModel|\App\Base\Services\BaseModel
      */
-    public function publish($request)
+    public function publish($request,$commentUserId=0,$dispatchNow=false)
     {
-        $request['mer_user_id'] = $this->userId();
+        $request['mer_user_id'] = $commentUserId ? $commentUserId : $this->userId();
         if (isset($request['pid']) && $request['pid']) {
             $pidInfo = $this->model->newQuery()->where('id' , $request['pid'])->firstOrFail();
             $request['reply_user_id'] = $pidInfo['mer_user_id'];
             $request['pid'] = $pidInfo['pid'] ? $pidInfo['pid'] : $request['pid'] ;
             $request['fid'] = $pidInfo['id'] ?? 0;
         }
-        $request['ip'] = getClientIp();
+        $request['ip'] = $commentUserId? getClientIp() : '';
         $this->model->fill($this->model->filter($request))->save();
 
         $content = app(TopicContentService::class)->findOneBy([
@@ -39,7 +41,9 @@ class TopicContentCommentService extends BaseService
             $pidInfo['mer_user_id'] ?? $content['mer_user_id'],
             1,
             $request['content_id'],
-            $this->model->id
+            $this->model->id,
+            $request['mer_user_id'],
+            $dispatchNow
         );
 
         return $this->model;
@@ -67,6 +71,7 @@ class TopicContentCommentService extends BaseService
      */
     public function index($contentId,$pid=0)
     {
+        $loginUserId = $this->userId();
         $res = $this->model->query()
             ->select('id','pid','mer_user_id','content_id','reply_user_id','like_count','comment','created_at')
             ->where('content_id',$contentId)
@@ -77,13 +82,16 @@ class TopicContentCommentService extends BaseService
             },function ($query){
                 $query->withCount('childComment')->orderBy('created_at','desc');
             })
-            ->with(['like' => function($query){
-                $query->select('id','comment_id')->where('mer_user_id',$this->userId());
-            },'user' => function($query3){
+            ->with(['user' => function($query3){
                 $query3->select('id','profile_img','nick_name');
             },'content' => function($query4){
                 $query4->select('id','is_anonymous','mer_user_id');
             }])
+            ->when($loginUserId,function ($query)use($loginUserId){
+                $query->with(['like' => function($query) use($loginUserId){
+                    $query->select('id','comment_id')->where('mer_user_id',$loginUserId);
+                }]);
+            })
             ->where('pid',$pid ?? 0)
             ->when($pid ?? 0,function ($query){
                 $query ->orderBy('like_count','desc')->orderBy('created_at','asc');
@@ -94,7 +102,7 @@ class TopicContentCommentService extends BaseService
         foreach ($res['data'] as $key => &$item) {
             if (isset($item['child_comment_count']) && $item['child_comment_count']){
                 $childComment = $this->model->newQuery()
-                    ->where('id',$item['id'])->with(['childComment' => function($queryComment){
+                    ->where('id',$item['id'])->with(['childComment' => function($queryComment) use($loginUserId){
                         $queryComment->select('id','pid','mer_user_id','reply_user_id','like_count','comment','created_at')
                             ->with(['user' => function($query1){
                                 $query1->select('id','profile_img','nick_name');
@@ -102,9 +110,11 @@ class TopicContentCommentService extends BaseService
                             ->with(['replyUser' => function($query2){
                                 $query2->select('id','profile_img','nick_name');
                             }])
-                            ->with(['like' => function($query2){
-                                $query2->select('id','comment_id')->where('mer_user_id',$this->userId());
-                            }])
+                            ->when($loginUserId,function ($query2)use($loginUserId){
+                                $query2->with(['like' => function($query3) use($loginUserId){
+                                    $query3->select('id','comment_id')->where('mer_user_id',$loginUserId);
+                                }]);
+                            })
                             ->orderBy('id','asc')
                             ->take(2);
                     }])->first();
@@ -113,7 +123,7 @@ class TopicContentCommentService extends BaseService
             }
 
             if (
-                $this->userId() != $item['content']['mer_user_id']
+                $loginUserId != $item['content']['mer_user_id']
                 &&
                 $item['content']['is_anonymous'] == TopicContent::ISANONYMOUS_YES
             ) {

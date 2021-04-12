@@ -28,7 +28,10 @@ class AuthToken extends BaseMiddleware
     public function handle($request, Closure $next)
     {
         // 检查此次请求中是否带有 token，如果没有则抛出异常。
-        $this->checkForToken($request);
+//        $this->checkForToken($request);
+        if (! $this->auth->parser()->setRequest($request)->hasToken()) {
+            throw new \Exception(transL('mer-user.login_need', '请登录.'), 401);
+        }
         $role = 'api';
         // 判断token是否在有效期内
         try {
@@ -37,7 +40,7 @@ class AuthToken extends BaseMiddleware
                     throw new \Exception(transL('mer-user.login_expired', '登录失效,请重新登录.'), 401);
                 }
                 //单点登录
-//                $this->CheckSsoToken(auth('api')->getToken(), auth($role)->user()->id);
+                $this->CheckSsoToken(auth('api')->getToken(), auth($role)->user()->id);
                 $user = auth($role)->user();
                 $user['device_uid'] = $request->input('device_uid');
                 app(MerUserLoginLogService::class)->addLog($user);

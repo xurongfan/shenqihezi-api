@@ -15,6 +15,7 @@ return [
     'user_game_collect_limit' => '收藏数量超额',
     'need_relogin' => '您的账号在别处登录.',
     'login_expired' => '登录失效,请重新登录.',
+    'login_need' => '请登录客户端.',
     'follow_self' => '您不能关注您自己.',
     'account_disable' => '该用户已被禁用，请联系官方工作人员'
 ];

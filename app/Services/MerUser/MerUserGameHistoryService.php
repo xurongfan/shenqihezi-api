@@ -18,11 +18,17 @@ class MerUserGameHistoryService extends BaseService
      */
     public function index($userId = 0)
     {
+
+        if (!$userId && !$this->userId()){
+            return [
+                'data' => []
+            ];
+        }
         $page = request()->input('page', 1);
-        if (!$isVip = app(MerUserService::class)->isVip() && !$userId) {
+//        if (!$isVip = app(MerUserService::class)->isVip() && !$userId) {
 //            $page = 1;
 //            $limit = 5;
-        }
+//        }
         //查看他人历史
         if ($userId) {
             $limit = 5;
@@ -61,14 +67,14 @@ class MerUserGameHistoryService extends BaseService
                 'uid' => Uuid::uuid1()->toString(),
                 'duration' => $duration?$duration:0
             ] + getIp2());
-
-        MerUserGameLog::query()->updateOrCreate([
-            'mer_user_id' => $this->userId(),
-            'game_package_id' => $gamePackageId,
-        ], [
-            'updated_at' => date('Y-m-d H:i:s')
-        ]);
-
+        if ($this->userId()){
+            MerUserGameLog::query()->updateOrCreate([
+                'mer_user_id' => $this->userId(),
+                'game_package_id' => $gamePackageId,
+            ], [
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+        }
         return $res;
 
     }
@@ -95,10 +101,11 @@ class MerUserGameHistoryService extends BaseService
                     'duration' => $time//$duration$duration ? $duration : (new Carbon())->diffInSeconds($report['created_at'])
                 ]
             );
-            //更新用户总游戏时长
-            MerUserInfo::query()->where('mer_user_id', $report['mer_user_id'])
-                ->increment('total_game_time', $duration);
-
+            if ($this->userId()){
+                //更新用户总游戏时长
+                MerUserInfo::query()->where('mer_user_id', $report['mer_user_id'])
+                    ->increment('total_game_time', $duration);
+            }
             return $report;
         }
         throw new \Exception(transL('common.system_error'));
@@ -109,7 +116,7 @@ class MerUserGameHistoryService extends BaseService
      */
     public function hotGame()
     {
-//        return Cache::remember('hot-game-list', 60 * 2, function () {
+        return Cache::remember('hot-game-list-'.config('app.locale'), 60 * 2, function () {
             $result = $this->model->newQuery()
                 ->select('game_package_id', DB::raw('sum(`duration`) as score'))
 //            ->where('duration','>',30)
@@ -124,7 +131,7 @@ class MerUserGameHistoryService extends BaseService
                 ->get()->toArray();
 
             return $result;
-//        });
+        });
     }
 
     /**

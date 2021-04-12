@@ -10,6 +10,7 @@ use App\Console\Commands\StaticsGameCommand;
 use App\Console\Commands\TestCommand;
 use App\Console\Commands\TopicCommentCommand;
 use App\Console\Commands\TopicContentCreatedRandomCommand;
+use App\Console\Commands\TopicContentDelayedJobCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -28,6 +29,7 @@ class Kernel extends ConsoleKernel
         MerUserLoginRemainCommand::class,
         StaticsCountryCommand::class,
         StaticsGameCommand::class,
+        TopicContentDelayedJobCommand::class,
         TestCommand::class
     ];
 
@@ -50,6 +52,9 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('game:log')
             ->dailyAt('02:30');;//用户注册国家分布
+
+        $schedule->command('comment:delayed')
+            ->everyMinute();//每五分钟执行一次
     }
 
     /**

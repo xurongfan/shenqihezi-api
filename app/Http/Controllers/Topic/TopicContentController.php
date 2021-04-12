@@ -19,6 +19,12 @@ use Illuminate\Validation\Rule;
 class TopicContentController extends Controller
 {
 
+    public function __construct(){
+        if (\request()->input('is_follow',null)){
+            $this->middleware('auth_token')->only('index');
+        }
+    }
+
     /**
      * 发表话题内容
      * @param Request $request

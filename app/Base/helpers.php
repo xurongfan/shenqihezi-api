@@ -23,11 +23,12 @@ function sqlDump()
  * @param null $id
  * @param string $msg
  * @param array $replace
- * @return string
+ * @param null $locale
+ * @return array|\Illuminate\Contracts\Translation\Translator|\Illuminate\Foundation\Application|mixed|string|string[]|null
  */
-function transL($id = null, $msg = '', $replace = [])
+function transL($id = null, $msg = '', $replace = [],$locale=null)
 {
-    $data = trans($id, $replace);
+    $data = trans($id, $replace,$locale);
     if (is_array($data)) {
         $data = $data[1];
     }
@@ -317,7 +318,12 @@ function sendSms($phoneNumber, $areaCode, $varifyCode)
 function getLangField(string $field)
 {
     $lang = config('app.locale');
-    return $lang == 'zh-CN' ? $field : ($field . '_' . strtolower(config('app.locale')));
+    $lang = in_array($lang,[
+        'zh-CN',
+        'en',
+    ]) ? $lang : 'en';
+
+    return $lang == 'zh-CN' ? $field : ($field . '_' . strtolower($lang));
 }
 
 /**

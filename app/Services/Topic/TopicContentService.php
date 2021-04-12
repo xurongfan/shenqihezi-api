@@ -3,9 +3,11 @@
 namespace App\Services\Topic;
 
 use App\Base\Services\BaseService;
+use App\Jobs\TopicContentDelayedJobJob;
 use App\Jobs\TopicContentResourceJob;
 use App\Models\Game\GamePackage;
 use App\Models\Topic\Topic;
+use App\Models\Topic\TopicContentDelayedJob;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -25,6 +27,7 @@ class TopicContentService extends BaseService
 //        }
         try {
             $request['mer_user_id'] = $this->userId();
+            $request['game_package_id'] = $request['game_package_id'] ?? 0;
             $key = 'topic_content_lock_' . $request['mer_user_id'];
             if (Redis::set($key, 1, 'nx', 'ex', 5)) {
                 $request['ip'] = getClientIp();
@@ -40,8 +43,13 @@ class TopicContentService extends BaseService
                     //自动关注此话题
                     app(TopicService::class)->follow($topicArr);
                 }
-                //资源入驻
-                app(TopicContentResourceService::class)->resource($this->model->id, $request['image_resource'] ?? []);
+                //资源入表
+                if (!$request['game_package_id']){
+                    app(TopicContentResourceService::class)->resource($this->model->id, $request['image_resource'] ?? []);
+                }
+                //虚拟评论数据延迟入库
+                TopicContentDelayedJobJob::dispatch($this->model->id);
+
                 Redis::del($key);
                 return $this->show($this->model->id);
             }
@@ -77,8 +85,10 @@ class TopicContentService extends BaseService
     public function index($isFollow = 0, $topicId = 0, $isHot = 0, $userId = 0)
     {
         //已屏蔽用户
-        if (($topicId || $isHot) || (!$isFollow && !$topicId && !$isHot && !$userId)) {
-            $shiedlUser = app(TopicContentUserShieldService::class)->index($this->userId());
+        if ($this->userId()){
+            if (($topicId || $isHot) || (!$isFollow && !$topicId && !$isHot && !$userId)) {
+                $shiedlUser = app(TopicContentUserShieldService::class)->index($this->userId());
+            }
         }
         $shiedlUser = $shiedlUser ?? [];
 
@@ -102,25 +112,27 @@ class TopicContentService extends BaseService
         $hotId = $hotId ?? [];
 
         $res = $this->model->query()
-            ->select('id', 'mer_user_id', 'content', 'image_resource', 'is_anonymous', 'position_info', 'created_at', 'game_package_id', 'extra_info')
+            ->select('id', 'mer_user_id', 'content', 'image_resource', 'is_anonymous', 'position_info', 'created_at', 'game_package_id', 'extra_info','is_export')
             ->with(['user' => function ($query) {
                 $query->select('id', 'profile_img', 'nick_name', 'vip');
             }, 'topic' => function ($query) {
                 $query->select('topic.id', 'topic.title')->where('topic.status', 1);
-            }, 'like' => function ($query) use($loginUserId) {
-                $query->select('id', 'content_id')->where('mer_user_id',$loginUserId);
-            }, 'IsUserFollow' => function ($query) use($loginUserId){
-                $query->where('mer_user_id', $loginUserId);
             }, 'game' => function ($query) {
                 $query->select('id', 'title', 'icon_img', 'background_img', 'url', 'is_crack', 'crack_url', 'crack_des', 'status', 'des', 'video_url', 'is_rank', 'is_landscape');
             }])
-//           ->when($gameId,function ($query){
-//               $query->where('game_package_id','!=',0);
-//           })
+           ->when($loginUserId,function ($query) use ($loginUserId){
+               $query->with([
+                   'like' => function ($query1) use($loginUserId) {
+                       $query1->select('id', 'content_id')->where('mer_user_id',$loginUserId);
+                   }, 'IsUserFollow' => function ($query1) use($loginUserId){
+                       $query1->where('mer_user_id', $loginUserId);
+                   }
+               ]);
+           })
             //指定话题
             ->when($topicId, function ($query) use ($topicId) {
-                $query->whereHasIn('topic', function ($query) use ($topicId) {
-                    $query->where('topic.id', $topicId)->where('topic.status', 1);
+                $query->whereHasIn('topic', function ($query1) use ($topicId) {
+                    $query1->where('topic.id', $topicId)->where('topic.status', 1);
                 });
             })
             //关注人
@@ -153,7 +165,7 @@ class TopicContentService extends BaseService
             ->paginate(20,'[*]','page',$isHot?1:null)
             ->toArray();
 
-        if ($topicId) {
+        if ($topicId && $loginUserId) {
             $topicFollow = app(TopicUserService::class)->findOneBy([
                 'topic_id' => $topicId,
                 'mer_user_id' => $loginUserId,
@@ -176,6 +188,9 @@ class TopicContentService extends BaseService
             if ($isHot) {
                 $item['created_at'] = null;
             }
+            if ($item['is_export']){
+                $item['like_count'] = rand(10,1000);
+            }
         }
 
         if ($isHot && $hotId){
@@ -197,25 +212,29 @@ class TopicContentService extends BaseService
      */
     public function show($contentId)
     {
+        $loginUserId = $this->userId();
         $content = $this->model->newQuery()->where('id', $contentId)
             ->with(['user' => function ($query) {
                 $query->select('id', 'profile_img', 'nick_name');
             }, 'topic' => function ($query) {
                 $query->select('topic.id', 'topic.title')->where('topic.status', 1);
-            }, 'like' => function ($query) {
-                $query->select('id', 'content_id')->where('mer_user_id', $this->userId());
             }, 'IsUserFollow' => function ($query) {
                 $query->where('mer_user_id', $this->userId());
             }, 'game' => function ($query) {
                 $query->select('id', 'title', 'icon_img', 'background_img', 'url', 'is_crack', 'crack_url', 'crack_des', 'status', 'des', 'video_url', 'is_rank', 'is_landscape');
             }])
+            ->when($loginUserId,function ($query) use ($loginUserId){
+                $query->with(['like' => function ($query1) use($loginUserId){
+                    $query1->select('id', 'content_id')->where('mer_user_id', $loginUserId);
+                }]);
+            })
             ->withCount(['comment', 'like'])
             ->firstOrFail();
         //匿名处理
         if (
             $content['is_anonymous'] == $this->model::ISANONYMOUS_YES
             &&
-            $this->userId() != $content['mer_user_id']
+            $loginUserId != $content['mer_user_id']
         ) {
             $item['mer_user_id'] = null;
             $item['user']['id'] = null;
@@ -233,10 +252,14 @@ class TopicContentService extends BaseService
      */
     public function deleteContent($id)
     {
-        return $this->deleteBy([
+        if ($res = $this->deleteBy([
             'id' => $id,
             'mer_user_id' => $this->userId()
-        ]);
+        ])){
+            TopicContentDelayedJob::query()->where('topic_content_id',$id)->where('status',0)->delete();
+
+        }
+        return $res;
     }
 
     /**
