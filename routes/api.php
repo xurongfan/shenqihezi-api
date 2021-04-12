@@ -347,42 +347,42 @@ Route::any('/topic-content', function () {
     $file = request()->input('file');
     $data = file_get_contents(storage_path('content/' . $file));
     $data = json_decode($data, true);
-//    echo"<pre>";print_r(count($data['data']));exit;
     $count = 0;
-    foreach ($data['data'] as $k => $datum) {
-
-        if (isset($datum['pic_urls']) && $datum['pic_urls']) {
-            foreach ($datum['pic_urls'] as &$v) {
-                $v = importImage('pic/' . $v );
-            }
+    foreach ($data as $k => $datum) {
+        if ($k>=1){
+            break;
         }
+
+//        if (isset($datum['pic_urls']) && $datum['pic_urls']) {
+//            foreach ($datum['pic_urls'] as &$v) {
+//                $v = importImage('pic/' . $v );
+//            }
+//        }
         $user = \App\Models\User\MerUser::query()->firstOrCreate([
             'phone' => $datum['uid']
         ], [
-            'nick_name' => $datum['username'],
-            'profile_img' => importImage('avatar/' . $datum['avatar_url'] ),
-            'sex' => $datum['gender'] == 1 ? 'male' : 'female',
-            'birth' => $datum['birthday'],
+            'nick_name' => $datum['uname'],
+            'profile_img' => $datum['aucher_avatar'],
+            'sex' => rand(0,1) == 1 ? 'male' : 'female',
             'description' => $datum['content'],
+            'is_export' => 1
         ]);
-        if ($user['id'] == 10250){
-            continue;
-        }
 
         $content = \App\Models\Topic\TopicContent::query()->create([
             'mer_user_id' => $user->id,
             'content' => $datum['content'],
-            'image_resource' => $datum['pic_urls'],
+            'image_resource' => $datum['images'],
             'is_export' => 1,
-            'created_at' => date('Y-m-d H:i:s', $datum['timestamp']),
-            'updated_at' => date('Y-m-d H:i:s', $datum['timestamp'])
+            'created_at' => date('Y-m-d H:i:s', rand(time()-7*60*60*24,time())),
+            'updated_at' => date('Y-m-d H:i:s', rand(time()-7*60*60*24,time()))
         ]);
 
         $topicService = app(TopicService::class);
-        if (isset($datum['topicnames']) && $datum['topicnames']) {
+        if (isset($datum['tag']) && $datum['tag']) {
+            $datum['tag'] = [$datum['tag']];
             $topicArr = [];
-            $datum['topicnames'] = array_slice($datum['topicnames'],0,5);
-            foreach ($datum['topicnames'] as $key => $value) {
+            $datum['tag'] = array_slice($datum['tag'],0,5);
+            foreach ($datum['tag'] as $key => $value) {
                 $topicArr[] = $topicService->findOrCreate($value,$user->id)->id;
             }
 //            $topicArr[] = $topicService->findOrCreate($datum['topicnames'], $user->id)->id;
@@ -399,33 +399,29 @@ Route::any('/topic-content', function () {
             ->toArray();
 
         foreach ($gameList as $game) {
-            \App\Models\User\MerUserGameHistory::query()->create([
-                'uid' => Uuid::uuid1()->toString(),
+            \App\Models\User\MerUserGameLog::query()->firstOrCreate([
                 'mer_user_id' => $user->id,
                 'game_package_id' => $game['id']
             ]);
         }
 
-        //游戏虚拟积分
-        $gameRankList = \App\Models\Game\GamePackage::query()
-            ->select('id','integral_base')
-            ->where('id', '>=', rand(8, 160))
-            ->where('is_rank', 1)
-            ->where('status', '=', 1)
-            ->limit(5)
-            ->get()
-            ->toArray();
-
-        foreach ($gameRankList as $game) {
-            \App\Models\User\MerUserGameIntegral::query()->updateOrCreate([
-                'mer_user_id' => $user->id,
-                'game_package_id' => $game['id']
+        foreach ($datum['comments'] as $k => $comment){
+            $userComment = \App\Models\User\MerUser::query()->firstOrCreate([
+                'phone' => $comment['comment_author_id']
             ], [
-                'integral' => rand(intval($game['integral_base']/2), $game['integral_base']),
-                'mer_user_id' => $user->id,
-                'game_package_id' => $game['id']
+                'nick_name' => $comment['comment_author_name'],
+                'profile_img' => $comment['comment_author_avatar'],
+                'sex' => rand(0,1) == 1 ? 'male' : 'female',
+                'is_export' => 1
+            ]);
+            \App\Models\Topic\TopicContentComment::query()->create([
+                'content_id' => $content['id'],
+                'mer_user_id' => $userComment['id'],
+                'comment' => $comment['comment_text'],
+                'created_at' => date('Y-m-d H:i:s', rand(time()-7*60*60*24,time())),
             ]);
         }
+
         $count++;
     }
     echo '导入' . $count . '条数据';
