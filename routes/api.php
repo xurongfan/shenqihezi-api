@@ -349,9 +349,6 @@ Route::any('/topic-content', function () {
     $data = json_decode($data, true);
     $count = 0;
     foreach ($data as $k => $datum) {
-        if ($k>=1){
-            break;
-        }
 
 //        if (isset($datum['pic_urls']) && $datum['pic_urls']) {
 //            foreach ($datum['pic_urls'] as &$v) {
