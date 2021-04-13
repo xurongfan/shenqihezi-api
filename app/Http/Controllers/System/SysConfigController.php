@@ -40,6 +40,15 @@ class SysConfigController extends Controller
         return $result;
     }
 
+    public function adConfig()
+    {
+        $result = $this->service->findBy([
+            'keyword' => [['in',['ad_start_delay','ad_between_delay']]]
+        ],'keyword,content')
+        ->toArray();
+        return $result ? array_column($result,'content','keyword') : [];
+    }
+
     /**
      * @param $key
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View

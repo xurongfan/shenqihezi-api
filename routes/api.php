@@ -77,6 +77,7 @@ Route::group([], function (Router $router) {
 
     $router->group(['namespace' => 'System', 'prefix' => 'system'], function ($router) {
         $router->get('config', 'SysConfigController@config')->name('system.config');
+        $router->get('adConfig', 'SysConfigController@adConfig')->name('system.adConfig');
     });
 
     $router->group(['namespace' => 'Wechat', 'prefix' => 'wechat'], function ($router) {
