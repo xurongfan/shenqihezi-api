@@ -389,6 +389,7 @@ function findNum($str=''){
  */
 function makeOrderNumber()
 {
+    return date('YmdHis').substr(microtime(), 2, 5).sprintf('%02d',rand(0, 99));
     $order_id_main = date('YmdHis') . rand(1000,9999);
 
     $order_id_len = strlen($order_id_main);
