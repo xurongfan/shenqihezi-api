@@ -23,14 +23,30 @@ class SysConfigController extends Controller
         $this->validate($request,[
             'keyword' => 'required' ,
         ]);
+        $keyword = \request('keyword');
         $result = $this->service->findOneBy([
-            'keyword' => getLangField(\request('keyword'))
+            'keyword' => in_array($keyword,[
+                'privacy_policy',
+                'help_support',
+                'about_us',
+                'report',
+                'term_of_service',
+            ]) ? getLangField($keyword) : $keyword
         ],'content');
-        if (isset($result['content']) && $result['content'] && in_array(\request('keyword'),['report'])) {
+        if (isset($result['content']) && $result['content'] && in_array($keyword,['report'])) {
             $result['content'] = json_decode($result['content'],true);
         }
 
         return $result;
+    }
+
+    public function adConfig()
+    {
+        $result = $this->service->findBy([
+            'keyword' => [['in',['ad_start_delay','ad_between_delay']]]
+        ],'keyword,content')
+        ->toArray();
+        return $result ? array_column($result,'content','keyword') : [];
     }
 
     /**
