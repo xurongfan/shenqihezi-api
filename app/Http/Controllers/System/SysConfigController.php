@@ -39,9 +39,15 @@ class SysConfigController extends Controller
      */
     public function viewConfig($key)
     {
+        if ($lang = \request()->get('lang')){
+            config([
+                'app.locale' => $lang
+            ]);
+        }
         $result = $this->service->findOneBy([
             'keyword' => getLangField($key)
         ],'content');
+
 
         return view('paperwork',$result);
     }
