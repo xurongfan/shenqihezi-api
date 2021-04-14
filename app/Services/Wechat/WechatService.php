@@ -52,9 +52,12 @@ class WechatService
             'total_fee' => $order['amount'] * 100,
             'trade_type' => 'APP'
         ]);
+
+
         $result = $result->getContent();
         $result = json_decode($result,true);
         $result['order_num'] = $order['order_num'];
+        logger('wechat order info:'.json_encode($result));
         return $result;
     }
 
