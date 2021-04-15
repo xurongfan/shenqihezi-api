@@ -23,7 +23,7 @@ class GameTypeService extends BaseService
      */
     public function all()
     {
-        return $this->model->newQuery()->select('id',getLangField('title').' as title')
-            ->orderBy('sort','asc')->get();
+        return $this->model->newQuery()->select('id','title')
+            ->orderBy('sort','desc')->get();
     }
 }

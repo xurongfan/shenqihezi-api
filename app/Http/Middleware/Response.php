@@ -16,7 +16,8 @@ class Response
     public function handle($request, Closure $next)
     {
         if ($lang = $request->header('lang')) {
-            config(['app.locale' => in_array($lang,['en','zh-CN'])?$lang:'en']);
+            config(['app.locale' => $lang]);
+//            config(['app.locale' => in_array($lang,['en','zh-CN'])?$lang:'en']);
         }
         if ($request->header('timezone')) {
             config(['app.timezone' => $request->header('timezone')]);

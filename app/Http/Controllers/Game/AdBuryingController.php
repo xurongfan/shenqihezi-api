@@ -15,7 +15,7 @@ class AdBuryingController extends \App\Base\Controllers\Controller
     public function report(Request $request)
     {
         $this->validate($request,[
-            'game_package_id' => ['required', Rule::exists('game_package','id')],
+//            'game_package_id' => ['required', Rule::exists('game_package','id')],
             'type' => ['required',Rule::in([1, 2]),],
             'device_uid' => 'required',
             'show_type' => 'required',

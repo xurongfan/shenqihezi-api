@@ -26,7 +26,9 @@ class GamePackage extends BaseModel
      */
     public function getTitleAttribute($value)
     {
-        return config('app.locale') == env('APP_LOCALE','en') ? $value : transL('game-package.title'.'_'.$this->id);
+        $lang = config('app.locale');
+        $lang = in_array($lang,['en','zh-CN'])?$lang:env('APP_LOCALE','en');
+        return $lang == env('APP_LOCALE','en') ? $value : transL('game-package.title'.'_'.$this->id);
     }
 
     /**
